@@ -1,0 +1,44 @@
+{
+    "version": "0.2",
+    "ignorePaths": [
+        "**/.git/objects/**",
+        ".devcontainer/",
+        ".vscode/",
+        "LICENSE",
+        "tests/"
+    ],
+    "enabledLanguageIds": [
+        "python",
+        "reStructuredText"
+    ],
+    "words": [
+        "annofab",
+        "annofabcli",
+        "annoworkcli",
+        "astimezone",
+        "astype",
+        "asyncio",
+        "bokeh",
+        "dateutil",
+        "dtype",
+        "dtypes",
+        "fillna",
+        "getrgb",
+        "giveup",
+        "groupby",
+        "inplace",
+        "isin",
+        "isna",
+        "iterrows",
+        "itertools",
+        "kurusugawa",
+        "nargs",
+        "netrc",
+        "noqa",
+        "popen",
+        "pylint",
+        "tzlocal",
+        "unarchived",
+        "unsubscriptable"
+    ]
+}
