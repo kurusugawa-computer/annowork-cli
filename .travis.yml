@@ -1,0 +1,26 @@
+language: python
+
+python:
+  - "3.8"
+  - "3.9"
+
+dist: focal
+
+install:
+  - pip install poetry
+  - travis_retry poetry install
+
+before_script:
+  - export TZ=Asia/Tokyo
+  - sudo ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+  - echo "Asia/Tokyo" > sudo tee /etc/timezone  > /dev/null
+
+script:
+   - make lint
+   - make test
+
+branches:
+  only:
+      - main
+
+cache: pip
