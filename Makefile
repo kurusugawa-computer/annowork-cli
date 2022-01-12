@@ -16,9 +16,9 @@ format:
 	poetry run black ${FORMAT_FILES}
 
 lint:
-	poetry run mypy ${LINT_FILES} --config-file setup.cfg
+	poetry run mypy ${LINT_FILES}
 	poetry run flake8 ${LINT_FILES}
-	poetry run pylint ${LINT_FILES} --rcfile setup.cfg
+	poetry run pylint ${LINT_FILES}
 
 test:
 	poetry run pytest -n auto  --cov=annoworkcli --cov-report=html tests
