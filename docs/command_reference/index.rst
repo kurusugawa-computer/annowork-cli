@@ -8,11 +8,11 @@ Command Reference
    :caption: Available Commands
    :titlesonly:
 
-   job/index
    account/index
    actual_working_time/index
    annofab/index
    expected_working_time/index
+   job/index
    my/index
    organization/index
    organization_member/index

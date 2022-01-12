@@ -14,8 +14,8 @@ Available Commands
    :maxdepth: 1
    :titlesonly:
 
-   list_daily
    list
+   list_daily
 
 Usage Details
 =================================
