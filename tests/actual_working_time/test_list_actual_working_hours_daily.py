@@ -64,9 +64,7 @@ class Test__create_actual_working_hours_dict:
 
     def test_evening(self):
         actual = _create_actual_working_hours_dict(ACTUAL_WORKING_TIME_LIST[0], tzinfo=self.jtc_tzinfo)
-        expected = {
-            (datetime.date(2021, 11, 1), "organization_mmeber_kawamatsu", "3e29d3eb-5b29-40b5-a696-678be1ef6b6d"): 1.0
-        }
+        expected = {(datetime.date(2021, 11, 1), "alice", "3e29d3eb-5b29-40b5-a696-678be1ef6b6d"): 1.0}
         assert actual == expected
 
     def test_midnight(self):
