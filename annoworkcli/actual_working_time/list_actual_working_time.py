@@ -330,12 +330,6 @@ def parse_args(parser: argparse.ArgumentParser):
     )
 
     parser.add_argument(
-        "--show_notes",
-        action="store_true",
-        help="親のジョブ情報も出力します。",
-    )
-
-    parser.add_argument(
         "--timezone_offset", type=float, help="日付に対するタイムゾーンのオフセット時間を指定します。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。"
     )
 

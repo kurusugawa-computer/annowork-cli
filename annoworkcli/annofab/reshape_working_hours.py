@@ -611,7 +611,7 @@ class ReshapeWorkingHours:
             job_ids = self.list_actual_obj.get_job_id_list_from_parent_job_id_list(parent_job_ids)
 
         df = self.list_actual_obj.get_df_working_hours(
-            start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids, is_show_notes=True
+            start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids
         )
         return df
 

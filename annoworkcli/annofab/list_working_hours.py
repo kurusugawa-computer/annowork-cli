@@ -117,7 +117,6 @@ class ListWorkingHoursWithAnnofab:
         job_ids: Optional[Collection[str]] = None,
         parent_job_ids: Optional[Collection[str]] = None,
         user_ids: Optional[Collection[str]] = None,
-        is_show_notes: bool = False,
     ) -> list[ActualWorkingHoursDaily]:
         actual_working_time_list = self.list_actual_working_time_obj.get_actual_working_times(
             job_ids=job_ids,
@@ -130,7 +129,7 @@ class ListWorkingHoursWithAnnofab:
         self.list_actual_working_time_obj.set_additional_info_to_actual_working_time(actual_working_time_list)
 
         result = create_actual_working_hours_daily_list(
-            actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS, show_notes=is_show_notes
+            actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS
         )
         result = filter_actual_daily_list(result, start_date=start_date, end_date=end_date)
         return result
@@ -280,8 +279,7 @@ class ListWorkingHoursWithAnnofab:
         else:
             required_columns = ["date"] + job_columns + user_columns + ["actual_working_hours"] + annofab_columns
 
-        if is_show_notes:
-            required_columns.append("notes")
+        required_columns.append("notes")
         return required_columns
 
     def get_df_working_hours(
@@ -292,7 +290,6 @@ class ListWorkingHoursWithAnnofab:
         job_ids: Optional[Collection[str]] = None,
         user_ids: Optional[Collection[str]] = None,
         is_show_parent_job: bool = False,
-        is_show_notes: bool = False,
     ) -> pandas.DataFrame:
         def _get_start_date(df: pandas.DataFrame) -> str:
             if start_date is None:
@@ -305,7 +302,7 @@ class ListWorkingHoursWithAnnofab:
             return max(end_date, df["date"].max())
 
         actual_working_hours_daily_list = self.get_actual_working_hours_daily(
-            job_ids=job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date, is_show_notes=is_show_notes
+            job_ids=job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
         )
 
         df_actual_working_hours = pandas.DataFrame(actual_working_hours_daily_list)
@@ -345,7 +342,7 @@ class ListWorkingHoursWithAnnofab:
             df = df.merge(df_job_parent_job, how="left", on="job_id")
 
         df.sort_values(["date", "job_id", "user_id"], inplace=True)
-        required_columns = self._get_required_columns(is_show_parent_job, is_show_notes)
+        required_columns = self._get_required_columns(is_show_parent_job)
         return df[required_columns]
 
     def get_job_id_list_from_parent_job_id_list(self, parent_job_id_list: Collection[str]) -> list[str]:
@@ -373,7 +370,6 @@ def main(args):
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
-    is_show_notes = args.show_notes
 
     main_obj = ListWorkingHoursWithAnnofab(
         annowork_service=build_annoworkapi(args),
@@ -444,11 +440,6 @@ def parse_args(parser: argparse.ArgumentParser):
         help="親のジョブ情報も出力します。",
     )
 
-    parser.add_argument(
-        "--show_notes",
-        action="store_true",
-        help="実績の備考も出力します。",
-    )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 
