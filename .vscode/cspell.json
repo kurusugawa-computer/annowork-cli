@@ -36,6 +36,7 @@
         "netrc",
         "noqa",
         "popen",
+        "pydata",
         "pylint",
         "tzlocal",
         "unarchived",
