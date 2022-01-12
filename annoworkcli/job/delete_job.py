@@ -58,6 +58,7 @@ class DeleteJob:
 def main(args):
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
+    assert job_id_list is not None
 
     DeleteJob(annowork_service=annowork_service, organization_id=args.organization_id, all_yes=args.yes).main(
         job_id_list,

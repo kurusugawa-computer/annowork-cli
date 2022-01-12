@@ -83,7 +83,7 @@ def main(args):
     annowork_service = build_annoworkapi(args)
     annofab_service = build_annofabapi()
     user_id_list = get_list_from_args(args.user_id)
-
+    assert user_id_list is not None
     PutAnnofabAccountId(
         annowork_service=annowork_service, annofab_service=annofab_service, overwrite=args.overwrite
     ).main(af_organization_name=args.annofab_organization_name, user_id_list=user_id_list)

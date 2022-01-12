@@ -87,6 +87,8 @@ def main(args):
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     organization_tag_id_list = get_list_from_args(args.organization_tag_id)
+    assert user_id_list is not None
+    assert organization_tag_id_list is not None
 
     RemoveTagToOrganizationMember(
         annowork_service=annowork_service,
