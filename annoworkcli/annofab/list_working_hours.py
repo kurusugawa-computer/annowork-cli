@@ -5,6 +5,7 @@ import functools
 import itertools
 import logging
 import multiprocessing
+import sys
 from pathlib import Path
 from typing import Any, Collection, Optional
 
@@ -23,7 +24,7 @@ from annoworkcli.actual_working_time.list_actual_working_hours_daily import (
 )
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.annofab import TIMEZONE_OFFSET_HOURS, get_annofab_project_id_from_job, isoduration_to_hour
-from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -368,8 +369,18 @@ def main(args):
 
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
-    user_id_list = get_list_from_args(args.user_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
+    user_id_list = get_list_from_args(args.user_id)
+    start_date: Optional[str] = args.start_date
+    end_date: Optional[str] = args.end_date
+
+    command = " ".join(sys.argv[0:3])
+    if all(
+        v is None
+        for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]
+    ):
+        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
+        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
     main_obj = ListWorkingHoursWithAnnofab(
         annowork_service=build_annoworkapi(args),
@@ -385,8 +396,8 @@ def main(args):
         job_id_list = main_obj.get_job_id_list_from_annofab_project_id_list(annofab_project_id_list)
 
     df = main_obj.get_df_working_hours(
-        start_date=args.start_date,
-        end_date=args.end_date,
+        start_date=start_date,
+        end_date=end_date,
         job_ids=job_id_list,
         user_ids=user_id_list,
         is_show_parent_job=args.show_parent_job,

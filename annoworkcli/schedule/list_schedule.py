@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import sys
 from pathlib import Path
 from typing import Any, Collection, Dict, Optional, Tuple
 
@@ -10,7 +11,7 @@ from annoworkapi.enums import ScheduleType
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
-from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -224,11 +225,20 @@ def main(args):
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
+
+    start_date: Optional[str] = args.start_date
+    end_date: Optional[str] = args.end_date
+
+    command = " ".join(sys.argv[0:3])
+    if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
+        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
+        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+
     ListSchedule(annowork_service=annowork_service, organization_id=args.organization_id,).main(
         job_id_list=job_id_list,
         user_id_list=user_id_list,
-        start_date=args.start_date,
-        end_date=args.end_date,
+        start_date=start_date,
+        end_date=end_date,
         output=args.output,
         output_format=OutputFormat(args.format),
     )

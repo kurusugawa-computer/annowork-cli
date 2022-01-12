@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import logging
+import sys
 from pathlib import Path
 from typing import Any, Collection, Optional
 
@@ -13,7 +14,7 @@ from annoworkapi.resource import Resource as AnnoworkResource
 from annoworkapi.utils import str_to_datetime
 
 import annoworkcli
-from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -288,6 +289,14 @@ def main(args):
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
+    start_date: Optional[str] = args.start_date
+    end_date: Optional[str] = args.end_date
+
+    command = " ".join(sys.argv[0:3])
+    if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
+        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
+        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+
     ListActualWorkingTime(
         annowork_service=annowork_service,
         organization_id=args.organization_id,
@@ -296,8 +305,8 @@ def main(args):
         job_id_list=job_id_list,
         parent_job_id_list=parent_job_id_list,
         user_id_list=user_id_list,
-        start_date=args.start_date,
-        end_date=args.end_date,
+        start_date=start_date,
+        end_date=end_date,
         is_add_parent_job_info=args.show_parent_job,
         output=args.output,
         output_format=OutputFormat(args.format),

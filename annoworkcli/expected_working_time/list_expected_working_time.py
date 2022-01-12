@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import sys
 import argparse
 import logging
 from pathlib import Path
@@ -9,7 +9,7 @@ import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
-from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args, COMMAND_LINE_ERROR_STATUS_CODE
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -124,6 +124,15 @@ class ListExpectedWorkingTime:
 def main(args):
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
+    start_date: Optional[str] = args.start_date
+    end_date: Optional[str] = args.end_date
+
+    command = " ".join(sys.argv[0:3])
+    if all(v is None for v in [user_id_list, start_date, end_date]):
+        print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
+        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+
+
     ListExpectedWorkingTime(annowork_service=annowork_service, organization_id=args.organization_id).main(
         user_id_list=user_id_list,
         start_date=args.start_date,

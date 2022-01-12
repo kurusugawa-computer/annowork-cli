@@ -107,8 +107,8 @@ class ListLabor:
         self,
         job_id_list: Optional[list[str]],
         annofab_project_id_list: Optional[list[str]],
-        start_date: str,
-        end_date: str,
+        start_date: Optional[str],
+        end_date: Optional[str],
     ) -> list[AnnofabLabor]:
         # job_id_listとjob_id_annofab_project_id_dictのどちらかは必ずnot None
         assert job_id_list is not None or annofab_project_id_list is not None
@@ -162,11 +162,14 @@ def main(args):
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
+    start_date: Optional[str] = args.start_date
+    end_date: Optional[str] = args.end_date
+
     annofab_labor_list = ListLabor(annowork_service, args.organization_id).get_annofab_labor_list(
         job_id_list=job_id_list,
         annofab_project_id_list=annofab_project_id_list,
-        start_date=args.start_date,
-        end_date=args.end_date,
+        start_date=start_date,
+        end_date=end_date,
     )
 
     if len(annofab_labor_list) == 0:
