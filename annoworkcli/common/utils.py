@@ -131,7 +131,7 @@ def set_default_logger(is_debug_mode: bool = False):
     data = pkgutil.get_data("annoworkcli", "data/logging.yaml")
     if data is None:
         logger.warning("annoworkcli/data/logging.yaml の読み込みに失敗しました。")
-        raise RuntimeError("annofabcli/data/logging.yaml の読み込みに失敗しました。")
+        raise RuntimeError("annoworkcli/data/logging.yaml の読み込みに失敗しました。")
 
     logging_config = yaml.safe_load(data.decode("utf-8"))
 

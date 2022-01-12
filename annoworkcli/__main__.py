@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 from typing import Optional, Sequence
 
 import annoworkcli
@@ -45,8 +46,7 @@ def create_parser() -> argparse.ArgumentParser:
 
 def main(arguments: Optional[Sequence[str]] = None):
     """
-    annofabcli コマンドのメイン処理
-    注意： `deprecated`なツールは、サブコマンド化しない。
+    annoworkcli コマンドのメイン処理
 
     Args:
         arguments: コマンドライン引数。テストコード用
@@ -61,7 +61,7 @@ def main(arguments: Optional[Sequence[str]] = None):
     if hasattr(args, "subcommand_func"):
         try:
             set_default_logger(is_debug_mode=args.debug)
-            logger.info(args)
+            logger.info(f"{sys.argv=}")
             args.subcommand_func(args)
         except Exception as e:
             logger.exception(e)

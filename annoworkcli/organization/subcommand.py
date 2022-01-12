@@ -1,11 +1,10 @@
 import argparse
 from typing import Optional
 
-from annofabcli.common.cli import add_parser as add_root_parser
-
 import annoworkcli
 import annoworkcli.organization.list_organization
 import annoworkcli.organization.put_organization
+from annoworkcli.common.cli import add_parser as add_root_parser
 
 
 def parse_args(parser: argparse.ArgumentParser):

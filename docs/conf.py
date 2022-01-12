@@ -69,7 +69,7 @@ html_theme_options = {
 
 html_context = {
     "github_user": "kurusugawa-computer",
-    "github_repo": "annofab-cli",
+    "github_repo": "annowork-cli",
     "github_version": "main",
     "doc_path": "docs",
 }
