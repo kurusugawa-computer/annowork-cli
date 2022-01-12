@@ -17,6 +17,7 @@ from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
 from annoworkcli.actual_working_time.list_actual_working_hours_daily import (
+    ActualWorkingHoursDaily,
     create_actual_working_hours_daily_list,
     filter_actual_daily_list,
 )
@@ -117,7 +118,7 @@ class ListWorkingHoursWithAnnofab:
         parent_job_ids: Optional[Collection[str]] = None,
         user_ids: Optional[Collection[str]] = None,
         is_show_notes: bool = False,
-    ):
+    ) -> list[ActualWorkingHoursDaily]:
         actual_working_time_list = self.list_actual_working_time_obj.get_actual_working_times(
             job_ids=job_ids,
             parent_job_ids=parent_job_ids,
