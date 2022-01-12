@@ -484,6 +484,7 @@ def main(args):
 
     elif args.annofab_project_id is not None:
         af_project_id = args.annofab_project_id
+        assert af_project_id is not None
         # annofabのプロジェクトに紐づくジョブは複数あるので、job_id_listを採用する
         job_id_list = main_obj.get_job_id_list_from_af_project_id(af_project_id)
         logger.debug(f"{af_project_id=}に紐づくAnnoworkのjob_ids={job_id_list}")
@@ -493,13 +494,13 @@ def main(args):
         return
 
     if args.annofab_task_json is not None:
-        with open(args.annofab_task_json, encoding="utf-8") as f:
-            task_list = json.load(f)
+        with open(args.annofab_task_json, encoding="utf-8") as f1:
+            task_list = json.load(f1)
 
     else:
-        with tempfile.NamedTemporaryFile() as f:
-            execute_annofabcli_project_download(af_project_id, output_file=Path(f.name), is_latest=args.latest)
-            task_list = json.load(f)
+        with tempfile.NamedTemporaryFile() as f2:
+            execute_annofabcli_project_download(af_project_id, output_file=Path(f2.name), is_latest=args.latest)
+            task_list = json.load(f2)
 
     dashboard_data = main_obj.create_dashboard_data(
         job_ids=job_id_list, af_project_id=af_project_id, date=args.date, task_list=task_list

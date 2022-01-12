@@ -46,6 +46,7 @@ class ListExternalLinkageInfo:
 def main(args):
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
+    assert user_id_list is not None
     ListExternalLinkageInfo(annowork_service=annowork_service).main(
         user_id_list=user_id_list, output=args.output, output_format=OutputFormat(args.format)
     )
