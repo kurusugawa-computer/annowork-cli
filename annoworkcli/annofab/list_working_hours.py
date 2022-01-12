@@ -256,7 +256,7 @@ class ListWorkingHoursWithAnnofab:
         return df[["job_id", "parent_job_id", "parent_job_name"]]
 
     @staticmethod
-    def _get_required_columns(is_show_parent_job: bool, is_show_notes: bool):
+    def _get_required_columns(is_show_parent_job: bool):
         job_columns = [
             "job_id",
             "job_name",
@@ -390,7 +390,6 @@ def main(args):
         job_ids=job_id_list,
         user_ids=user_id_list,
         is_show_parent_job=args.show_parent_job,
-        is_show_notes=is_show_notes,
     )
 
     if len(df) == 0:
@@ -439,7 +438,6 @@ def parse_args(parser: argparse.ArgumentParser):
         action="store_true",
         help="親のジョブ情報も出力します。",
     )
-
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 
