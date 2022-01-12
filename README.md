@@ -101,10 +101,6 @@ optional arguments:
   --endpoint_url ENDPOINT_URL
                         AnnoWork WebAPIのエンドポイントを指定します。指定しない場合は'https://annowork.com'です。 (default: None)
 
-  --is_development      開発環境に対して操作します。`--endpoint_url https://dev.annowork.com`と同等です。 (default: False)
-
-  --is_staging          ステージング環境に対して操作します。`--endpoint_url https://stage.annowork.com`と同等です。 (default: False)
-
   -org ORGANIZATION_ID, --organization_id ORGANIZATION_ID
                         対象の組織ID (default: None)
 
@@ -166,18 +162,11 @@ $ annoworkcli member list --output foo.csv --is_development
 
 
 # VSCode Devcontainerを使って開発する方法
-0. 以下の環境変数を定義します。
+1. 以下の環境変数を定義します。
     * `ANNOFAB_USER_ID`
     * `ANNOFAB_PASSWORD`
     * `ANNOWORK_USER_ID`
     * `ANNOWORK_PASSWORD`
-
-1. `.devcontainer/.env` にNEXUSの認証情報を記載します。社内PyPIにある`annoworkapi`に依存しているためです。
-
-```
-NEXUS_USER=XXX
-NEXUS_PASSWORD=${NEXUSのパスワードをbase64でエンコードした値}
-```
 
 2. VSCodeのdevcontainerを起動します。
 
