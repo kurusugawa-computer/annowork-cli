@@ -7,7 +7,7 @@ import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree
@@ -99,7 +99,7 @@ def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.t
 def create_actual_working_hours_daily_list(
     actual_working_time_list: list[dict[str, Any]],
     timezone_offset_hours: Optional[float] = None,
-    show_notes: Optional[bool] = False,
+    show_notes: bool = True,
 ) -> list[ActualWorkingHoursDaily]:
     results_dict: ActualWorkingHoursDict = defaultdict(float)
     notes_dict: ActualWorkingTimeNoteDict = defaultdict(list)
@@ -186,10 +186,10 @@ def get_actual_working_time_list_from_input_file(input_file: Path) -> list[dict[
 
 
 def filter_actual_daily_list(
-    actual_daily_list: list[ActualWorkingHoursDaily], start_date: Optional[str], end_date: Optional[str]
-):
+    actual_daily_list: Sequence[ActualWorkingHoursDaily], start_date: Optional[str], end_date: Optional[str]
+) -> list[ActualWorkingHoursDaily]:
     if start_date is None and end_date is None:
-        return actual_daily_list
+        return list(actual_daily_list)
 
     def is_match(elm: ActualWorkingHoursDaily) -> bool:
         result = True
@@ -208,7 +208,7 @@ class ListActualWorkingHoursDaily:
         self.organization_id = organization_id
 
     def add_parent_job_info(
-        self, daily_list: list[ActualWorkingHoursDaily]
+        self, daily_list: Sequence[ActualWorkingHoursDaily]
     ) -> list[ActualWorkingHoursDailyWithParentJob]:
         all_job_list = self.annowork_service.api.get_jobs(self.organization_id)
         all_job_dict = {e["job_id"]: e for e in all_job_list}
@@ -229,7 +229,7 @@ class ListActualWorkingHoursDaily:
         return result
 
 
-def get_required_columns(show_parent_job: bool, show_notes: bool) -> list[str]:
+def get_required_columns(show_parent_job: bool) -> list[str]:
     if show_parent_job:
         required_columns = [
             "date",
@@ -241,6 +241,7 @@ def get_required_columns(show_parent_job: bool, show_notes: bool) -> list[str]:
             "user_id",
             "username",
             "actual_working_hours",
+            "notes",
         ]
     else:
         required_columns = [
@@ -251,10 +252,9 @@ def get_required_columns(show_parent_job: bool, show_notes: bool) -> list[str]:
             "user_id",
             "username",
             "actual_working_hours",
+            "notes",
         ]
 
-    if show_notes:
-        required_columns.append("notes")
     return required_columns
 
 
@@ -265,7 +265,6 @@ def main(args):
     user_id_list = get_list_from_args(args.user_id)
     start_date: Optional[str] = args.start_date
     end_date: Optional[str] = args.end_date
-    show_notes: bool = args.show_notes
 
     main_obj = ListActualWorkingHoursDaily(annowork_service, args.organization_id)
 
@@ -289,8 +288,8 @@ def main(args):
         actual_working_time_list = get_actual_working_time_list_from_input_file(args.input)
 
     logger.debug(f"{len(actual_working_time_list)} 件の実績作業時間情報を日ごとに集約します。")
-    result = create_actual_working_hours_daily_list(
-        actual_working_time_list, timezone_offset_hours=args.timezone_offset, show_notes=show_notes
+    result: Sequence[ActualWorkingHoursDaily] = create_actual_working_hours_daily_list(
+        actual_working_time_list, timezone_offset_hours=args.timezone_offset, show_notes=True
     )
 
     result = filter_actual_daily_list(result, start_date=start_date, end_date=end_date)
@@ -303,21 +302,16 @@ def main(args):
     if show_parent_job:
         result = main_obj.add_parent_job_info(result)
 
-    logger.info(f"{len(result)} 件の日ごとの実績作業時間情報を出力します。")
-
     if OutputFormat(args.format) == OutputFormat.JSON:
         if show_parent_job:
             dict_result = ActualWorkingHoursDailyWithParentJob.schema().dump(result, many=True)
         else:
             dict_result = ActualWorkingHoursDaily.schema().dump(result, many=True)
-        if not show_notes:
-            for d in dict_result:
-                d.pop("notes")
 
         print_json(dict_result, is_pretty=True, output=args.output)
     else:
         df = pandas.DataFrame(result)
-        required_columns = get_required_columns(show_parent_job, show_notes)
+        required_columns = get_required_columns(show_parent_job)
         print_csv(df[required_columns], output=args.output)
 
 
@@ -352,12 +346,6 @@ def parse_args(parser: argparse.ArgumentParser):
         "--show_parent_job",
         action="store_true",
         help="親のジョブ情報も出力します。",
-    )
-
-    parser.add_argument(
-        "--show_notes",
-        action="store_true",
-        help="備考情報を出力します。start_datetimeの日付に対応する行に出力します。備考が複数ある場合は改行します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
