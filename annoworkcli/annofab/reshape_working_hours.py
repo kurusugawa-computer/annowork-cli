@@ -515,7 +515,7 @@ class ReshapeDataFrame:
                     "actual_working_hours",
                     "monitored_working_hours",
                     "activity_rate",
-                    "monitor_rate", 
+                    "monitor_rate",
                 ]
             ]
         ]
