@@ -27,9 +27,6 @@ from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDail
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_TO_REPLACE_FOR_VALUE = {numpy.inf: "--", numpy.nan: "--"}
-ROUND_DECIMALS = 2
-
 
 class ShapeType(Enum):
     DETAILS = "details"
@@ -77,11 +74,14 @@ def filter_df(
 
 
 class ReshapeDataFrame:
-    def __init__(self, *, round_decimals: Optional[int] = None, replace_nan_inf_with: Optional[str] = None) -> None:
+    """
+    Args:
+        round_decimals: Noneでなければ、数値列を小数点以下 ``round_decimals`` になるように四捨五入する。
+
+    """
+
+    def __init__(self, *, round_decimals: Optional[int] = None) -> None:
         self.round_decimals = round_decimals
-        self.replace_nan_info = None
-        if replace_nan_inf_with is not None:
-            self.replace_nan_info = {numpy.inf: replace_nan_inf_with, numpy.nan: replace_nan_inf_with}
 
     def format_df(self, df: pandas.DataFrame, value_columns: Optional[list[str]] = None) -> pandas.DataFrame:
         df = df.copy()
@@ -90,12 +90,6 @@ class ReshapeDataFrame:
                 df[value_columns] = df[value_columns].round(self.round_decimals)
             else:
                 df = df.round(self.round_decimals)
-
-        if self.replace_nan_info is not None:
-            if value_columns is not None:
-                df[value_columns] = df[value_columns].replace(DEFAULT_TO_REPLACE_FOR_VALUE)
-            else:
-                df = df.replace(DEFAULT_TO_REPLACE_FOR_VALUE)
 
         return df
 
@@ -510,14 +504,7 @@ class ReshapeDataFrame:
         df_added_rate = pandas.concat(added_column_list, axis="columns")
         df2 = pandas.concat([df2, df_added_rate], axis="columns")
 
-        # nua,infの置き換えする列を指定したいので、`self.format_df`は使わない
-        if self.round_decimals is not None:
-            df2 = df2.round(self.round_decimals)
-        if self.replace_nan_info is not None:
-            df2.replace(
-                {col: self.replace_nan_info for col in df2.columns if col[1] in ["activity_rate", "monitor_rate"]},
-                inplace=True,
-            )
+        df2 = self.format_df(df2)
 
         df2 = df2[
             [
@@ -528,7 +515,7 @@ class ReshapeDataFrame:
                     "actual_working_hours",
                     "monitored_working_hours",
                     "activity_rate",
-                    "monitor_rate",
+                    "monitor_rate", 
                 ]
             ]
         ]
@@ -673,7 +660,7 @@ class ReshapeWorkingHours:
         self, df_actual: pandas.DataFrame, df_assigned: pandas.DataFrame, shape_type: ShapeType
     ) -> pandas.DataFrame:
 
-        reshape_obj = ReshapeDataFrame(round_decimals=2, replace_nan_inf_with="--")
+        reshape_obj = ReshapeDataFrame(round_decimals=2)
         if shape_type == ShapeType.DETAILS:
             df_output = reshape_obj.get_df_details(df_actual=df_actual, df_assigned=df_assigned)
 
