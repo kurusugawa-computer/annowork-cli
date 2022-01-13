@@ -16,7 +16,7 @@ out_dir.mkdir(exist_ok=True, parents=True)
 class TestReshapeDataFrame:
     @classmethod
     def setup_class(cls):
-        cls.main_obj = ReshapeDataFrame(round_decimals=2, replace_nan_inf_with="--")
+        cls.main_obj = ReshapeDataFrame()
 
     def test_get_df_total(self):
         df_actual = pandas.read_csv(str(data_dir / "actual.csv"))

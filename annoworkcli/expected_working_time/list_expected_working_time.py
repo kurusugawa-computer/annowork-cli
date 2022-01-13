@@ -1,7 +1,8 @@
 from __future__ import annotations
-import sys
+
 import argparse
 import logging
+import sys
 from pathlib import Path
 from typing import Any, Optional
 
@@ -9,7 +10,7 @@ import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
-from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args, COMMAND_LINE_ERROR_STATUS_CODE
+from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -131,7 +132,6 @@ def main(args):
     if all(v is None for v in [user_id_list, start_date, end_date]):
         print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
-
 
     ListExpectedWorkingTime(annowork_service=annowork_service, organization_id=args.organization_id).main(
         user_id_list=user_id_list,
