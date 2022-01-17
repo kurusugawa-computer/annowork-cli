@@ -39,7 +39,13 @@ class ListOrganization:
         # pandasのメソッドを使うために、一時的にDataFrameにする
         return pandas.DataFrame(result).drop_duplicates().to_dict("records")
 
-    def main(self, output: Path, output_format: OutputFormat, organization_tag_ids: Optional[Collection[str]]):
+    def main(
+        self,
+        output: Path,
+        output_format: OutputFormat,
+        organization_tag_ids: Optional[Collection[str]],
+        show_organization_tag: bool,
+    ):
         if organization_tag_ids is not None:
             organization_members = self.get_organization_members_from_tags(organization_tag_ids)
         else:
@@ -47,7 +53,8 @@ class ListOrganization:
                 self.organization_id, query_params={"includes_inactive_members": True}
             )
 
-        self.set_additional_info(organization_members)
+        if show_organization_tag:
+            self.set_additional_info(organization_members)
 
         organization_members.sort(key=lambda e: e["user_id"].lower())
 
@@ -68,7 +75,10 @@ def main(args):
     annowork_service = build_annoworkapi(args)
     organization_tag_id_list = get_list_from_args(args.organization_tag_id)
     ListOrganization(annowork_service=annowork_service, organization_id=args.organization_id).main(
-        output=args.output, output_format=OutputFormat(args.format), organization_tag_ids=organization_tag_id_list
+        output=args.output,
+        output_format=OutputFormat(args.format),
+        organization_tag_ids=organization_tag_id_list,
+        show_organization_tag=args.show_organization_tag,
     )
 
 
@@ -87,6 +97,12 @@ def parse_args(parser: argparse.ArgumentParser):
         nargs="+",
         type=str,
         help="指定した組織タグが付与された組織メンバを出力します。",
+    )
+
+    parser.add_argument(
+        "--show_organization_tag",
+        action="store_true",
+        help="組織タグに関する情報も出力します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")

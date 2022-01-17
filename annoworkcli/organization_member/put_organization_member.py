@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import logging
 import uuid
-from typing import Any, Optional
+from typing import Any, Collection, Optional
 
 from annoworkapi.enums import Role
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -27,7 +27,7 @@ class PutOrganizationMember:
         self,
         user_id: str,
         role: str,
-        organization_tag_id_list: list[str],
+        organization_tag_id_list: Optional[Collection[str]],
         old_member: Optional[dict[str, Any]],
     ):
         """[summary]
@@ -47,7 +47,11 @@ class PutOrganizationMember:
             last_updated_datetime = None
             organization_member_id = str(uuid.uuid4())
 
-        request_body: dict[str, Any] = {"user_id": user_id, "role": role, "organization_tags": organization_tag_id_list}
+        request_body: dict[str, Any] = {
+            "user_id": user_id,
+            "role": role,
+            "organization_tags": organization_tag_id_list if organization_tag_id_list is not None else [],
+        }
         if last_updated_datetime is not None:
             request_body["last_updated_datetime"] = last_updated_datetime
 
@@ -58,7 +62,7 @@ class PutOrganizationMember:
         logger.debug(f"{user_id=}, {organization_member_id=}: 組織メンバを追加しました。 :: {new_member}")
         return True
 
-    def main(self, user_id_list: list[str], role: str, organization_tag_id_list: list[str]):
+    def main(self, user_id_list: list[str], role: str, organization_tag_id_list: Optional[Collection[str]]):
         organization_members = self.annowork_service.api.get_organization_members(
             self.organization_id, query_params={"includes_inactive_members": True}
         )
@@ -86,7 +90,6 @@ def main(args):
     user_id_list = get_list_from_args(args.user_id)
     organization_tag_id_list = get_list_from_args(args.organization_tag_id)
     assert user_id_list is not None
-    assert organization_tag_id_list is not None
     PutOrganizationMember(
         annowork_service=annowork_service,
         organization_id=args.organization_id,
@@ -124,7 +127,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--organization_tag_id",
         type=str,
         nargs="+",
-        required=True,
+        required=False,
         help="メンバに付与する組織タグID",
     )
 
