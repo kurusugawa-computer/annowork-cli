@@ -42,6 +42,7 @@ class PrettyHelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaul
                         help += " (default: %(default)s)"
         return help
 
+
 def add_parser(
     subparsers: Optional[argparse._SubParsersAction],
     command_name: str,
