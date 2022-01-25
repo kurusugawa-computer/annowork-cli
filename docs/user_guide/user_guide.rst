@@ -63,15 +63,15 @@ Getting Help
 
 .. code-block::
 
-  $ annoworkcli my get -o out/my.json
-  INFO     : 2022-01-12 10:42:52,791 : annoworkcli.__main__           : sys.argv=['annoworkcli', 'my', 'get', '-o', 'out/my.json']
-  INFO     : 2022-01-12 10:42:53,390 : annoworkcli.common.utils       : out/my.json に出力しました。
+    $ annoworkcli my get -o out/my.json
+    INFO     : 2022-01-12 10:42:52,791 : annoworkcli.__main__           : sys.argv=['annoworkcli', 'my', 'get', '-o', 'out/my.json']
+    INFO     : 2022-01-12 10:42:53,390 : annoworkcli.common.utils       : out/my.json に出力しました。
 
-  $ annoworkcli my get -o out/my.json --debug
-  INFO     : 2022-01-12 10:43:45,339 : annoworkcli.__main__           : sys.argv=['annoworkcli', 'my', 'get', '-o', 'out/my.json', '--debug']
-  DEBUG    : 2022-01-12 10:43:45,339 : annoworkapi.resource           : Create annoworkapi resource instance :: {'login_user_id': 'kawamatsu_yuuji', 'endpoint_url': 'https://annowork.com'}
-  DEBUG    : 2022-01-12 10:43:45,615 : annoworkapi.api                : Sent a request :: {'request': {'http_method': 'get', 'url': 'https://annowork.com/api/v1/my/account', 'query_params': None, 'header_params': None, 'request_body': None}, 'response': {'status_code': 401, 'content_length': 26}}
-  DEBUG    : 2022-01-12 10:43:46,047 : annoworkapi.api                : Sent a request :: {'requests': {'http_method': 'post', 'url': 'https://annowork.com/api/v1/login', 'query_params': None, 'request_body_json': {'user_id': 'alice', 'password': '***'}, 'request_body_data': None, 'header_params': None}, 'response': {'status_code': 200, 'content_length': 4105}}
-  DEBUG    : 2022-01-12 10:43:46,154 : annoworkapi.api                : Sent a request :: {'request': {'http_method': 'get', 'url': 'https://annowork.com/api/v1/my/account', 'query_params': None, 'header_params': None, 'request_body': None}, 'response': {'status_code': 200, 'content_length': 365}}
-  INFO     : 2022-01-12 10:43:46,155 : annoworkcli.common.utils       : out/my.json に出力しました。
+    $ annoworkcli my get -o out/my.json --debug
+    INFO     : 2022-01-12 10:43:45,339 : annoworkcli.__main__           : sys.argv=['annoworkcli', 'my', 'get', '-o', 'out/my.json', '--debug']
+    DEBUG    : 2022-01-12 10:43:45,339 : annoworkapi.resource           : Create annoworkapi resource instance :: {'login_user_id': 'kawamatsu_yuuji', 'endpoint_url': 'https://annowork.com'}
+    DEBUG    : 2022-01-12 10:43:45,615 : annoworkapi.api                : Sent a request :: {'request': {'http_method': 'get', 'url': 'https://annowork.com/api/v1/my/account', 'query_params': None, 'header_params': None, 'request_body': None}, 'response': {'status_code': 401, 'content_length': 26}}
+    DEBUG    : 2022-01-12 10:43:46,047 : annoworkapi.api                : Sent a request :: {'requests': {'http_method': 'post', 'url': 'https://annowork.com/api/v1/login', 'query_params': None, 'request_body_json': {'user_id': 'alice', 'password': '***'}, 'request_body_data': None, 'header_params': None}, 'response': {'status_code': 200, 'content_length': 4105}}
+    DEBUG    : 2022-01-12 10:43:46,154 : annoworkapi.api                : Sent a request :: {'request': {'http_method': 'get', 'url': 'https://annowork.com/api/v1/my/account', 'query_params': None, 'header_params': None, 'request_body': None}, 'response': {'status_code': 200, 'content_length': 365}}
+    INFO     : 2022-01-12 10:43:46,155 : annoworkcli.common.utils       : out/my.json に出力しました。
 
