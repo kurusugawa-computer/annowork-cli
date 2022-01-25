@@ -3,6 +3,26 @@ name = "annoworkcli"
 version = "2.0.3"
 description = ""
 authors = ["yuji38kwmt"]
+license = "MIT"
+keywords=["annowork", "cli"]
+readme="README.md"
+repository="https://github.com/kurusugawa-computer/annowork-cli"
+classifiers = [
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Environment :: Console",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Topic :: Utilities",
+        "Operating System :: OS Independent",
+]
+
+
+
+
 
 [tool.poetry.dependencies]
 python = "^3.8"
