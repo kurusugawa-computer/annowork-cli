@@ -54,7 +54,7 @@ def test_list_daily():
             "--start_date",
             "2022-01-01",
             "--end_date",
-            "2022-01-31",c
+            "2022-01-31",
             "--output",
             str(out_dir / "list_daily.csv"),
         ]
