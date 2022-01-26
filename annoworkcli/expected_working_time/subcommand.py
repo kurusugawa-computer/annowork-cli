@@ -4,6 +4,7 @@ from typing import Optional
 import annoworkcli
 import annoworkcli.expected_working_time.delete_expected_working_time
 import annoworkcli.expected_working_time.list_expected_working_time
+import annoworkcli.expected_working_time.list_expected_working_time_groupby_tag
 
 
 def parse_args(parser: argparse.ArgumentParser):
@@ -13,6 +14,7 @@ def parse_args(parser: argparse.ArgumentParser):
     # サブコマンドの定義
     annoworkcli.expected_working_time.delete_expected_working_time.add_parser(subparsers)
     annoworkcli.expected_working_time.list_expected_working_time.add_parser(subparsers)
+    annoworkcli.expected_working_time.list_expected_working_time_groupby_tag.add_parser(subparsers)
 
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
