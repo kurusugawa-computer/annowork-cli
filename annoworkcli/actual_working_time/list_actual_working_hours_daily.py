@@ -15,7 +15,7 @@ from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
 from annoworkapi.utils import str_to_datetime
 from dataclasses_json import DataClassJsonMixin
-
+import typing
 import annoworkcli
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
@@ -44,7 +44,9 @@ class ActualWorkingHoursDaily(DataClassJsonMixin):
     user_id: str
     username: str
     actual_working_hours: float
-    notes: Optional[list]
+    # listでなくtyping.Listを使っている理由：`list`だとPython3.8でデコード時にエラーが発生するため
+    # https://qiita.com/yuji38kwmt/items/ce49efc91bb9b6430437
+    notes: Optional[typing.List[str]]
 
 
 @dataclass
@@ -309,10 +311,11 @@ def main(args):
         result = main_obj.add_parent_job_info(result)
 
     if OutputFormat(args.format) == OutputFormat.JSON:
-        if show_parent_job:
-            dict_result = ActualWorkingHoursDailyWithParentJob.schema().dump(result, many=True)
-        else:
-            dict_result = ActualWorkingHoursDaily.schema().dump(result, many=True)
+        # `.schema().dump(many=True)`を使わない理由：使うと警告が発生するから
+        # https://qiita.com/yuji38kwmt/items/a3625b2011aff1d9901b
+        dict_result = []
+        for elm in result:
+            dict_result.append(elm.to_dict())
 
         print_json(dict_result, is_pretty=True, output=args.output)
     else:
