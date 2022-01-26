@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Collection, Optional, Sequence
 
 import pandas
+from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
@@ -29,11 +30,27 @@ class ListActualWorkingTimeGroupbyTag:
         self.organization_id = organization_id
         self.timezone_offset_hours = timezone_offset_hours
 
+    def add_parent_job_info(self, daily_list: list[dict[str, Any]]):
+        """引数daily_listに、parent_job情報を追加する。"""
+        all_job_list = self.annowork_service.api.get_jobs(self.organization_id)
+        all_job_dict = {e["job_id"]: e for e in all_job_list}
+        parent_job_id_set = {get_parent_job_id_from_job_tree(e["job_tree"]) for e in all_job_list}
+        if None in parent_job_id_set:
+            parent_job_id_set.remove(None)
+
+        for elm in daily_list:
+            job = all_job_dict[elm["job_id"]]
+            parent_job_id = get_parent_job_id_from_job_tree(job["job_tree"])
+            parent_job_name = all_job_dict[parent_job_id]["job_name"] if parent_job_id is not None else None
+            elm["parent_job_id"] = parent_job_id
+            elm["parent_job_name"] = parent_job_name
+
     def get_actual_working_times_groupby_tag(
         self,
         actual_working_hours_daily: list[ActualWorkingHoursDaily],
         target_organization_tag_ids: Optional[Collection[str]] = None,
         target_organization_tag_names: Optional[Collection[str]] = None,
+        show_parent_job: bool = False,
     ) -> list[dict[str, Any]]:
         """実績作業時間のlistから、組織タグごとに集計したlistを返す。"""
         organization_tags = self.annowork_service.api.get_organization_tags(self.organization_id)
@@ -93,6 +110,10 @@ class ListActualWorkingTimeGroupbyTag:
             results.append(e)
 
         results.sort(key=lambda e: (e["date"], e["job_id"]))
+
+        if show_parent_job:
+            self.add_parent_job_info(results)
+
         return results
 
     def get_actual_working_hours_daily(
@@ -139,11 +160,11 @@ class ListActualWorkingTimeGroupbyTag:
         end_date: Optional[str] = None,
         target_organization_tag_ids: Optional[Collection[str]] = None,
         target_organization_tag_names: Optional[Collection[str]] = None,
+        show_parent_job: bool = False,
     ):
         actual_working_hours_daily_list = self.get_actual_working_hours_daily(
             job_ids=job_ids, parent_job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
         )
-        print(actual_working_hours_daily_list[0])
         if len(actual_working_hours_daily_list) == 0:
             logger.warning(f"日ごとの実績作業時間情報は0件なので、出力しません。")
             return
@@ -152,6 +173,7 @@ class ListActualWorkingTimeGroupbyTag:
             actual_working_hours_daily_list,
             target_organization_tag_ids=target_organization_tag_ids,
             target_organization_tag_names=target_organization_tag_names,
+            show_parent_job=show_parent_job,
         )
 
         logger.info(f"{len(results)} 件の組織タグで集計した実績作業時間の一覧を出力します。")
@@ -161,11 +183,23 @@ class ListActualWorkingTimeGroupbyTag:
         else:
             df = pandas.json_normalize(results)
             df.fillna(0, inplace=True)
-            required_columns = [
-                "date",
-                "job_id",
-                "actual_working_hours.total",
-            ]
+            if show_parent_job:
+                required_columns = [
+                    "date",
+                    "job_id",
+                    "job_name",
+                    "parent_job_id",
+                    "parent_job_name",
+                    "actual_working_hours.total",
+                ]
+            else:
+                required_columns = [
+                    "date",
+                    "job_id",
+                    "job_name",
+                    "actual_working_hours.total",
+                ]
+
             remaining_columns = list(set(df.columns) - set(required_columns))
             columns = required_columns + sorted(remaining_columns)
 
@@ -202,6 +236,7 @@ def main(args):
         target_organization_tag_names=organization_tag_name_list,
         output=args.output,
         output_format=OutputFormat(args.format),
+        show_parent_job=args.show_parent_job,
     )
 
 
