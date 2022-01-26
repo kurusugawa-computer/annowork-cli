@@ -51,7 +51,7 @@ class ListAssignedHoursDailyGroupbyTag:
             ]
             if len(organization_tags) != len(target_organization_tag_names):
                 logger.warning(
-                    f"target_organization_tag_namesに含まれるいくつかのorganization_tag_nameは、存在しません。:: {len(target_organization_tag_ids)=}, {len(organization_tags)=}"
+                    f"target_organization_tag_namesに含まれるいくつかのorganization_tag_nameは、存在しません。:: {len(target_organization_tag_names)=}, {len(organization_tags)=}"
                 )
 
         dict_hours: dict[tuple[str, str, str], float] = defaultdict(float)
