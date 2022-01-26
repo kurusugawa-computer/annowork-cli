@@ -54,7 +54,8 @@ def test_list_daily():
             "2022-01-01",
             "--end_date",
             "2022-01-31",
-            "--format","json",
+            "--format",
+            "json",
             "--output",
             str(out_dir / "list_daily.csv"),
         ]

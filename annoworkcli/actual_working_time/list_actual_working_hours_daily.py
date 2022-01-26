@@ -5,6 +5,7 @@ import datetime
 import json
 import logging
 import sys
+import typing
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,7 +16,7 @@ from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
 from annoworkapi.utils import str_to_datetime
 from dataclasses_json import DataClassJsonMixin
-import typing
+
 import annoworkcli
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
@@ -276,24 +277,20 @@ def main(args):
 
     main_obj = ListActualWorkingHoursDaily(annowork_service, args.organization_id)
 
-    if args.input is None:
-        list_actual_working_time_obj = ListActualWorkingTime(
-            annowork_service=annowork_service,
-            organization_id=args.organization_id,
-            timezone_offset_hours=args.timezone_offset,
-        )
-        actual_working_time_list = list_actual_working_time_obj.get_actual_working_times(
-            job_ids=job_id_list,
-            parent_job_ids=parent_job_id_list,
-            user_ids=user_id_list,
-            start_date=args.start_date,
-            end_date=args.end_date,
-            is_set_additional_info=False,
-        )
-        list_actual_working_time_obj.set_additional_info_to_actual_working_time(actual_working_time_list)
-
-    else:
-        actual_working_time_list = get_actual_working_time_list_from_input_file(args.input)
+    list_actual_working_time_obj = ListActualWorkingTime(
+        annowork_service=annowork_service,
+        organization_id=args.organization_id,
+        timezone_offset_hours=args.timezone_offset,
+    )
+    actual_working_time_list = list_actual_working_time_obj.get_actual_working_times(
+        job_ids=job_id_list,
+        parent_job_ids=parent_job_id_list,
+        user_ids=user_id_list,
+        start_date=args.start_date,
+        end_date=args.end_date,
+        is_set_additional_info=False,
+    )
+    list_actual_working_time_obj.set_additional_info_to_actual_working_time(actual_working_time_list)
 
     logger.debug(f"{len(actual_working_time_list)} 件の実績作業時間情報を日ごとに集約します。")
     result: Sequence[ActualWorkingHoursDaily] = create_actual_working_hours_daily_list(
@@ -333,10 +330,6 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         help="対象の組織ID",
     )
-    required_group.add_argument(
-        "--input", type=Path, help="``annoworkcli actual_workign_time list`` コマンドで出力したファイルのパスを指定します。"
-    )
-
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 
     # parent_job_idとjob_idの両方を指定するユースケースはなさそうなので、exclusiveにする。
