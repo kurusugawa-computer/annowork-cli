@@ -82,10 +82,10 @@ class ListExpectedWorkingTimeGroupbyTag:
             )
 
     def get_expected_working_times_groupby_tag(
-        self, expected_working_times: list[dict[str, Any]],
+        self,
+        expected_working_times: list[dict[str, Any]],
         target_organization_tag_ids: Optional[Collection[str]] = None,
         target_organization_tag_names: Optional[Collection[str]] = None,
-
     ) -> list[dict[str, Any]]:
         """予定稼働時間のlistから、組織タグごとに集計したlistを返す。
 
@@ -101,12 +101,16 @@ class ListExpectedWorkingTimeGroupbyTag:
         # target_organization_tag_idsとtarget_organization_tag_namesは排他的なので、両方not Noneになることはない
         assert not (target_organization_tag_ids is not None and target_organization_tag_names is not None)
         if target_organization_tag_ids is not None:
-            organization_tags = [e for e in organization_tags if e["organization_tag_id"] in set(target_organization_tag_ids)]
+            organization_tags = [
+                e for e in organization_tags if e["organization_tag_id"] in set(target_organization_tag_ids)
+            ]
             if len(organization_tags) != original_organization_tag_length:
                 logger.warning(f"target_organization_tag_idsに含まれるいくつかのorganization_tag_idは、存在しません。")
 
         if target_organization_tag_names is not None:
-            organization_tags = [e for e in organization_tags if e["organization_tag_name"] in set(target_organization_tag_names)]
+            organization_tags = [
+                e for e in organization_tags if e["organization_tag_name"] in set(target_organization_tag_names)
+            ]
             if len(organization_tags) != original_organization_tag_length:
                 logger.warning(f"target_organization_tag_namesに含まれるいくつかのorganization_tag_nameは、存在しません。")
 
@@ -161,7 +165,11 @@ class ListExpectedWorkingTimeGroupbyTag:
             logger.warning(f"予定稼働時間情報0件なので、出力しません。")
             return
 
-        results = self.get_expected_working_times_groupby_tag(expected_working_times, target_organization_tag_ids=target_organization_tag_ids, target_organization_tag_names=target_organization_tag_names)
+        results = self.get_expected_working_times_groupby_tag(
+            expected_working_times,
+            target_organization_tag_ids=target_organization_tag_ids,
+            target_organization_tag_names=target_organization_tag_names,
+        )
 
         logger.info(f"{len(results)} 件の組織タグで集計した予定稼働時間の一覧を出力します。")
 
@@ -218,7 +226,6 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
     parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
-
 
     org_tag_group = parser.add_mutually_exclusive_group()
     org_tag_group.add_argument(
