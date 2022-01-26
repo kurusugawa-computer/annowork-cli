@@ -38,7 +38,7 @@ Examples
 
    ``expected_working_hours.total`` は、組織タグを無視して集計した値です。
    ``expected_working_hours.total`` 以外の値の合計値ではないことに、注意してください。
-   
+
    たとえば上記の出力結果だと、``expected_working_hours.total ≠ expected_working_hours.type:acceptor + expected_working_hours.type:monitored`` です。
 
 
@@ -47,7 +47,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.expected_working_time.list_expected_working_time.add_parser
-   :prog: annoworkcli expected_working_time list
+   :ref: annoworkcli.expected_working_time.list_expected_working_time_groupby_tag.add_parser
+   :prog: annoworkcli expected_working_time list_groupby_tag
    :nosubcommands:
    :nodefaultconst:
