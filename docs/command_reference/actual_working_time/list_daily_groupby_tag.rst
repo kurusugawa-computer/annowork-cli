@@ -35,6 +35,15 @@ Examples
    ]
 
 
+.. note::
+
+   ``actual_working_hours.total`` は、組織タグを無視して集計した値です。
+   ``actual_working_hours.total`` 以外の値の合計値ではないことに、注意してください。
+   
+   たとえば上記の出力結果だと、``actual_working_hours.total ≠ actual_working_hours.type:acceptor + actual_working_hours.type:monitored`` です。
+
+   
+
 ``--show_parent_job`` を指定すると、実績作業時間に紐づくジョブの親ジョブの情報も出力します。
 
 
