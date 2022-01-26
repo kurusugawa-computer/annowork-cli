@@ -17,7 +17,7 @@ before_script:
 
 script:
    - make lint
-   - make test
+   - poetry run pytest -n auto -m "not access_webapi"
 
 branches:
   only:

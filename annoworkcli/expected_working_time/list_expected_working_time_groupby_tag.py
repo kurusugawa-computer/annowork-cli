@@ -28,7 +28,6 @@ class ListExpectedWorkingTimeGroupbyTag:
         expected_working_times: list[dict[str, Any]],
         target_organization_tag_ids: Optional[Collection[str]] = None,
         target_organization_tag_names: Optional[Collection[str]] = None,
-
     ) -> list[dict[str, Any]]:
         """予定稼働時間のlistから、組織タグごとに集計したlistを返す。
 
