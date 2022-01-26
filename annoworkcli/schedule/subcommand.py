@@ -3,6 +3,7 @@ from typing import Optional
 
 import annoworkcli
 import annoworkcli.schedule.list_assigned_hours_daily
+import annoworkcli.schedule.list_assigned_hours_daily_groupby_tag
 import annoworkcli.schedule.list_schedule
 
 
@@ -13,6 +14,7 @@ def parse_args(parser: argparse.ArgumentParser):
     # サブコマンドの定義
     annoworkcli.schedule.list_schedule.add_parser(subparsers)
     annoworkcli.schedule.list_assigned_hours_daily.add_parser(subparsers)
+    annoworkcli.schedule.list_assigned_hours_daily_groupby_tag.add_parser(subparsers)
 
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:

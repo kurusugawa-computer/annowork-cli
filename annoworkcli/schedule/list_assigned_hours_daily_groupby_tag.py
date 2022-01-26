@@ -13,30 +13,25 @@ from annoworkapi.resource import Resource as AnnoworkResource
 import annoworkcli
 from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
-from annoworkcli.expected_working_time.list_expected_working_time import ListExpectedWorkingTime
+from annoworkcli.schedule.list_assigned_hours_daily import AssignedHoursDaily, ListAssignedHoursDaily
+from annoworkcli.schedule.list_schedule import ListSchedule
 
 logger = logging.getLogger(__name__)
 
 
-class ListExpectedWorkingTimeGroupbyTag:
+class ListAssignedHoursDailyGroupbyTag:
     def __init__(self, annowork_service: AnnoworkResource, organization_id: str):
         self.annowork_service = annowork_service
         self.organization_id = organization_id
+        self.list_schedule_obj = ListSchedule(annowork_service, organization_id)
 
-    def get_expected_working_times_groupby_tag(
+    def get_assigned_hours_groupby_tag(
         self,
-        expected_working_times: list[dict[str, Any]],
+        assigned_hours_list: list[AssignedHoursDaily],
         target_organization_tag_ids: Optional[Collection[str]] = None,
         target_organization_tag_names: Optional[Collection[str]] = None,
     ) -> list[dict[str, Any]]:
-        """予定稼働時間のlistから、組織タグごとに集計したlistを返す。
-
-        Args:
-            expected_working_times (list[dict[str,Any]]): [description]
-
-        Returns:
-            list[dict[str,Any]]: [description]
-        """
+        """アサイン時間のlistから、組織タグごとに集計したlistを返す。"""
         organization_tags = self.annowork_service.api.get_organization_tags(self.organization_id)
 
         # target_organization_tag_idsとtarget_organization_tag_namesは排他的なので、両方not Noneになることはない
@@ -56,10 +51,11 @@ class ListExpectedWorkingTimeGroupbyTag:
             ]
             if len(organization_tags) != len(target_organization_tag_names):
                 logger.warning(
-                    f"target_organization_tag_namesに含まれるいくつかのorganization_tag_nameは、存在しません。:: {len(target_organization_tag_names)=}, {len(organization_tags)=}"
+                    f"target_organization_tag_namesに含まれるいくつかのorganization_tag_nameは、存在しません。:: {len(target_organization_tag_ids)=}, {len(organization_tags)=}"
                 )
 
-        dict_hours: dict[tuple[str, str], float] = defaultdict(float)
+        dict_hours: dict[tuple[str, str, str], float] = defaultdict(float)
+        """dictのkeyはtuple[date, job_id, organization_tag_name]"""
 
         # 組織タグごと日毎の時間を集計する
         for organization_tag in organization_tags:
@@ -68,25 +64,28 @@ class ListExpectedWorkingTimeGroupbyTag:
                 self.organization_id, organization_tag["organization_tag_id"]
             )
             member_ids = {e["organization_member_id"] for e in members}
-            for elm in expected_working_times:
-                if elm["organization_member_id"] in member_ids:
-                    dict_hours[elm["date"], organization_tag_name] += elm["expected_working_hours"]
+            for elm in assigned_hours_list:
+                if elm.organization_member_id in member_ids:
+                    dict_hours[elm.date, elm.job_id, organization_tag_name] += elm.assigned_working_hours
 
         # 全体の時間を日毎に集計する
-        for elm in expected_working_times:
-            dict_hours[elm["date"], "total"] += elm["expected_working_hours"]
+        job_dict: dict[str, str] = {}
+        """key:job_id, value:job_nameのdict"""
+        for elm in assigned_hours_list:
+            dict_hours[elm.date, elm.job_id, "total"] += elm.assigned_working_hours
+            job_dict[elm.job_id] = elm.job_name
 
-        dict_date: dict[str, dict[str, float]] = defaultdict(dict)
-        for (date, org_tag), hours in dict_hours.items():
-            dict_date[date].update({org_tag: hours})
+        dict_date: dict[tuple[str, str], dict[str, float]] = defaultdict(dict)
+        """dictのkeyは、tuple[date, job_id]"""
+        for (date, job_id, org_tag), hours in dict_hours.items():
+            dict_date[(date, job_id)].update({org_tag: hours})
 
         results = []
+        for (date, job_id), value in dict_date.items():
+            e = {"date": date, "job_id": job_id, "job_name": job_dict.get(job_id), "assigned_working_hours": value}
+            results.append(e)
 
-        for date, value in dict_date.items():
-            elm = {"date": date, "expected_working_hours": value}
-            results.append(elm)
-
-        results.sort(key=lambda e: e["date"])
+        results.sort(key=lambda e: (e["date"], e["job_id"]))
         return results
 
     def main(
@@ -94,31 +93,30 @@ class ListExpectedWorkingTimeGroupbyTag:
         *,
         output: Path,
         output_format: OutputFormat,
-        user_id_list: Optional[list[str]] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        target_organization_tag_ids: Optional[Collection[str]] = None,
-        target_organization_tag_names: Optional[Collection[str]] = None,
+        start_date: Optional[str],
+        end_date: Optional[str],
+        job_id_list: Optional[list[str]],
+        user_id_list: Optional[list[str]],
+        target_organization_tag_ids: Optional[Collection[str]],
+        target_organization_tag_names: Optional[Collection[str]],
     ):
-        list_obj = ListExpectedWorkingTime(self.annowork_service, self.organization_id)
-        if user_id_list is not None:
-            expected_working_times = list_obj.get_expected_working_times_by_user_id(
-                user_id_list=user_id_list, start_date=start_date, end_date=end_date
-            )
-        else:
-            expected_working_times = list_obj.get_expected_working_times(start_date=start_date, end_date=end_date)
-
-        if len(expected_working_times) == 0:
-            logger.warning(f"予定稼働時間情報0件なので、出力しません。")
+        list_obj = ListAssignedHoursDaily(self.annowork_service, self.organization_id)
+        assigned_hours_list = list_obj.get_assigned_hours_daily_list(
+            start_date=start_date,
+            end_date=end_date,
+            job_ids=job_id_list,
+            user_ids=user_id_list,
+        )
+        if len(assigned_hours_list) == 0:
+            logger.warning(f"アサイン時間情報は0件なので、出力しません。")
             return
 
-        results = self.get_expected_working_times_groupby_tag(
-            expected_working_times,
+        results = self.get_assigned_hours_groupby_tag(
+            assigned_hours_list,
             target_organization_tag_ids=target_organization_tag_ids,
             target_organization_tag_names=target_organization_tag_names,
         )
-
-        logger.info(f"{len(results)} 件の組織タグで集計した予定稼働時間の一覧を出力します。")
+        logger.info(f"{len(results)} 件のアサイン時間情報を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(results, is_pretty=True, output=output)
@@ -127,7 +125,9 @@ class ListExpectedWorkingTimeGroupbyTag:
             df.fillna(0, inplace=True)
             required_columns = [
                 "date",
-                "expected_working_hours.total",
+                "job_id",
+                "job_name",
+                "assigned_working_hours.total",
             ]
             remaining_columns = list(set(df.columns) - set(required_columns))
             columns = required_columns + sorted(remaining_columns)
@@ -137,26 +137,29 @@ class ListExpectedWorkingTimeGroupbyTag:
 
 def main(args):
     annowork_service = build_annoworkapi(args)
+    job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
+
     start_date: Optional[str] = args.start_date
     end_date: Optional[str] = args.end_date
 
     command = " ".join(sys.argv[0:3])
-    if all(v is None for v in [user_id_list, start_date, end_date]):
-        print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
+    if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
+        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
     organization_tag_id_list = get_list_from_args(args.organization_tag_id)
     organization_tag_name_list = get_list_from_args(args.organization_tag_name)
 
-    ListExpectedWorkingTimeGroupbyTag(annowork_service=annowork_service, organization_id=args.organization_id).main(
+    ListAssignedHoursDailyGroupbyTag(annowork_service=annowork_service, organization_id=args.organization_id,).main(
+        job_id_list=job_id_list,
         user_id_list=user_id_list,
-        start_date=args.start_date,
-        end_date=args.end_date,
+        start_date=start_date,
+        end_date=end_date,
         output=args.output,
+        output_format=OutputFormat(args.format),
         target_organization_tag_ids=organization_tag_id_list,
         target_organization_tag_names=organization_tag_name_list,
-        output_format=OutputFormat(args.format),
     )
 
 
@@ -169,10 +172,12 @@ def parse_args(parser: argparse.ArgumentParser):
         help="対象の組織ID",
     )
 
-    parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")
+    parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 
-    parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
-    parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
+    parser.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="取得対象のジョブID")
+
+    parser.add_argument("--start_date", type=str, required=False, help="取得する範囲の開始日")
+    parser.add_argument("--end_date", type=str, required=False, help="取得する範囲の終了日")
 
     org_tag_group = parser.add_mutually_exclusive_group()
     org_tag_group.add_argument(
@@ -191,6 +196,7 @@ def parse_args(parser: argparse.ArgumentParser):
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
+
     parser.add_argument(
         "-f", "--format", type=str, choices=[e.value for e in OutputFormat], help="出力先", default=OutputFormat.CSV.value
     )
@@ -199,8 +205,8 @@ def parse_args(parser: argparse.ArgumentParser):
 
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
-    subcommand_name = "list_groupby_tag"
-    subcommand_help = "組織タグで集計した予定稼働時間の一覧を出力します。"
+    subcommand_name = "list_daily_groupby_tag"
+    subcommand_help = "日ごとのアサイン時間を、組織タグで集計した値を出力します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help
