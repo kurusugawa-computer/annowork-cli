@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import copy
 import json
 import logging
 from typing import Any, Optional
@@ -19,16 +18,18 @@ class PutExternalLinkageInfo:
         self.annowork_service = annowork_service
 
     def main(self, user_id: str, external_linkage_info: dict[str, Any]):
-
         old_info = self.annowork_service.wrapper.get_account_external_linkage_info_or_none(user_id)
         if old_info is None:
             logger.warning(f"user_id={user_id} のアカウント外部連携情報は存在しません。")
             return
 
-        request_body = copy.deepcopy(external_linkage_info)
-        request_body["last_updated_datetime"] = old_info["updated_datetime"]
+        request_body = {
+            "external_linkage_info": external_linkage_info,
+            "last_updated_datetime": old_info["updated_datetime"],
+        }
 
         self.annowork_service.api.put_account_external_linkage_info(user_id, request_body=request_body)
+        logger.info(f"{user_id=} のユーザの外部連携情報を設定しました。")
 
 
 def main(args):
@@ -48,7 +49,7 @@ def parse_args(parser: argparse.ArgumentParser):
         help="登録対象ユーザのuser_id",
     )
 
-    SAMPLE_EXTERNAL_LINKAGE_INFO = {"external_linkage_info": {"annofab": {"account_id": "xxx"}}}
+    SAMPLE_EXTERNAL_LINKAGE_INFO = {"annofab": {"account_id": "xxx"}}
 
     parser.add_argument(
         "--external_linkage_info",
