@@ -12,7 +12,7 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args, prompt
 logger = logging.getLogger(__name__)
 
 
-class ChangeJobStatus:
+class ChangeJobProperties:
     def __init__(self, annowork_service: AnnoworkResource, organization_id: str, *, all_yes: bool):
         self.annowork_service = annowork_service
         self.organization_id = organization_id
@@ -101,8 +101,8 @@ def parse_args(parser: argparse.ArgumentParser):
 
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
-    subcommand_name = "change_status"
-    subcommand_help = "ジョブのステータスを変更します。"
+    subcommand_name = "change"
+    subcommand_help = "ジョブの情報（ステータスなど）を変更します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help
