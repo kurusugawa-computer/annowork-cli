@@ -17,6 +17,7 @@ before_script:
 
 script:
    - make lint
+  # webapiにアクセスするテストは実行しないようにする
    - poetry run pytest -n auto -m "not access_webapi"
 
 branches:
