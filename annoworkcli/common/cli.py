@@ -11,6 +11,7 @@ from typing import Any, List, Optional, Tuple
 import annoworkapi
 from annoworkapi.api import DEFAULT_ENDPOINT_URL
 from annoworkapi.exceptions import AnnoworkApiException
+from more_itertools import first_true
 
 from annoworkcli.common.utils import get_file_scheme_path, read_lines_except_blank_line
 
@@ -66,6 +67,23 @@ def add_parser(
         サブコマンドのparser
 
     """
+    GLOBAL_OPTIONAL_ARGUMENTS_TITLE = "global optional arguments"
+
+    def create_parent_parser() -> argparse.ArgumentParser:
+        """
+        共通の引数セットを生成する。
+        """
+        parent_parser = argparse.ArgumentParser(add_help=False)
+        group = parent_parser.add_argument_group(GLOBAL_OPTIONAL_ARGUMENTS_TITLE)
+        group.add_argument("--debug", action="store_true", help="HTTPリクエストの内容やレスポンスのステータスコードなど、デバッグ用のログが出力されます。")
+        group.add_argument(
+            "--endpoint_url",
+            type=str,
+            help=f"AnnoWork WebAPIのエンドポイントを指定します。指定しない場合は '{DEFAULT_ENDPOINT_URL}' です。",
+        )
+
+        return parent_parser
+
     if subparsers is None:
         # ヘルプページにコマンドラインオプションを表示する`sphinx-argparse`ライブラリが実行するときは、subparsersがNoneになる。
         subparsers = argparse.ArgumentParser().add_subparsers()
@@ -81,23 +99,19 @@ def add_parser(
     )
     parser.set_defaults(command_help=parser.print_help)
 
-    return parser
-
-
-def create_parent_parser() -> argparse.ArgumentParser:
-    """
-    共通の引数セットを生成する。
-    """
-    parent_parser = argparse.ArgumentParser(add_help=False)
-    group = parent_parser.add_argument_group("global optional arguments")
-    group.add_argument("--debug", action="store_true", help="HTTPリクエストの内容やレスポンスのステータスコードなど、デバッグ用のログが出力されます。")
-    group.add_argument(
-        "--endpoint_url",
-        type=str,
-        help=f"AnnoWork WebAPIのエンドポイントを指定します。指定しない場合は '{DEFAULT_ENDPOINT_URL}' です。",
+    # 引数グループに"global optional group"がある場合は、"--help"オプションをデフォルトの"optional"グループから、"global optional arguments"グループに移動する
+    # https://ja.stackoverflow.com/a/57313/19524
+    global_optional_argument_group = first_true(
+        parser._action_groups, pred=lambda e: e.title == GLOBAL_OPTIONAL_ARGUMENTS_TITLE
     )
+    if global_optional_argument_group is not None:
+        # optional グループの 0番目が help なので取り出す
+        help_action = parser._optionals._group_actions.pop(0)
+        assert help_action.dest == "help"
+        # global optional group の 先頭にhelpを追加
+        global_optional_argument_group._group_actions.insert(0, help_action)
 
-    return parent_parser
+    return parser
 
 
 def get_list_from_args(str_list: Optional[List[str]] = None) -> Optional[List[str]]:
