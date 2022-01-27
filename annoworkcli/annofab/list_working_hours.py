@@ -179,7 +179,9 @@ class ListWorkingHoursWithAnnofab:
             logger.debug(
                 f"annofab_project_id= '{af_project_id}' のAnnoFabプロジェクトの作業時間を取得します。:: {start_date=}, {end_date=}"
             )
-            account_statistics = self.annofab_service.wrapper.get_account_daily_statistics(af_project_id, from_date=start_date, to_date=end_date)
+            account_statistics = self.annofab_service.wrapper.get_account_daily_statistics(
+                af_project_id, from_date=start_date, to_date=end_date
+            )
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == requests.codes.not_found:
                 logger.warning(f"annofab_project_id= '{af_project_id}' は存在しません。")
