@@ -9,7 +9,7 @@ from annoworkcli.actual_working_time.list_actual_working_hours_daily import (
 
 ACTUAL_WORKING_TIME_LIST = [
     {
-        "organization_id": "kurusugawa",
+        "organization_id": "org",
         "actual_working_time_id": "b9256922-f028-4e02-85a5-64cd1d6f6597",
         "job_id": "3e29d3eb-5b29-40b5-a696-678be1ef6b6d",
         "organization_member_id": "alice",
@@ -25,7 +25,7 @@ ACTUAL_WORKING_TIME_LIST = [
         "job_name": "task1",
     },
     {
-        "organization_id": "kurusugawa",
+        "organization_id": "org",
         "actual_working_time_id": "e13a87a1-3e0b-4502-a832-c8f0bbe40360",
         "job_id": "0dc59bfb-a410-4bb6-b783-4e5afdc4d0aa",
         "organization_member_id": "alice",
@@ -41,7 +41,7 @@ ACTUAL_WORKING_TIME_LIST = [
         "job_name": "task2",
     },
     {
-        "organization_id": "kurusugawa",
+        "organization_id": "org",
         "actual_working_time_id": "7ca964f7-50a6-483e-bb5b-b339766c0936",
         "job_id": "3e29d3eb-5b29-40b5-a696-678be1ef6b6d",
         "organization_member_id": "alice",

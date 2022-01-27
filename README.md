@@ -119,20 +119,20 @@ optional arguments:
 
 ```
 # CSV出力
-$ annoworkcli organization_member list -org kurusugawa -o out.csv
+$ annoworkcli organization_member list -org org -o out.csv
 $ cat out.csv
 organization_member_id,organization_id,account_id,user_id,username,role,status,created_datetime,updated_datetime,organization_tag_ids,organization_tag_names,inactivated_datetime
-12345678-abcd-1234-abcd-1234abcd5678,kurusugawa,12345678-abcd-1234-abcd-1234abcd5678,alice,Alice,manager,active,2021-11-04T04:27:57.702Z,2021-11-04T04:27:57.702Z,['company_kurusugawa'],['company:来栖川電算'],
+12345678-abcd-1234-abcd-1234abcd5678,org,12345678-abcd-1234-abcd-1234abcd5678,alice,Alice,manager,active,2021-11-04T04:27:57.702Z,2021-11-04T04:27:57.702Z,['company_kurusugawa'],['company:来栖川電算'],
 ...
 
 
 # CSV出力
-$ annoworkcli organization_member list -org kurusugawa -o out.json -f json
+$ annoworkcli organization_member list -org org -o out.json -f json
 $ cat out.json
 [
   {
     "organization_member_id": "12345678-abcd-1234-abcd-1234abcd5678",
-    "organization_id": "kurusugawa",
+    "organization_id": "org",
     "account_id": "12345678-abcd-1234-abcd-1234abcd5678",
     "user_id": "alice",
     "username": "Alice",
