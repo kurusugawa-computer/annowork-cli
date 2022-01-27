@@ -12,14 +12,14 @@ AnnoFabのuser_idはAnnoWorkのuser_idと一致している必要があります
 Examples
 =================================
 
-TODO
+以下のコマンドは、ユーザ ``alice`` の外部連携情報に、AnnoFab組織 ``af_org`` に所属するユーザ ``alice`` の情報を設定します。
 
 
+.. code-block:: 
 
-出力結果
-=================================
+    $ annoworkcli annofab put_account_external_linkage_info --user_id alice \
+     --annofab_organization_name af_org
 
-TODO
 
 
 Usage Details
