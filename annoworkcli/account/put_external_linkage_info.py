@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import json
 import argparse
 import copy
 import logging
@@ -53,7 +53,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--external_linkage_info",
         type=str,
         required=True,
-        help="登録するアカウント外部連携情報。\n" f"(ex) ``{SAMPLE_EXTERNAL_LINKAGE_INFO}`` ",
+        help="登録するアカウント外部連携情報。\n" f"(ex) ``{json.dumps(SAMPLE_EXTERNAL_LINKAGE_INFO)}`` ",
     )
 
     parser.set_defaults(subcommand_func=main)
