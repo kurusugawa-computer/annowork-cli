@@ -179,7 +179,12 @@ def main(args):
     logger.info(f"{len(annofab_labor_list)} 件の日ごとの実績作業時間情報を出力します。")
 
     if OutputFormat(args.format) == OutputFormat.JSON:
-        print_json(AnnofabLabor.schema().dump(annofab_labor_list, many=True), is_pretty=True, output=args.output)
+        # `.schema().dump(many=True)`を使わない理由：使うと警告が発生するから
+        # https://qiita.com/yuji38kwmt/items/a3625b2011aff1d9901b
+        dict_result = []
+        for elm in annofab_labor_list:
+            dict_result.append(elm.to_dict())
+        print_json(dict_result, is_pretty=True, output=args.output)
     else:
         df = pandas.DataFrame(annofab_labor_list)
         print_csv(df, output=args.output)

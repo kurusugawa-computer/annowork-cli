@@ -11,14 +11,14 @@ Description
 Examples
 =================================
 
-TODO
+以下のコマンドは、ジョブID ``job1`` , ``job2`` のステータスをアーカイブに変更します。
 
 
+.. code-block:: 
 
-出力結果
-=================================
+    $ annoworkcli job change --organization_id org --job_id job --status archived
 
-TODO
+
 
 
 Usage Details

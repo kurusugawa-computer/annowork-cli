@@ -11,14 +11,14 @@ Description
 Examples
 =================================
 
-TODO
 
+以下のコマンドは、ユーザalice, bobを組織orgの組織メバから削除します。
 
+.. code-block:: 
 
-出力結果
-=================================
+    $ annoworkcli my list_organization_member delete --organization_id org \
+     --user_id alice bob
 
-TODO
 
 
 Usage Details

@@ -10,14 +10,12 @@ Description
 Examples
 =================================
 
-TODO
+以下のコマンドは、組織ID ``org`` の組織を作成します。
 
+.. code-block:: 
 
+    $ annoworkcli organization put --organization_id org --email "alice@example.com" 
 
-出力結果
-=================================
-
-TODO
 
 
 Usage Details

@@ -143,7 +143,12 @@ class ListAssignedHoursDaily:
         logger.info(f"{len(result)} 件のアサイン時間情報を出力します。")
 
         if output_format == OutputFormat.JSON:
-            print_json(AssignedHoursDaily.schema().dump(result, many=True), is_pretty=True, output=output)
+            # `.schema().dump(many=True)`を使わない理由：使うと警告が発生するから
+            # https://qiita.com/yuji38kwmt/items/a3625b2011aff1d9901b
+            dict_result = []
+            for elm in result:
+                dict_result.append(elm.to_dict())
+            print_json(dict_result, is_pretty=True, output=output)
         else:
             df = pandas.DataFrame(result)
             print_csv(df, output=output)

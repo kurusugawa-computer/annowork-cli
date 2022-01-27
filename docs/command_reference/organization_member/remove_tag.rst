@@ -11,14 +11,14 @@ Description
 Examples
 =================================
 
-TODO
+以下のコマンドは、ユーザalice, bobから、組織タグtag1, tag2を除去します。
+
+.. code-block:: 
+
+    $ annoworkcli my list_organization_member remove_tag --organization_id org \
+     --user_id alice bob --organization_tag_id tag1 tag2
 
 
-
-出力結果
-=================================
-
-TODO
 
 
 Usage Details

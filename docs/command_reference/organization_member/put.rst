@@ -11,14 +11,13 @@ Description
 Examples
 =================================
 
-TODO
+以下のコマンドは、ユーザalice, bobを組織orgの組織メンバに追加します。
 
+.. code-block:: 
 
+    $ annoworkcli my list_organization_member put --organization_id org \
+     --user_id alice bob 
 
-出力結果
-=================================
-
-TODO
 
 
 Usage Details

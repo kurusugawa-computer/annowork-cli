@@ -11,14 +11,31 @@ Description
 Examples
 =================================
 
-TODO
+以下のコマンドは、2022-01-01以降の予定稼働時間を出力します。
+
+.. code-block:: 
+
+    $ annoworkcli actual_working_time list --organization_id org --start_date 2022-01-01 \
+     --format json --output out.json
 
 
+.. code-block:: json
+   :caption: out.json
 
-出力結果
-=================================
+   [
+      {
+         "organization_id": "org",
+         "organization_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
+         "date": "2022-01-02",
+         "expected_working_hours": 3,
+         "created_datetime": "2021-11-24T22:14:31.030Z",
+         "updated_datetime": "2021-11-24T22:14:31.030Z",
+         "user_id": "alice",
+         "username": "Alice"
+      },
+   ]
 
-TODO
+
 
 
 Usage Details

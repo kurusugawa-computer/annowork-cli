@@ -5,6 +5,7 @@ import datetime
 import json
 import logging
 import sys
+import typing
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -44,7 +45,9 @@ class ActualWorkingHoursDaily(DataClassJsonMixin):
     user_id: str
     username: str
     actual_working_hours: float
-    notes: Optional[list]
+    # listでなくtyping.Listを使っている理由：`list`だとPython3.8でデコード時にエラーが発生するため
+    # https://qiita.com/yuji38kwmt/items/ce49efc91bb9b6430437
+    notes: Optional[typing.List[str]]
 
 
 @dataclass
@@ -274,24 +277,20 @@ def main(args):
 
     main_obj = ListActualWorkingHoursDaily(annowork_service, args.organization_id)
 
-    if args.input is None:
-        list_actual_working_time_obj = ListActualWorkingTime(
-            annowork_service=annowork_service,
-            organization_id=args.organization_id,
-            timezone_offset_hours=args.timezone_offset,
-        )
-        actual_working_time_list = list_actual_working_time_obj.get_actual_working_times(
-            job_ids=job_id_list,
-            parent_job_ids=parent_job_id_list,
-            user_ids=user_id_list,
-            start_date=args.start_date,
-            end_date=args.end_date,
-            is_set_additional_info=False,
-        )
-        list_actual_working_time_obj.set_additional_info_to_actual_working_time(actual_working_time_list)
-
-    else:
-        actual_working_time_list = get_actual_working_time_list_from_input_file(args.input)
+    list_actual_working_time_obj = ListActualWorkingTime(
+        annowork_service=annowork_service,
+        organization_id=args.organization_id,
+        timezone_offset_hours=args.timezone_offset,
+    )
+    actual_working_time_list = list_actual_working_time_obj.get_actual_working_times(
+        job_ids=job_id_list,
+        parent_job_ids=parent_job_id_list,
+        user_ids=user_id_list,
+        start_date=args.start_date,
+        end_date=args.end_date,
+        is_set_additional_info=False,
+    )
+    list_actual_working_time_obj.set_additional_info_to_actual_working_time(actual_working_time_list)
 
     logger.debug(f"{len(actual_working_time_list)} 件の実績作業時間情報を日ごとに集約します。")
     result: Sequence[ActualWorkingHoursDaily] = create_actual_working_hours_daily_list(
@@ -309,10 +308,11 @@ def main(args):
         result = main_obj.add_parent_job_info(result)
 
     if OutputFormat(args.format) == OutputFormat.JSON:
-        if show_parent_job:
-            dict_result = ActualWorkingHoursDailyWithParentJob.schema().dump(result, many=True)
-        else:
-            dict_result = ActualWorkingHoursDaily.schema().dump(result, many=True)
+        # `.schema().dump(many=True)`を使わない理由：使うと警告が発生するから
+        # https://qiita.com/yuji38kwmt/items/a3625b2011aff1d9901b
+        dict_result = []
+        for elm in result:
+            dict_result.append(elm.to_dict())
 
         print_json(dict_result, is_pretty=True, output=args.output)
     else:
@@ -330,10 +330,6 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         help="対象の組織ID",
     )
-    required_group.add_argument(
-        "--input", type=Path, help="``annoworkcli actual_workign_time list`` コマンドで出力したファイルのパスを指定します。"
-    )
-
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 
     # parent_job_idとjob_idの両方を指定するユースケースはなさそうなので、exclusiveにする。

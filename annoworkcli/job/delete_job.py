@@ -7,7 +7,7 @@ from typing import Optional
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
-from annoworkcli.common.cli import build_annoworkapi, get_list_from_args, prompt_yesnoall
+from annoworkcli.common.cli import build_annoworkapi, prompt_yesnoall
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +57,7 @@ class DeleteJob:
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    job_id_list = get_list_from_args(args.job_id)
-    assert job_id_list is not None
+    job_id_list = [args.job_id]
 
     DeleteJob(annowork_service=annowork_service, organization_id=args.organization_id, all_yes=args.yes).main(
         job_id_list,
@@ -74,11 +73,11 @@ def parse_args(parser: argparse.ArgumentParser):
         help="対象の組織ID",
     )
 
+    # 間違えてたくさんのジョブを削除してしまわないようにするため、1つのjob_idしか指定できないようにする
     parser.add_argument(
         "-j",
         "--job_id",
         type=str,
-        nargs="+",
         required=True,
         help="削除するジョブのjob_idを指定してください。",
     )
