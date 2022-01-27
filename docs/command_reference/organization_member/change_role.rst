@@ -7,18 +7,16 @@ Description
 組織メンバのロールを変更します。
 
 
-
 Examples
 =================================
 
-TODO
+以下のコマンドは、ユーザalice, bobのロールを"ワーカ"に変更します。
 
+.. code-block:: 
 
+    $ annoworkcli my list_organization_member change_role --organization_id org \
+     --user_id alice bob --role worker
 
-出力結果
-=================================
-
-TODO
 
 
 Usage Details

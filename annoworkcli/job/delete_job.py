@@ -7,7 +7,7 @@ from typing import Optional
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
-from annoworkcli.common.cli import build_annoworkapi, get_list_from_args, prompt_yesnoall
+from annoworkcli.common.cli import build_annoworkapi, prompt_yesnoall
 
 logger = logging.getLogger(__name__)
 
