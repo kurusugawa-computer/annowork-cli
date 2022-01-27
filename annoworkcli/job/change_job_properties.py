@@ -64,7 +64,7 @@ def main(args):
     job_id_list = get_list_from_args(args.job_id)
     assert job_id_list is not None
 
-    ChangeJobStatus(annowork_service=annowork_service, organization_id=args.organization_id, all_yes=args.yes).main(
+    ChangeJobProperties(annowork_service=annowork_service, organization_id=args.organization_id, all_yes=args.yes).main(
         job_id_list=job_id_list, status=args.status
     )
 
