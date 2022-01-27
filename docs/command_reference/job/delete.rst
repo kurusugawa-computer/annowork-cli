@@ -10,15 +10,14 @@ Description
 
 Examples
 =================================
-
-TODO
-
+以下のコマンドは、ジョブID ``job`` のジョブを削除します。
 
 
-出力結果
-=================================
+.. code-block:: 
 
-TODO
+    $ annoworkcli job delete --organization_id org --job_id job 
+
+
 
 
 Usage Details

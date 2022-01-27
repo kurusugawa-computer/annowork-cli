@@ -61,7 +61,7 @@ Examples
 
 
 
-このコマンドは、内部で ``annofabcli statistics visualize`` コマンドを実行しています。コマンドライン引数の使い方は、ほとんど `annofabcli statistics visualize`` と同じです。
+このコマンドは、内部で ``annofabcli statistics visualize`` コマンドを実行しています。コマンドライン引数の使い方は、ほとんど ``annofabcli statistics visualize`` と同じです。
 コマンドの使い方は、`annofabcli statistics visualize <https://annofab-cli.readthedocs.io/ja/latest/command_reference/statistics/visualize.html>`_ のドキュメントを参照してください。
 
 

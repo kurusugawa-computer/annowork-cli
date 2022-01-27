@@ -84,7 +84,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=True,
-        help="削除するジョブのjob_idを指定してください。",
+        help="ステータスを変更するジョブのjob_idを指定してください。",
     )
 
     parser.add_argument(
