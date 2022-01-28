@@ -40,17 +40,14 @@ Examples
 =================================
 
 
-details
+``--shape_type details``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TODO
+日付ごとユーザごとに作業時間を集計したファイルです。
+行方向に日付、列方向にユーザが並んでいます。
 
 
-.. csv-table:: out.csv
-   :header: user_id,username,company,assigned_working_hours,actual_working_hours,monitored_working_hours,activity_rate,activity_diff,monitor_rate,monitor_diff
-   :header-rows: 1
-   
-    alice,Alice,U.S.,44.0,81.0,76.8,1.84,0.54,0.95,4.2
-    bob,Bob,Japan,0.0,77.0,73.82,inf,0.0,0.96,3.18
+.. csv-table:: details.csv
+   :file: reshape_working_hours/details.csv
 
 
 
