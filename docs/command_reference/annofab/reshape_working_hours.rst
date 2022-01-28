@@ -39,6 +39,19 @@ Examples
 出力結果
 =================================
 
+列名
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+列名の内容は以下の通りです。
+
+
+* assigned_working_hours : AnnoWorkのアサイン時間
+* actual_working_hours : AnnoWorkの実績時間
+* monitored_working_hours : AnnoFabの作業時間（AnnoFabのアノテーションエディタで計測された作業時間）
+* activity_rate : アサイン時間に対する実績作業時間の比率（ ``= actual_working_hours / assigned_working_hours`` ）
+* activity_diff : アサインに対する実績作業時間の差分（ ``= assigned_working_hours - actual_working_hours`` ）
+* monitor_rate : 実績作業時間に対する計測作業時間の比率（ ``= monitored_working_hours / actual_working_hours`` ）
+* monitor_diff : 実績作業時間に対する計測作業時間の差分（ ``= actual_working_hours - monitored_working_hours`` ）
+
 
 ``--shape_type details``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
