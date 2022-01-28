@@ -5,7 +5,6 @@ import functools
 import itertools
 import logging
 import multiprocessing
-import sys
 from pathlib import Path
 from typing import Any, Collection, Optional
 
@@ -24,7 +23,7 @@ from annoworkcli.actual_working_time.list_actual_working_hours_daily import (
 )
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.annofab import TIMEZONE_OFFSET_HOURS, get_annofab_project_id_from_job, isoduration_to_hour
-from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -374,13 +373,13 @@ def main(args):
     start_date: Optional[str] = args.start_date
     end_date: Optional[str] = args.end_date
 
-    command = " ".join(sys.argv[0:3])
     if all(
         v is None
         for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]
     ):
-        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
-        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+        logger.warning(
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+        )
 
     main_obj = ListWorkingHoursWithAnnofab(
         annowork_service=build_annoworkapi(args),

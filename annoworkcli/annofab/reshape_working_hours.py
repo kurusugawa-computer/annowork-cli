@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import sys
 from enum import Enum
 from pathlib import Path
 from typing import Any, Collection, Optional
@@ -18,7 +17,7 @@ from annoworkapi.resource import Resource as AnnoworkResource
 import annoworkcli
 from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
-from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 from annoworkcli.common.organization_tag import (
     get_company_from_organization_tag_name,
     is_company_from_organization_tag_name,
@@ -795,10 +794,11 @@ def main(args):
     start_date = args.start_date
     end_date = args.end_date
 
-    command = " ".join(sys.argv[0:3])
-    if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
-        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
-        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+    if args.actual_file is None or args.assigned_file is None:
+        if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
+            logger.warning(
+                "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            )
 
     # "--job_id"と"--annofab_project_id"は排他的なので、job_id_listは上書きする
     if annofab_project_id_list is not None:
