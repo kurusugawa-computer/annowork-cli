@@ -1,5 +1,5 @@
 =======================================
-job change_status
+job change
 =======================================
 
 Description
@@ -25,7 +25,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.job.change_job_status.add_parser
-   :prog: annoworkcli job change_status
+   :ref: annoworkcli.job.change_job_properties.add_parser
+   :prog: annoworkcli job change
    :nosubcommands:
    :nodefaultconst:

@@ -660,6 +660,7 @@ class ReshapeWorkingHours:
         self, df_actual: pandas.DataFrame, df_assigned: pandas.DataFrame, shape_type: ShapeType
     ) -> pandas.DataFrame:
 
+        # 見やすくするため、小数点以下2桁になるように四捨五入する
         reshape_obj = ReshapeDataFrame(round_decimals=2)
         if shape_type == ShapeType.DETAILS:
             df_output = reshape_obj.get_df_details(df_actual=df_actual, df_assigned=df_assigned)
@@ -789,18 +790,23 @@ def main(args):
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
-    # "--job_id"と"--annofab_project_id"は排他的なので、job_id_listは上書きする
-    if annofab_project_id_list is not None:
-        job_id_list = main_obj.get_job_id_list_from_af_project_id(annofab_project_id_list)
-
     user_id_list = get_list_from_args(args.user_id)
     start_date = args.start_date
     end_date = args.end_date
 
+    if args.actual_file is None or args.assigned_file is None:
+        if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
+            logger.warning(
+                "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            )
+
+    # "--job_id"と"--annofab_project_id"は排他的なので、job_id_listは上書きする
+    if annofab_project_id_list is not None:
+        job_id_list = main_obj.get_job_id_list_from_af_project_id(annofab_project_id_list)
+
     shape_type = ShapeType(args.shape_type)
 
     if args.actual_file is not None:
-
         df_actual = get_dataframe_from_input_file(args.actual_file)
     else:
         df_actual = main_obj.get_df_actual(
@@ -942,9 +948,10 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     description = (
         "AnnoWorkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。\n"
         "レポートとして利用できるようにするため、以下を対応しています。\n"
-        " * 小数点以下2桁目まで表示\n"
-        " * 比較対象の比率と差分を表示\n"
-        " * organization_member_idなどGUIに直接関係ない項目は表示しない\n"
+        "\n"
+        "* 小数点以下2桁目まで表示\n"
+        "* 比較対象の比率と差分を表示\n"
+        "* organization_member_idなどGUIに直接関係ない項目は表示しない\n"
     )
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=description)

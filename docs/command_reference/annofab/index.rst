@@ -17,7 +17,6 @@ Available Commands
 
    get_dashboard
    list_job
-   list_labor
    list_working_hours
    put_account_external_linkage_info
    put_job

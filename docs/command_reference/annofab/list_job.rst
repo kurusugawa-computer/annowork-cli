@@ -28,7 +28,7 @@ Examples
       {
          "job_id": "job",
          "job_name": "MOON",
-         "job_tree": "kurusugawa/parent_job/job",
+         "job_tree": "org/parent_job/job",
          "status": "unarchived",
          "target_hours": null,
          "organization_id": "org",
@@ -66,7 +66,7 @@ Examples
       {
          "job_id": "job",
          "job_name": "MOON",
-         "job_tree": "kurusugawa/parent_job/job",
+         "job_tree": "org/parent_job/job",
          "status": "unarchived",
          "target_hours": null,
          "organization_id": "org",

@@ -5,7 +5,6 @@ import functools
 import itertools
 import logging
 import multiprocessing
-import sys
 from pathlib import Path
 from typing import Any, Collection, Optional
 
@@ -24,7 +23,7 @@ from annoworkcli.actual_working_time.list_actual_working_hours_daily import (
 )
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.annofab import TIMEZONE_OFFSET_HOURS, get_annofab_project_id_from_job, isoduration_to_hour
-from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -179,7 +178,9 @@ class ListWorkingHoursWithAnnofab:
             logger.debug(
                 f"annofab_project_id= '{af_project_id}' のAnnoFabプロジェクトの作業時間を取得します。:: {start_date=}, {end_date=}"
             )
-            account_statistics = self.annofab_service.wrapper.get_account_daily_statistics(af_project_id)
+            account_statistics = self.annofab_service.wrapper.get_account_daily_statistics(
+                af_project_id, from_date=start_date, to_date=end_date
+            )
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == requests.codes.not_found:
                 logger.warning(f"annofab_project_id= '{af_project_id}' は存在しません。")
@@ -194,16 +195,14 @@ class ListWorkingHoursWithAnnofab:
             for history in histories:
                 working_hours = isoduration_to_hour(history["worktime"])
                 if working_hours > 0:
-                    # TODO 新しい統計webapiに変わったら、ここの条件分岐はなくなる
-                    if start_date <= history["date"] <= end_date:
-                        result.append(
-                            {
-                                "annofab_project_id": af_project_id,
-                                "annofab_account_id": af_account_id,
-                                "date": history["date"],
-                                "annofab_working_hours": working_hours,
-                            }
-                        )
+                    result.append(
+                        {
+                            "annofab_project_id": af_project_id,
+                            "annofab_account_id": af_account_id,
+                            "date": history["date"],
+                            "annofab_working_hours": working_hours,
+                        }
+                    )
         return result
 
     def _get_af_working_hours(
@@ -374,13 +373,13 @@ def main(args):
     start_date: Optional[str] = args.start_date
     end_date: Optional[str] = args.end_date
 
-    command = " ".join(sys.argv[0:3])
     if all(
         v is None
         for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]
     ):
-        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
-        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+        logger.warning(
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+        )
 
     main_obj = ListWorkingHoursWithAnnofab(
         annowork_service=build_annoworkapi(args),

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -13,7 +12,7 @@ from annoworkapi.resource import Resource as AnnoworkResource
 from dataclasses_json import DataClassJsonMixin
 
 import annoworkcli
-from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_schedule import ExpectedWorkingHoursDict, ListSchedule, create_assigned_hours_dict
 
@@ -162,10 +161,10 @@ def main(args):
     start_date: Optional[str] = args.start_date
     end_date: Optional[str] = args.end_date
 
-    command = " ".join(sys.argv[0:3])
     if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
-        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
-        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+        logger.warning(
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+        )
 
     ListAssignedHoursDaily(annowork_service=annowork_service, organization_id=args.organization_id,).main(
         job_id_list=job_id_list,

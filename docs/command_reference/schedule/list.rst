@@ -25,7 +25,7 @@ Examples
    [
       {
          "schedule_id": "b3fa6635-b6ea-49dc-b1cd-c23a50ed26f1",
-         "organization_id": "kurusugawa",
+         "organization_id": "org",
          "job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
          "organization_member_id": "53ba2c39-5c02-4df4-abdb-eab0143ac0c7",
          "start_date": "2021-12-28",

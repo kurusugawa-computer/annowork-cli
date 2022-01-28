@@ -14,7 +14,7 @@ Available Commands
    :maxdepth: 1
    :titlesonly:
 
-   change_status
+   change
    delete
    list
 

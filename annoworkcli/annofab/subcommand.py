@@ -4,7 +4,6 @@ from typing import Optional
 import annoworkcli
 import annoworkcli.annofab.get_dashboard
 import annoworkcli.annofab.list_job_with_annofab_project
-import annoworkcli.annofab.list_labor
 import annoworkcli.annofab.list_working_hours
 import annoworkcli.annofab.put_account_external_linkage_info
 import annoworkcli.annofab.put_job_from_annofab_project
@@ -19,7 +18,6 @@ def parse_args(parser: argparse.ArgumentParser):
     # サブコマンドの定義
     annoworkcli.annofab.get_dashboard.add_parser(subparsers)
     annoworkcli.annofab.list_job_with_annofab_project.add_parser(subparsers)
-    annoworkcli.annofab.list_labor.add_parser(subparsers)
     annoworkcli.annofab.list_working_hours.add_parser(subparsers)
     annoworkcli.annofab.visualize_statistics.add_parser(subparsers)
     annoworkcli.annofab.reshape_working_hours.add_parser(subparsers)
