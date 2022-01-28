@@ -40,27 +40,17 @@ Examples
 =================================
 
 
-
-    details: 日付ごとユーザごとに作業時間を集計します。
-
-    total_by_user: ユーザごとに作業時間を集計します。
-
-    total_by_job: ジョブごとに作業時間を集計します。 --assigned_file は不要です。
-
-    total_by_parent_job: 親ジョブごとに作業時間を集計します。
-
-    total: 作業時間を合計します。
-
-    list_by_date_user_job: 作業時間の一覧を日付、ユーザ、ジョブ単位で出力します。 --assigned_file は不要です。
-
-    list_by_date_user_parent_job: 作業時間の一覧を日付、ユーザ、親ジョブ単位で出力します。 --assigned_file は不要です。
-
-
-
 details
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 TODO
 
+
+.. csv-table:: out.csv
+   :header: user_id,username,company,assigned_working_hours,actual_working_hours,monitored_working_hours,activity_rate,activity_diff,monitor_rate,monitor_diff
+   :header-rows: 1
+   
+    alice,Alice,U.S.,44.0,81.0,76.8,1.84,0.54,0.95,4.2
+    bob,Bob,Japan,0.0,77.0,73.82,inf,0.0,0.96,3.18
 
 
 
