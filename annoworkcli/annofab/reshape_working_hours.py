@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import sys
 from enum import Enum
 from pathlib import Path
 from typing import Any, Collection, Optional
@@ -17,7 +18,7 @@ from annoworkapi.resource import Resource as AnnoworkResource
 import annoworkcli
 from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
-from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, build_annoworkapi, get_list_from_args
 from annoworkcli.common.organization_tag import (
     get_company_from_organization_tag_name,
     is_company_from_organization_tag_name,
@@ -660,6 +661,7 @@ class ReshapeWorkingHours:
         self, df_actual: pandas.DataFrame, df_assigned: pandas.DataFrame, shape_type: ShapeType
     ) -> pandas.DataFrame:
 
+        # 見やすくするため、小数点以下2桁になるように四捨五入する
         reshape_obj = ReshapeDataFrame(round_decimals=2)
         if shape_type == ShapeType.DETAILS:
             df_output = reshape_obj.get_df_details(df_actual=df_actual, df_assigned=df_assigned)
@@ -789,13 +791,18 @@ def main(args):
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
-    # "--job_id"と"--annofab_project_id"は排他的なので、job_id_listは上書きする
-    if annofab_project_id_list is not None:
-        job_id_list = main_obj.get_job_id_list_from_af_project_id(annofab_project_id_list)
-
     user_id_list = get_list_from_args(args.user_id)
     start_date = args.start_date
     end_date = args.end_date
+
+    command = " ".join(sys.argv[0:3])
+    if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
+        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
+        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+
+    # "--job_id"と"--annofab_project_id"は排他的なので、job_id_listは上書きする
+    if annofab_project_id_list is not None:
+        job_id_list = main_obj.get_job_id_list_from_af_project_id(annofab_project_id_list)
 
     shape_type = ShapeType(args.shape_type)
 

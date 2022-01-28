@@ -17,10 +17,7 @@ Examples
 .. code-block:: 
 
     $ annoworkcli account put_external_linkage_info  --user_id alice \
-     --external_linkage_info '{"external_linkage_info": {"annofab": {"account_id": "xxx"}}}'
-
-\
-
+     --external_linkage_info '{"annofab": {"account_id": "xxx"}}}'
 
 
 

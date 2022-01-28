@@ -3,7 +3,7 @@ from typing import Optional
 
 import annoworkcli
 import annoworkcli.organization_member.append_tag_to_organization_member
-import annoworkcli.organization_member.change_role_of_organization_member
+import annoworkcli.organization_member.change_organization_member_properties
 import annoworkcli.organization_member.delete_organization_member
 import annoworkcli.organization_member.list_organization_member
 import annoworkcli.organization_member.put_organization_member
@@ -16,7 +16,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     # サブコマンドの定義
     annoworkcli.organization_member.append_tag_to_organization_member.add_parser(subparsers)
-    annoworkcli.organization_member.change_role_of_organization_member.add_parser(subparsers)
+    annoworkcli.organization_member.change_organization_member_properties.add_parser(subparsers)
     annoworkcli.organization_member.delete_organization_member.add_parser(subparsers)
     annoworkcli.organization_member.list_organization_member.add_parser(subparsers)
 

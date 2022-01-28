@@ -33,7 +33,12 @@ class PrettyHelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaul
         # 不要なデフォルト値（--debug や オプショナルな引数）を表示させないようにする
         # super()._get_help_string の中身を、そのまま持ってきた。
         # https://qiita.com/yuji38kwmt/items/c7c4d487e3188afd781e 参照
-        help = action.help  # pylint: disable=redefined-builtin
+
+        # 必須な引数には、引数の説明の後ろに"(required)"を付ける
+        help = action.help
+        if action.required:
+            help += " (required)"
+
         if "%(default)" not in action.help:
             if action.default is not argparse.SUPPRESS:
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
@@ -79,7 +84,7 @@ def add_parser(
         group.add_argument(
             "--endpoint_url",
             type=str,
-            help=f"AnnoWork WebAPIのエンドポイントを指定します。指定しない場合は '{DEFAULT_ENDPOINT_URL}' です。",
+            help=f"AnnoWork WebAPIのエンドポイントを指定します。指定しない場合は ``{DEFAULT_ENDPOINT_URL}`` です。",
         )
 
         return parent_parser
