@@ -948,9 +948,10 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     description = (
         "AnnoWorkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。\n"
         "レポートとして利用できるようにするため、以下を対応しています。\n"
-        " * 小数点以下2桁目まで表示\n"
-        " * 比較対象の比率と差分を表示\n"
-        " * organization_member_idなどGUIに直接関係ない項目は表示しない\n"
+        "\n"
+        "* 小数点以下2桁目まで表示\n"
+        "* 比較対象の比率と差分を表示\n"
+        "* organization_member_idなどGUIに直接関係ない項目は表示しない\n"
     )
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=description)
