@@ -807,7 +807,6 @@ def main(args):
     shape_type = ShapeType(args.shape_type)
 
     if args.actual_file is not None:
-
         df_actual = get_dataframe_from_input_file(args.actual_file)
     else:
         df_actual = main_obj.get_df_actual(

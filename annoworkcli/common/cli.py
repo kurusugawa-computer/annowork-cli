@@ -30,12 +30,21 @@ class PrettyHelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaul
         return super()._format_action(action) + "\n"
 
     def _get_help_string(self, action):
-        # 不要なデフォルト値（--debug や オプショナルな引数）を表示させないようにする
-        # super()._get_help_string の中身を、そのまま持ってきた。
+        """引数説明用のメッセージを生成する。
+        不要なデフォルト値（--debug や オプショナルな引数）を表示させないようにする.
+        `argparse.ArgumentDefaultsHelpFormatter._get_help_string` をオーバライドしている。
+
+        Args:
+            action ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        # ArgumentDefaultsHelpFormatter._get_help_string の中身を、そのまま持ってきた。
         # https://qiita.com/yuji38kwmt/items/c7c4d487e3188afd781e 参照
 
         # 必須な引数には、引数の説明の後ろに"(required)"を付ける
-        help = action.help
+        help = action.help  # pylint: disable=redefined-builtin
         if action.required:
             help += " (required)"
 
