@@ -22,8 +22,7 @@ logger = logging.getLogger(__name__)
 
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Command Line Interface for AnnoFab",
-        formatter_class=PrettyHelpFormatter,
+        description="Command Line Interface for AnnoFab", formatter_class=PrettyHelpFormatter, allow_abbrev=False
     )
     parser.add_argument("--version", action="version", version=f"annoworkcli {annoworkcli.__version__}")
     parser.set_defaults(command_help=parser.print_help)

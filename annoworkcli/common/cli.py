@@ -87,7 +87,7 @@ def add_parser(
         """
         共通の引数セットを生成する。
         """
-        parent_parser = argparse.ArgumentParser(add_help=False)
+        parent_parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
         group = parent_parser.add_argument_group(GLOBAL_OPTIONAL_ARGUMENTS_TITLE)
         group.add_argument("--debug", action="store_true", help="HTTPリクエストの内容やレスポンスのステータスコードなど、デバッグ用のログが出力されます。")
         group.add_argument(
@@ -100,7 +100,7 @@ def add_parser(
 
     if subparsers is None:
         # ヘルプページにコマンドラインオプションを表示する`sphinx-argparse`ライブラリが実行するときは、subparsersがNoneになる。
-        subparsers = argparse.ArgumentParser().add_subparsers()
+        subparsers = argparse.ArgumentParser(allow_abbrev=False).add_subparsers()
     parents = [create_parent_parser()] if is_subcommand else []
 
     parser = subparsers.add_parser(

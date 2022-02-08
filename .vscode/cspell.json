@@ -35,6 +35,7 @@
         "nargs",
         "netrc",
         "noqa",
+        "notna",
         "popen",
         "pydata",
         "pylint",
