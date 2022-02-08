@@ -36,7 +36,6 @@ def _get_get_df_working_hours_from_df(
     df_job_and_af_project: pandas.DataFrame,
     df_af_working_hours: pandas.DataFrame,
 ) -> pandas.DataFrame:
-
     # annowork側の作業時間情報
     df_aw_working_hours = df_actual_working_hours.merge(
         df_user_and_af_account[["user_id", "annofab_account_id"]], how="left", on="user_id"
@@ -65,8 +64,11 @@ def _get_get_df_working_hours_from_df(
     for user_column in USER_COLUMNS:
         df_merged[user_column].fillna(df_merged[f"{user_column}{TMP_SUFFIX}"], inplace=True)
 
+    # job_id, job_nameの欠損値を、df_job_and_af_project を使って埋める
     JOB_COLUMNS = ["job_id", "job_name"]
-    df_merged = df_merged.merge(df_job_and_af_project, how="left", on="annofab_project_id", suffixes=(None, TMP_SUFFIX))
+    # af_projectに紐付いているジョブとaf_projectのDataFrameを生成して、それを使って欠損値を埋める
+    df_job_id_af_project = df_job_and_af_project[df_job_and_af_project["annofab_project_id"].notna()]
+    df_merged = df_merged.merge(df_job_id_af_project, how="left", on="annofab_project_id", suffixes=(None, TMP_SUFFIX))
     for job_column in JOB_COLUMNS:
         df_merged[job_column].fillna(df_merged[f"{job_column}{TMP_SUFFIX}"], inplace=True)
 
@@ -429,7 +431,7 @@ def parse_args(parser: argparse.ArgumentParser):
     # parent_job_idとjob_idの両方を指定するユースケースはなさそうなので、exclusiveにする。
     job_id_group = parser.add_mutually_exclusive_group()
     job_id_group.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="絞り込み対象のジョブID")
-    job_id_group.add_argument("--parent_job_id", type=str, nargs="+", required=False, help="絞り込み対象の親のジョブID")
+    job_id_group.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="絞り込み対象の親のジョブID")
 
     job_id_group.add_argument(
         "-af_p",
