@@ -41,6 +41,9 @@ class ShapeType(Enum):
     TOTAL_BY_JOB = "total_by_job"
     """ジョブ毎に集計した作業時間を出力する。アサイン対象のジョブと比較できないので、アサイン時間は含まない。"""
 
+    TOTAL_BY_USER_PARENT_JOB = "total_by_user_parent_job"
+    """人毎、親ジョブ毎に集計作業時間を出力する"""
+
     TOTAL = "total"
     """すべてを集計する"""
 
@@ -320,6 +323,90 @@ class ReshapeDataFrame:
                 [
                     "parent_job_id",
                     "parent_job_name",
+                    "assigned_working_hours",
+                    "actual_working_hours",
+                    "monitored_working_hours",
+                    "activity_rate",
+                    "activity_diff",
+                    "monitor_rate",
+                    "monitor_diff",
+                ]
+            ]
+        )
+
+    def get_df_total_by_user_parent_job(
+        self,
+        *,
+        df_actual: pandas.DataFrame,
+        df_assigned: pandas.DataFrame,
+        df_job_parent_job: pandas.DataFrame,
+        df_parent_job: pandas.DataFrame,
+    ) -> pandas.DataFrame:
+        """
+        `--shape_type total_by_user_parent_job`に対応するDataFrameを生成する。
+
+        Args:
+            df_job_parent_job: job_id, parent_job_id 列を持つDataFrame
+
+        """
+        df_sum_actual_groupby_job_id = df_actual.groupby(["user_id", "job_id"])[
+            ["actual_working_hours", "annofab_working_hours"]
+        ].sum()
+        df_sum_actual_groupby_job_id = df_sum_actual_groupby_job_id.join(
+            df_job_parent_job.set_index("job_id"), how="left"
+        )
+        df_sum_actual = df_sum_actual_groupby_job_id.groupby(by="parent_job_id", level="user_id").sum()
+
+        # df_sum_actual が0件のときは、列がないので追加する
+        # TODO 必要か？
+        if "actual_working_hours" not in df_sum_actual.columns:
+            df_sum_actual["actual_working_hours"] = 0
+        if "annofab_working_hours" not in df_sum_actual.columns:
+            df_sum_actual["annofab_working_hours"] = 0
+
+        df_sum_assigned = df_assigned.groupby(["user_id", "job_id"])[["assigned_working_hours"]].sum()
+        # df_assignedのjob_idとdf_actualのparent_job_idが対応するので、わかりやすくするため、index.namesを変更する
+        df_sum_assigned.index.names = ["user_id", "parent_job_id"]
+        # df_sum_assigned が0件のときは、assigned_working_hours 列がないので、追加する。
+        if "assigned_working_hours" not in df_sum_assigned.columns:
+            df_sum_assigned["assigned_working_hours"] = 0
+
+        df = df_sum_actual.join(df_sum_assigned, how="outer")
+
+        # parent_job_nameの紐付け
+        df = df.join(df_parent_job.set_index("parent_job_id"), level="parent_job_id", how="left")
+
+        # user_name の紐付け
+        df_user = pandas.concat(
+            [df_actual.groupby("user_id").first()[["username"]], df_assigned.groupby("user_id").first()[["username"]]]
+        ).drop_duplicates()
+        df = df.join(df_user.set_index("user_id"), level="user_id", how="left")
+
+        df.fillna(
+            {
+                "assigned_working_hours": 0,
+                "actual_working_hours": 0,
+                "annofab_working_hours": 0,
+            },
+            inplace=True,
+        )
+
+        df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
+        df["activity_rate"] = df["actual_working_hours"] / df["assigned_working_hours"]
+        df["activity_diff"] = df["assigned_working_hours"] / df["actual_working_hours"]
+        df["monitor_rate"] = df["monitored_working_hours"] / df["actual_working_hours"]
+        df["monitor_diff"] = df["actual_working_hours"] - df["monitored_working_hours"]
+
+        df.reset_index(inplace=True)
+        df.sort_values(by=["parent_job_name", "user_id"], key=lambda e: e.str.lower(), inplace=True)
+
+        return self.format_df(
+            df[
+                [
+                    "parent_job_id",
+                    "parent_job_name",
+                    "user_id",
+                    "user_name",
                     "assigned_working_hours",
                     "actual_working_hours",
                     "monitored_working_hours",
@@ -747,6 +834,16 @@ class ReshapeWorkingHours:
             )
 
         elif shape_type == ShapeType.TOTAL_BY_PARENT_JOB:
+            df_job_parent_job = self.get_df_job_parent_job()
+            df_parent_job = self.get_df_parent_job()
+            df_output = reshape_obj.get_df_total_by_parent_job(
+                df_actual=df_actual,
+                df_assigned=df_assigned,
+                df_job_parent_job=df_job_parent_job,
+                df_parent_job=df_parent_job,
+            )
+
+        elif shape_type == ShapeType.TOTAL_BY_USER_PARENT_JOB:
             df_job_parent_job = self.get_df_job_parent_job()
             df_parent_job = self.get_df_parent_job()
             df_output = reshape_obj.get_df_total_by_parent_job(
