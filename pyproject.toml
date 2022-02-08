@@ -47,7 +47,7 @@ mypy = "*"
 pylint = "*"
 autoflake = "*"
 flake8 = "*"
-black = {version = "^21.12b0", allow-prereleases = true}
+black = "*"
 
 # type stub package
 types-requests = "*"

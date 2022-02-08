@@ -349,13 +349,14 @@ class ReshapeDataFrame:
             df_job_parent_job: job_id, parent_job_id 列を持つDataFrame
 
         """
+        # groupbyをjob_id, parent_job_idの2回に分けている理由：join/mergeするときの行数を減らすため
         df_sum_actual_groupby_job_id = df_actual.groupby(["user_id", "job_id"])[
             ["actual_working_hours", "annofab_working_hours"]
         ].sum()
         df_sum_actual_groupby_job_id = df_sum_actual_groupby_job_id.join(
             df_job_parent_job.set_index("job_id"), how="left"
         )
-        df_sum_actual = df_sum_actual_groupby_job_id.groupby(by="parent_job_id", level="user_id").sum()
+        df_sum_actual = df_sum_actual_groupby_job_id.reset_index(level="user_id").groupby(by=["user_id", "parent_job_id"]).sum()
 
         # df_sum_actual が0件のときは、列がないので追加する
         # TODO 必要か？
@@ -372,15 +373,15 @@ class ReshapeDataFrame:
             df_sum_assigned["assigned_working_hours"] = 0
 
         df = df_sum_actual.join(df_sum_assigned, how="outer")
-
+        print(f"{df.index=}")
         # parent_job_nameの紐付け
-        df = df.join(df_parent_job.set_index("parent_job_id"), level="parent_job_id", how="left")
+        df = df.join(df_parent_job.set_index("parent_job_id"), how="left")
 
         # user_name の紐付け
         df_user = pandas.concat(
             [df_actual.groupby("user_id").first()[["username"]], df_assigned.groupby("user_id").first()[["username"]]]
         ).drop_duplicates()
-        df = df.join(df_user.set_index("user_id"), level="user_id", how="left")
+        df = df.join(df_user, how="left")
 
         df.fillna(
             {
@@ -398,15 +399,15 @@ class ReshapeDataFrame:
         df["monitor_diff"] = df["actual_working_hours"] - df["monitored_working_hours"]
 
         df.reset_index(inplace=True)
-        df.sort_values(by=["parent_job_name", "user_id"], key=lambda e: e.str.lower(), inplace=True)
+        df.sort_values(by=["user_id", "parent_job_name"], key=lambda e: e.str.lower(), inplace=True)
 
         return self.format_df(
             df[
                 [
+                    "user_id",
+                    "username",
                     "parent_job_id",
                     "parent_job_name",
-                    "user_id",
-                    "user_name",
                     "assigned_working_hours",
                     "actual_working_hours",
                     "monitored_working_hours",
@@ -846,7 +847,7 @@ class ReshapeWorkingHours:
         elif shape_type == ShapeType.TOTAL_BY_USER_PARENT_JOB:
             df_job_parent_job = self.get_df_job_parent_job()
             df_parent_job = self.get_df_parent_job()
-            df_output = reshape_obj.get_df_total_by_parent_job(
+            df_output = reshape_obj.get_df_total_by_user_parent_job(
                 df_actual=df_actual,
                 df_assigned=df_assigned,
                 df_job_parent_job=df_job_parent_job,
