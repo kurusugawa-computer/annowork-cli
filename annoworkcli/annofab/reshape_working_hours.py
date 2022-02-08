@@ -198,8 +198,16 @@ class ReshapeDataFrame:
             ]
         )
 
-    def get_df_total_by_job(self, df_actual: pandas.DataFrame) -> pandas.DataFrame:
+    def get_df_total_by_job(
+        self,
+        df_actual: pandas.DataFrame,
+        df_job_parent_job: Optional[pandas.DataFrame] = None,
+    ) -> pandas.DataFrame:
         """`--shape_type total_by_job`に対応するDataFrameを生成する。
+
+        Args:
+            df_job_parent_job: job_id, parent_job_id, parent_job_name 列が格納されたDataFrame。
+                指定されなければ、parent_job_id, parent_job_nameは格納しません。
 
         Notes:
             アサイン時間はparent_jobに対して指定するので、アサイン時間情報は参照しない。
@@ -212,9 +220,12 @@ class ReshapeDataFrame:
         if "annofab_working_hours" not in df_sum_actual.columns:
             df_sum_actual["annofab_working_hours"] = 0
 
+        # job_id, job_name, parent_job_id, parent_job_name, annofab_project_id 列を持つ列
         df_job = df_actual.drop_duplicates(subset=["job_id"])[["job_id", "job_name", "annofab_project_id"]].set_index(
             "job_id"
         )
+        if df_job_parent_job is not None:
+            df_job = df_job.join(df_job_parent_job.set_index("job_id"), how="left")
 
         df = df_sum_actual.join(df_job, how="left")
 
@@ -233,19 +244,28 @@ class ReshapeDataFrame:
         df.reset_index(inplace=True)
         df.sort_values(by="job_name", key=lambda e: e.str.lower(), inplace=True)
 
-        return self.format_df(
-            df[
-                [
-                    "job_id",
-                    "job_name",
-                    "annofab_project_id",
-                    "actual_working_hours",
-                    "monitored_working_hours",
-                    "monitor_rate",
-                    "monitor_diff",
-                ]
+        extension_columns = []
+        if df_job_parent_job is not None:
+            extension_columns = [
+                "parent_job_id",
+                "parent_job_name",
+            ]
+
+        columns = (
+            [
+                "job_id",
+                "job_name",
+            ]
+            + extension_columns
+            + [
+                "annofab_project_id",
+                "actual_working_hours",
+                "monitored_working_hours",
+                "monitor_rate",
+                "monitor_diff",
             ]
         )
+        return self.format_df(df[columns])
 
     def get_df_total_by_parent_job(
         self,
@@ -657,8 +677,24 @@ class ReshapeWorkingHours:
         return df
 
     def get_df_output(
-        self, df_actual: pandas.DataFrame, df_assigned: pandas.DataFrame, shape_type: ShapeType
+        self,
+        df_actual: pandas.DataFrame,
+        df_assigned: pandas.DataFrame,
+        shape_type: ShapeType,
+        show_parent_job: bool = False,
     ) -> pandas.DataFrame:
+        """実績時間DataFrameとアサイン時間のDataFrameから、shape_typeに従ったDataFrameを生成します。
+
+        Args:
+            df_actual (pandas.DataFrame): [description]
+            df_assigned (pandas.DataFrame): [description]
+            shape_type (ShapeType): [description]
+            show_parent_job (bool, optional): [description]. 出力対象のDataFrameに親ジョブ情報を格納します。
+                ただし、shape_typeがTOTAL_BY_JOB, LIST_BY_DATE_USER_JOBのときのみ有効なオプションです。
+
+        Returns:
+            pandas.DataFrame: [description]
+        """
 
         # 見やすくするため、小数点以下2桁になるように四捨五入する
         reshape_obj = ReshapeDataFrame(round_decimals=2)
@@ -672,7 +708,17 @@ class ReshapeWorkingHours:
             )
 
         elif shape_type == ShapeType.TOTAL_BY_JOB:
-            df_output = reshape_obj.get_df_total_by_job(df_actual=df_actual)
+            if show_parent_job:
+                df_job_parent_job = self.get_df_job_parent_job()
+                df_parent_job = self.get_df_parent_job()
+                df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
+            else:
+                df_job_parent_job = None
+                
+            df_output = reshape_obj.get_df_total_by_job(
+                df_actual=df_actual,
+                df_job_parent_job=df_job_parent_job,
+            )
 
         elif shape_type == ShapeType.TOTAL_BY_PARENT_JOB:
             df_job_parent_job = self.get_df_job_parent_job()
@@ -851,7 +897,9 @@ def main(args):
         job_ids=job_id_list,
     )
 
-    df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type)
+    df_output = main_obj.get_df_output(
+        df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type, show_parent_job=args.show_parent_job
+    )
 
     if len(df_output) == 0:
         logger.warning(f"出力対象のデータは0件なので、出力しません。")
@@ -933,6 +981,12 @@ def parse_args(parser: argparse.ArgumentParser):
             "* list_by_date_user_job: 作業時間の一覧を日付、ユーザ、ジョブ単位で出力します。 ``--assigned_file`` は不要です。 \n"
             "* list_by_date_user_parent_job: 作業時間の一覧を日付、ユーザ、親ジョブ単位で出力します。 ``--assigned_file`` は不要です。 \n"
         ),
+    )
+
+    parser.add_argument(
+        "--show_parent_job",
+        action="store_true",
+        help="親のジョブ情報も出力します。``--shape_type`` に以下の値を渡したときに有効なオプションです。\n" "* total_by_job" "* list_by_date_user_job",
     )
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
