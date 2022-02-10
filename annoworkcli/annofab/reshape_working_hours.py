@@ -44,6 +44,9 @@ class ShapeType(Enum):
     TOTAL_BY_USER_PARENT_JOB = "total_by_user_parent_job"
     """人毎、親ジョブ毎に集計作業時間を出力する"""
 
+    TOTAL_BY_USER_JOB = "total_by_user_job"
+    """人毎、ジョブ毎に集計作業時間を出力する"""
+
     TOTAL = "total"
     """すべてを集計する"""
 
@@ -356,7 +359,9 @@ class ReshapeDataFrame:
         df_sum_actual_groupby_job_id = df_sum_actual_groupby_job_id.join(
             df_job_parent_job.set_index("job_id"), how="left"
         )
-        df_sum_actual = df_sum_actual_groupby_job_id.reset_index(level="user_id").groupby(by=["user_id", "parent_job_id"]).sum()
+        df_sum_actual = (
+            df_sum_actual_groupby_job_id.reset_index(level="user_id").groupby(by=["user_id", "parent_job_id"]).sum()
+        )
 
         # df_sum_actual が0件のときは、列がないので追加する
         # TODO 必要か？
@@ -418,6 +423,78 @@ class ReshapeDataFrame:
                 ]
             ]
         )
+
+    def get_df_total_by_user_job(
+        self,
+        *,
+        df_actual: pandas.DataFrame,
+        df_job_parent_job: Optional[pandas.DataFrame] = None,
+    ) -> pandas.DataFrame:
+        """
+        `--shape_type total_by_user_job`に対応するDataFrameを生成する。
+
+        Args:
+            df_job_parent_job: job_id, parent_job_id, parent_job_name 列を持つDataFrame
+
+        """
+        # groupbyをjob_id, parent_job_idの2回に分けている理由：join/mergeするときの行数を減らすため
+        df_sum_actual = df_actual.groupby(["user_id", "job_id"])[
+            ["actual_working_hours", "annofab_working_hours"]
+        ].sum()
+
+        # df_sum_actual が0件のときは、列がないので追加する
+        if "actual_working_hours" not in df_sum_actual.columns:
+            df_sum_actual["actual_working_hours"] = 0
+        if "annofab_working_hours" not in df_sum_actual.columns:
+            df_sum_actual["annofab_working_hours"] = 0
+
+        # user_name の紐付け
+        df_user = df_actual.groupby("user_id").first()[["username"]].drop_duplicates()
+        df = df_sum_actual.join(df_user, how="left")
+
+        # 親ジョブ情報の紐付け
+        if df_job_parent_job is not None:
+            df = df.merge(df_job_parent_job, on="job_id", how="left")
+
+        df.fillna(
+            {
+                "actual_working_hours": 0,
+                "annofab_working_hours": 0,
+            },
+            inplace=True,
+        )
+
+        df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
+        df["monitor_rate"] = df["monitored_working_hours"] / df["actual_working_hours"]
+        df["monitor_diff"] = df["actual_working_hours"] - df["monitored_working_hours"]
+
+        df.reset_index(inplace=True)
+        df.sort_values(by=["user_id", "job_name"], key=lambda e: e.str.lower(), inplace=True)
+
+        extension_columns = []
+        if df_job_parent_job is not None:
+            extension_columns = [
+                "parent_job_id",
+                "parent_job_name",
+            ]
+
+        columns = (
+            [
+                "user_id",
+                "username",
+                "job_id",
+                "job_name",
+            ]
+            + extension_columns
+            + [
+                "actual_working_hours",
+                "monitored_working_hours",
+                "monitor_rate",
+                "monitor_diff",
+            ]
+        )
+
+        return self.format_df(df[columns])
 
     def get_df_list_by_date_user_parent_job(
         self, df_actual: pandas.DataFrame, df_job_parent_job: pandas.DataFrame, df_parent_job: pandas.DataFrame
@@ -852,6 +929,19 @@ class ReshapeWorkingHours:
                 df_assigned=df_assigned,
                 df_job_parent_job=df_job_parent_job,
                 df_parent_job=df_parent_job,
+            )
+
+        elif shape_type == ShapeType.TOTAL_BY_USER_JOB:
+            if show_parent_job:
+                df_job_parent_job = self.get_df_job_parent_job()
+                df_parent_job = self.get_df_parent_job()
+                df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
+            else:
+                df_job_parent_job = None
+
+            df_output = reshape_obj.get_df_total_by_user_job(
+                df_actual=df_actual,
+                df_job_parent_job=df_job_parent_job,
             )
 
         elif shape_type == ShapeType.TOTAL:
