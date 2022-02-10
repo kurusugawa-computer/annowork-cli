@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 from __future__ import annotations
 
 import argparse
@@ -448,12 +449,16 @@ class ReshapeDataFrame:
             df_sum_actual["annofab_working_hours"] = 0
 
         # user_name の紐付け
-        df_user = df_actual.groupby("user_id").first()[["username"]].drop_duplicates()
+        df_user = df_actual.drop_duplicates(subset=["user_id"])[["user_id", "username"]].set_index("user_id")
         df = df_sum_actual.join(df_user, how="left")
+
+        # job_id, job_name, parent_job_id, parent_job_name, annofab_project_id 列を持つ列
+        df_job = df_actual.drop_duplicates(subset=["job_id"])[["job_id", "job_name"]].set_index("job_id")
+        df = df.join(df_job, how="left")
 
         # 親ジョブ情報の紐付け
         if df_job_parent_job is not None:
-            df = df.merge(df_job_parent_job, on="job_id", how="left")
+            df = df.join(df_job_parent_job.set_index("job_id"), how="left")
 
         df.fillna(
             {
