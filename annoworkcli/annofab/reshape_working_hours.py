@@ -660,7 +660,7 @@ class ReshapeDataFrame:
             # 列名が"総合計"になるように、indexを変更する
             df_sum_by_date.index = [(date, SUM_COLUMN_NAME) for date in df_sum_by_date.index]
 
-            df = df.append(df_sum_by_date)
+            df = pandas.concat([df, df_sum_by_date])
 
         # ヘッダが [user_id, value] になるように設定する
         df2 = df.stack().unstack([1, 2])
@@ -669,7 +669,7 @@ class ReshapeDataFrame:
         not_exists_date_set = {
             str(e.date()) for e in pandas.date_range(start=min(df2.index), end=max(df2.index))
         } - set(df2.index)
-        df2 = df2.append([pandas.Series(name=date, dtype="float64") for date in not_exists_date_set], sort=True)
+        df2 = pandas.concat([df2] + [pandas.Series(name=date, dtype="float64") for date in not_exists_date_set])
         df2.sort_index(inplace=True)
         # 作業時間がNaNの場合は0に置換する
         df2.replace(
