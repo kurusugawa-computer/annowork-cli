@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "annoworkcli"
-version = "2.2.1"
+version = "2.2.2"
 description = ""
 authors = ["yuji38kwmt"]
 license = "MIT"
@@ -47,7 +47,7 @@ mypy = "*"
 pylint = "*"
 autoflake = "*"
 flake8 = "*"
-black = {version = "^21.12b0", allow-prereleases = true}
+black = "*"
 
 # type stub package
 types-requests = "*"
