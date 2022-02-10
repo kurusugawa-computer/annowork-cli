@@ -378,7 +378,6 @@ class ReshapeDataFrame:
             df_sum_assigned["assigned_working_hours"] = 0
 
         df = df_sum_actual.join(df_sum_assigned, how="outer")
-        print(f"{df.index=}")
         # parent_job_nameの紐付け
         df = df.join(df_parent_job.set_index("parent_job_id"), how="left")
 
@@ -1200,6 +1199,7 @@ def parse_args(parser: argparse.ArgumentParser):
             "* total_by_user: ユーザごとに作業時間を集計します。 \n"
             "* total_by_job: ジョブごとに作業時間を集計します。 ``--assigned_file`` は不要です。 \n"
             "* total_by_parent_job: 親ジョブごとに作業時間を集計します。 \n"
+            "* total_by_job: ジョブごとに作業時間を集計します。 \n"
             "* total: 作業時間を合計します。 \n"
             "* list_by_date_user_job: 作業時間の一覧を日付、ユーザ、ジョブ単位で出力します。 ``--assigned_file`` は不要です。 \n"
             "* list_by_date_user_parent_job: 作業時間の一覧を日付、ユーザ、親ジョブ単位で出力します。 ``--assigned_file`` は不要です。 \n"
