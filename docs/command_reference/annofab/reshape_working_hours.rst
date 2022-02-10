@@ -98,6 +98,26 @@ Examples
    :header-rows: 1
 
 
+``--shape_type total_by_user_parent_job``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ユーザごと親ジョブごとに作業時間を集計します。
+
+
+.. csv-table:: total_by_user_parent_job.csv
+   :file: reshape_working_hours/total_by_user_parent_job.csv
+   :header-rows: 1
+
+
+``--shape_type total_by_user_job``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ユーザごとジョブごとに作業時間を集計します。
+
+.. csv-table:: total_by_user_job.csv
+   :file: reshape_working_hours/total_by_user_job.csv
+   :header-rows: 1
+
 
 ``--shape_type total``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
