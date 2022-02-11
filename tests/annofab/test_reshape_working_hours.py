@@ -55,7 +55,6 @@ class TestReshapeDataFrame:
         )
         df.to_csv(out_dir / "out-total_by_parent_job.csv", index=False)
 
-
     def test_get_df_total_by_user_parent_job(self):
         df_actual = pandas.read_csv(str(data_dir / "actual.csv"))
         df_assigned = pandas.read_csv(str(data_dir / "assigned.csv"))
@@ -75,7 +74,6 @@ class TestReshapeDataFrame:
 
         df = self.main_obj.get_df_total_by_user_job(df_actual=df_actual)
         df.to_csv(out_dir / "out-total_by_user_job.csv", index=False)
-
 
     def test_get_df_details(self):
         df_actual = pandas.read_csv(str(data_dir / "actual.csv"))

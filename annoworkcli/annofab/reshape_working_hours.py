@@ -665,11 +665,15 @@ class ReshapeDataFrame:
         # ヘッダが [user_id, value] になるように設定する
         df2 = df.stack().unstack([1, 2])
 
-        # 日付が連続になるようにする
+        # DataFrameのindexの日付が連続になるようにする
         not_exists_date_set = {
             str(e.date()) for e in pandas.date_range(start=min(df2.index), end=max(df2.index))
         } - set(df2.index)
-        df2 = pandas.concat([df2] + [pandas.Series(name=date, dtype="float64") for date in not_exists_date_set])
+
+        df_not_exists_date = pandas.DataFrame(
+            [pandas.Series(name=date, dtype="float64") for date in not_exists_date_set]
+        )
+        df2 = pandas.concat([df2, df_not_exists_date])
         df2.sort_index(inplace=True)
         # 作業時間がNaNの場合は0に置換する
         df2.replace(
