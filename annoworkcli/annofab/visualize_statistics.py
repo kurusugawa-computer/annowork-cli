@@ -148,7 +148,11 @@ class ListLabor:
 
         result = []
         for elm in daily_list:
-            annofab_project_id = job_id_annofab_project_id_dict[elm.job_id]
+            annofab_project_id = job_id_annofab_project_id_dict.get(elm.job_id)
+            if annofab_project_id is None:
+                # annofabプロジェクトに紐付いていないジョブの場合に通る
+                continue
+
             annofab_account_id = user_id_annofab_account_id_dict[elm.user_id]
             result.append(
                 AnnofabLabor(
@@ -194,6 +198,9 @@ def visualize_statistics(temp_dir: Path, args):
         command.extend(["--project_id"] + annofab_project_id_list)
     elif job_id_list is not None:
         job_id_annofab_project_id_dict = main_obj.get_job_id_annofab_project_id_dict_from_job_id(job_id_list)
+        if len(job_id_annofab_project_id_dict) == 0:
+            logger.error(f"AnnoFabプロジェクトに紐づくジョブが0件なので、終了します。")
+            return
         command.extend(["--project_id"] + list(job_id_annofab_project_id_dict.values()))
 
     if args.user_id is not None:
