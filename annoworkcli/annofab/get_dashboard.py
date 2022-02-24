@@ -19,7 +19,7 @@ from annofabapi import build as build_annofabapi
 from annofabapi.models import Task
 from annofabapi.resource import Resource as AnnofabResource
 from annofabapi.utils import str_now
-from annofabcli.statistics.summarize_task_count_by_task_id import TaskStatusForSummary
+from annofabcli.statistics.summarize_task_count_by_task_id_group import TaskStatusForSummary
 from annoworkapi.resource import Resource as AnnoworkResource
 from dataclasses_json import DataClassJsonMixin
 from dateutil.parser import parse
