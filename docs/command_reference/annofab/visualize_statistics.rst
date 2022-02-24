@@ -17,7 +17,7 @@ Examples
 .. code-block:: 
 
    $ annoworkcli annofab visualize_statistics --organization_id org --job_id job \
-     --output out
+     --output_dir out
 
    $ tree out
    out
@@ -59,9 +59,23 @@ Examples
 
 
 
+AnnoFabプロジェクトのIDは、``--annofab_project_id`` で指定できます。
+
+.. code-block:: 
+
+   $ annoworkcli annofab visualize_statistics --organization_id org --annofab_project_id prj \
+     --output_dir out
 
 
-このコマンドは、内部で ``annofabcli statistics visualize`` コマンドを実行しています。コマンドライン引数の使い方は、ほとんど ``annofabcli statistics visualize`` と同じです。
+
+このコマンドは、内部で ``annofabcli statistics visualize`` コマンドを実行しています。``annofabcli statistics visualize`` に渡すオプションは ``--annofabcli_options`` 以降に指定してください。
+
+.. code-block:: 
+
+   $ annoworkcli annofab visualize_statistics --organization_id org --job_id job \
+    --output_dir out --annofabcli_options --task_query '{"status":"complete}' --minimal
+
+
 コマンドの使い方は、`annofabcli statistics visualize <https://annofab-cli.readthedocs.io/ja/latest/command_reference/statistics/visualize.html>`_ のドキュメントを参照してください。
 
 

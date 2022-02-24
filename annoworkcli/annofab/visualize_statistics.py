@@ -246,8 +246,12 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument("--temp_dir", type=Path, required=False, help="テンポラリディレクトリ")
 
     # 残りの引数は `annofabcli statistics visualize`コマンドにそのまま渡す
-    parser.add_argument("--annofabcli_options", nargs=argparse.REMAINDER, type=str, 
-        help="``annofabcli_options``以降のオプションを、``annofabcli statistics visualize``コマンドにそのまま渡します。")
+    parser.add_argument(
+        "--annofabcli_options",
+        nargs=argparse.REMAINDER,
+        type=str,
+        help="``annofabcli_options``以降のオプションを、``annofabcli statistics visualize``コマンドにそのまま渡します。",
+    )
 
     parser.set_defaults(subcommand_func=main)
 
