@@ -250,7 +250,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--annofabcli_options",
         nargs=argparse.REMAINDER,
         type=str,
-        help="``annofabcli_options``以降のオプションを、``annofabcli statistics visualize``コマンドにそのまま渡します。",
+        help="``annofabcli_options`` 以降のオプションを、 ``annofabcli statistics visualize`` コマンドにそのまま渡します。",
     )
 
     parser.set_defaults(subcommand_func=main)
