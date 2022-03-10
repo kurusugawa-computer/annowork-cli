@@ -55,11 +55,10 @@ class PutOrganizationMember:
         if last_updated_datetime is not None:
             request_body["last_updated_datetime"] = last_updated_datetime
 
-        logger.debug(f"{request_body=}")
         new_member = self.annowork_service.api.put_organization_member(
             self.organization_id, organization_member_id, request_body=request_body
         )
-        logger.debug(f"{user_id=}, {organization_member_id=}: 組織メンバを追加しました。 :: {new_member}")
+        logger.debug(f"{user_id=} :: 組織メンバを追加しました。 :: username='{new_member['username']}', {organization_member_id=}")
         return True
 
     def main(self, user_id_list: list[str], role: str, organization_tag_id_list: Optional[Collection[str]]):
@@ -78,8 +77,8 @@ class PutOrganizationMember:
                 )
                 if result:
                     success_count += 1
-            except Exception as e:
-                logger.warning(f"{user_id=}: 組織メンバの登録に失敗しました。{e}")
+            except Exception:
+                logger.warning(f"{user_id=}: 組織メンバの登録に失敗しました。", exc_info=True)
                 continue
 
         logger.info(f"{success_count}/{len(user_id_list)} 件のユーザを組織メンバに登録しました。")

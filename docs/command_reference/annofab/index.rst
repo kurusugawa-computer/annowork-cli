@@ -15,7 +15,6 @@ Available Commands
    :maxdepth: 1
    :titlesonly:
 
-   get_dashboard
    list_job
    list_working_hours
    put_account_external_linkage_info
