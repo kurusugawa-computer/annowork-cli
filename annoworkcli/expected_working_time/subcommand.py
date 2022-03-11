@@ -5,6 +5,7 @@ import annoworkcli
 import annoworkcli.expected_working_time.delete_expected_working_time
 import annoworkcli.expected_working_time.list_expected_working_time
 import annoworkcli.expected_working_time.list_expected_working_time_groupby_tag
+import annoworkcli.expected_working_time.list_expected_working_time_weekly
 
 
 def parse_args(parser: argparse.ArgumentParser):
@@ -15,6 +16,7 @@ def parse_args(parser: argparse.ArgumentParser):
     annoworkcli.expected_working_time.delete_expected_working_time.add_parser(subparsers)
     annoworkcli.expected_working_time.list_expected_working_time.add_parser(subparsers)
     annoworkcli.expected_working_time.list_expected_working_time_groupby_tag.add_parser(subparsers)
+    annoworkcli.expected_working_time.list_expected_working_time_weekly.add_parser(subparsers)
 
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
