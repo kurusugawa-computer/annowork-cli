@@ -44,6 +44,23 @@ def test_list():
     )
 
 
+def test_list_weekly():
+    main(
+        [
+            COMMAND_NAME,
+            "list",
+            "--organization_id",
+            organization_id,
+            "--start_date",
+            "2022-01-01",
+            "--end_date",
+            "2022-01-31",
+            "--output",
+            str(out_dir / "list_weekly.csv"),
+        ]
+    )
+
+
 def test_list_groupby_tag():
     main(
         [

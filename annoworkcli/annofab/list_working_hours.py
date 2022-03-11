@@ -454,7 +454,12 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 
     parser.add_argument(
-        "-f", "--format", type=str, choices=[e.value for e in OutputFormat], help="出力先", default=OutputFormat.CSV.value
+        "-f",
+        "--format",
+        type=str,
+        choices=[e.value for e in OutputFormat],
+        help="出力先のフォーマット",
+        default=OutputFormat.CSV.value,
     )
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
