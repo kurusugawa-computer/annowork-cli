@@ -17,6 +17,7 @@ Available Commands
    delete
    list
    list_groupby_tag
+   list_weekly
 
 Usage Details
 =================================

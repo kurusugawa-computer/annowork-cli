@@ -288,7 +288,7 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 
     parser.add_argument(
-        "-f", "--format", type=str, choices=[e.value for e in OutputFormat], help="出力先", default=OutputFormat.CSV.value
+        "-f", "--format", type=str, choices=[e.value for e in OutputFormat], help="出力先のフォーマット", default=OutputFormat.CSV.value
     )
 
     parser.set_defaults(subcommand_func=main)
