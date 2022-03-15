@@ -5,6 +5,7 @@ import datetime
 import logging
 import subprocess
 import tempfile
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional, Tuple
@@ -61,20 +62,22 @@ class ListLabor:
     def get_job_id_annofab_project_id_dict_from_annofab_project_id(
         self, annofab_project_id_list: list[str]
     ) -> JobIdAnnofabProjectIdDict:
-        annofab_project_id_dict = {
-            get_annofab_project_id_from_job(job): job["job_id"]
-            for job in self.all_job_list
-            if get_annofab_project_id_from_job(job) is not None
-        }
+        # オーダを減らすため、事前にdictを作成する
+        annofab_project_id_dict: dict[str, list[str]] = defaultdict(list)
+        for job in self.all_job_list:
+            af_project_id = get_annofab_project_id_from_job(job)
+            if af_project_id is not None:
+                annofab_project_id_dict[af_project_id].append(job["job_id"])
 
         result = {}
         for annofab_project_id in annofab_project_id_list:
-            job_id = annofab_project_id_dict.get(annofab_project_id)
-            if job_id is None:
+            job_id_list = annofab_project_id_dict.get(annofab_project_id)
+            if job_id_list is None:
                 logger.warning(f"ジョブの外部連携情報に、AnnoFabのプロジェクトID '{annofab_project_id}' を表すURLが設定されたジョブは見つかりませんでした。")
                 continue
 
-            result[job_id] = annofab_project_id
+            for job_id in job_id_list:
+                result[job_id] = annofab_project_id
 
         return result
 
