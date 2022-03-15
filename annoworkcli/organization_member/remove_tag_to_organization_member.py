@@ -43,7 +43,7 @@ class RemoveTagToOrganizationMember:
         new_member = self.annowork_service.api.put_organization_member(
             self.organization_id, organization_member_id, request_body=request_body
         )
-        logger.debug(f"{user_id=}, {organization_member_id=}: 組織メンバから組織タグを削除しました。 :: {new_member}")
+        logger.debug(f"{user_id=} :: 組織メンバから組織タグを削除しました。 :: username='{new_member['username']}'")
         return True
 
     def main(self, user_id_list: list[str], organization_tag_ids: Collection[str]):
