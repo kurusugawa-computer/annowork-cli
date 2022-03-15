@@ -210,7 +210,8 @@ def visualize_statistics(temp_dir: Path, args):
     if args.output_dir is not None:
         command.extend(["--output_dir", str(args.output_dir)])
 
-    command.extend(args.annofabcli_options)
+    if args.annofabcli_options is not None:
+        command.extend(args.annofabcli_options)
 
     str_command = " ".join(command)
     logger.debug(f"run command: {str_command}")
