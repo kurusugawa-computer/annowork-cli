@@ -17,7 +17,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli annofab list_job --organization_id org --job_id job \
+    $ annoworkcli annofab list_job --workspace_id org --job_id job \
      --format json --output out.json
 
 
@@ -31,7 +31,7 @@ Examples
          "job_tree": "org/parent_job/job",
          "status": "unarchived",
          "target_hours": null,
-         "organization_id": "org",
+         "workspace_id": "org",
          "note": "",
          "external_linkage_info": {
             "url": "https://annofab.com/projects/af_project_id"
@@ -53,7 +53,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli annofab list_job --organization_id org --job_id job --show_parent_job \
+    $ annoworkcli annofab list_job --workspace_id org --job_id job --show_parent_job \
      --format json --output out.json
 
 
@@ -69,7 +69,7 @@ Examples
          "job_tree": "org/parent_job/job",
          "status": "unarchived",
          "target_hours": null,
-         "organization_id": "org",
+         "workspace_id": "org",
          "note": "",
          "external_linkage_info": {
             "url": "https://annofab.com/projects/af_project_id"

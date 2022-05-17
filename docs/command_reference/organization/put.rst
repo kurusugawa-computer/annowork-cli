@@ -1,20 +1,20 @@
 =========================================
-organization put
+workspace put
 =========================================
 
 Description
 =================================
-組織を作成/更新します。
+ワークスペースを作成/更新します。
 
 
 Examples
 =================================
 
-以下のコマンドは、組織ID ``org`` の組織を作成します。
+以下のコマンドは、ワークスペースID ``org`` のワークスペースを作成します。
 
 .. code-block:: 
 
-    $ annoworkcli organization put --organization_id org --email "alice@example.com" 
+    $ annoworkcli workspace put --workspace_id org --email "alice@example.com" 
 
 
 
@@ -22,7 +22,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization.put_organization.add_parser
-   :prog: annoworkcli organization put
+   :ref: annoworkcli.workspace.put_workspace.add_parser
+   :prog: annoworkcli workspace put
    :nosubcommands:
    :nodefaultconst:

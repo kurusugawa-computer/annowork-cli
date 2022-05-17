@@ -1,10 +1,10 @@
 =========================================
-organization_member delete
+workspace_member delete
 =========================================
 
 Description
 =================================
-組織メンバを削除します。
+ワークスペースメンバを削除します。
 
 
 
@@ -12,11 +12,11 @@ Examples
 =================================
 
 
-以下のコマンドは、ユーザalice, bobを組織orgの組織メバから削除します。
+以下のコマンドは、ユーザalice, bobをワークスペースorgのワークスペースメバから削除します。
 
 .. code-block:: 
 
-    $ annoworkcli my list_organization_member delete --organization_id org \
+    $ annoworkcli my list_workspace_member delete --workspace_id org \
      --user_id alice bob
 
 
@@ -25,7 +25,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization_member.delete_organization_member.add_parser
-   :prog: annoworkcli organization_member delete
+   :ref: annoworkcli.workspace_member.delete_workspace_member.add_parser
+   :prog: annoworkcli workspace_member delete
    :nosubcommands:
    :nodefaultconst:

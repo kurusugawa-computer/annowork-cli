@@ -1,21 +1,21 @@
 =========================================
-organization list
+workspace list
 =========================================
 
 Description
 =================================
-組織の一覧を出力します。
+ワークスペースの一覧を出力します。
 
 
 Examples
 =================================
 
 
-以下のコマンドは、自分自身が所属している組織の一覧を出力します。
+以下のコマンドは、自分自身が所属しているワークスペースの一覧を出力します。
 
 .. code-block:: 
 
-    $ annoworkcli organization list \
+    $ annoworkcli workspace list \
      --format json --output out.json
 
 
@@ -24,8 +24,8 @@ Examples
 
    [
       {
-         "organization_id": "org",
-         "organization_name": "SANDBOX",
+         "workspace_id": "org",
+         "workspace_name": "SANDBOX",
          "email": "foo@example.com",
          "created_datetime": "2022-01-11T08:16:58.373Z",
          "updated_datetime": "2022-01-11T08:16:58.373Z"
@@ -38,7 +38,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization.list_organization.add_parser
-   :prog: annoworkcli organization list
+   :ref: annoworkcli.workspace.list_workspace.add_parser
+   :prog: annoworkcli workspace list
    :nosubcommands:
    :nodefaultconst:

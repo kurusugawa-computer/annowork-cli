@@ -1,10 +1,10 @@
 =========================================
-organization_tag put
+workspace_tag put
 =========================================
 
 Description
 =================================
-組織タグを更新します。
+ワークスペースタグを更新します。
 
 
 
@@ -25,7 +25,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization_tag.put_organization_tag.add_parser
-   :prog: annoworkcli organization_tag put
+   :ref: annoworkcli.workspace_tag.put_workspace_tag.add_parser
+   :prog: annoworkcli workspace_tag put
    :nosubcommands:
    :nodefaultconst:

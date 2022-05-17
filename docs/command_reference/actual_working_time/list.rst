@@ -15,7 +15,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli actual_working_time list --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
 
 
@@ -24,10 +24,10 @@ Examples
 
    [
       {
-         "organization_id": "org",
+         "workspace_id": "org",
          "actual_working_time_id": "1ed08b23-555e-493d-b8ef-ccb7b05b7522",
          "job_id": "caa0da6f-34aa-40cb-abc0-976c9aab3b40",
-         "organization_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
+         "workspace_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
          "start_datetime": "2022-01-02T01:00:00.000Z",
          "end_datetime": "2022-01-02T03:43:00.000Z",
          "note": "",
@@ -46,7 +46,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli actual_working_time list --workspace_id org --start_date 2022-01-01 \
      --timezone_offset 9 --format json --output out.json
 
 
@@ -57,7 +57,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli actual_working_time list --workspace_id org --start_date 2022-01-01 \
      --show_parent_job --format json --output out2.json
 
 
@@ -67,10 +67,10 @@ Examples
 
    [
       {
-         "organization_id": "org",
+         "workspace_id": "org",
          "actual_working_time_id": "1ed08b23-555e-493d-b8ef-ccb7b05b7522",
          "job_id": "caa0da6f-34aa-40cb-abc0-976c9aab3b40",
-         "organization_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
+         "workspace_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
          "start_datetime": "2022-01-02T01:00:00.000Z",
          "end_datetime": "2022-01-02T03:43:00.000Z",
          "note": "",

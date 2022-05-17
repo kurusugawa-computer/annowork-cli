@@ -1,22 +1,22 @@
 =========================================
-organization_member remove_tag
+workspace_member remove_tag
 =========================================
 
 Description
 =================================
-組織メンバから組織タグを削除します。
+ワークスペースメンバからワークスペースタグを削除します。
 
 
 
 Examples
 =================================
 
-以下のコマンドは、ユーザalice, bobから、組織タグtag1, tag2を除去します。
+以下のコマンドは、ユーザalice, bobから、ワークスペースタグtag1, tag2を除去します。
 
 .. code-block:: 
 
-    $ annoworkcli my list_organization_member remove_tag --organization_id org \
-     --user_id alice bob --organization_tag_id tag1 tag2
+    $ annoworkcli my list_workspace_member remove_tag --workspace_id org \
+     --user_id alice bob --workspace_tag_id tag1 tag2
 
 
 
@@ -25,7 +25,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization_member.remove_tag_to_organization_member.add_parser
-   :prog: annoworkcli organization_member remove_tag
+   :ref: annoworkcli.workspace_member.remove_tag_to_workspace_member.add_parser
+   :prog: annoworkcli workspace_member remove_tag
    :nosubcommands:
    :nodefaultconst:

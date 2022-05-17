@@ -1,21 +1,21 @@
 =========================================
-organization_member put
+workspace_member put
 =========================================
 
 Description
 =================================
-組織メンバを登録します。
+ワークスペースメンバを登録します。
 
 
 
 Examples
 =================================
 
-以下のコマンドは、ユーザalice, bobを組織orgの組織メンバに追加します。
+以下のコマンドは、ユーザalice, bobをワークスペースorgのワークスペースメンバに追加します。
 
 .. code-block:: 
 
-    $ annoworkcli my list_organization_member put --organization_id org \
+    $ annoworkcli my list_workspace_member put --workspace_id org \
      --user_id alice bob 
 
 
@@ -24,7 +24,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization_member.put_organization_member.add_parser
-   :prog: annoworkcli organization_member put
+   :ref: annoworkcli.workspace_member.put_workspace_member.add_parser
+   :prog: annoworkcli workspace_member put
    :nosubcommands:
    :nodefaultconst:

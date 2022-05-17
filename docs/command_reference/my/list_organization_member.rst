@@ -1,10 +1,10 @@
 =========================================
-my list_organization_member
+my list_workspace_member
 =========================================
 
 Description
 =================================
-自身の組織メンバの一覧を出力します。
+自身のワークスペースメンバの一覧を出力します。
 
 
 
@@ -12,11 +12,11 @@ Examples
 =================================
 
 
-以下のコマンドは、自身の組織メンバの一覧を出力します。
+以下のコマンドは、自身のワークスペースメンバの一覧を出力します。
 
 .. code-block:: 
 
-    $ annoworkcli my list_organization_member \
+    $ annoworkcli my list_workspace_member \
      --format json --output out.json
 
 
@@ -25,8 +25,8 @@ Examples
 
    [
       {
-         "organization_member_id": "a5cd6a09-e740-4c34-8981-fe3d1b0e0bde",
-         "organization_id": "org",
+         "workspace_member_id": "a5cd6a09-e740-4c34-8981-fe3d1b0e0bde",
+         "workspace_id": "org",
          "account_id": "0a998d6f-9b53-4d96-ba89-14edccd9ce0b",
          "user_id": "alice",
          "username": "Alice",
@@ -44,7 +44,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.my.list_my_organization_member.add_parser
-   :prog: annoworkcli my list_organization_member
+   :ref: annoworkcli.my.list_my_workspace_member.add_parser
+   :prog: annoworkcli my list_workspace_member
    :nosubcommands:
    :nodefaultconst:

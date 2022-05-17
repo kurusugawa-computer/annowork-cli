@@ -1,10 +1,10 @@
 ==================================================
-organization_member
+workspace_member
 ==================================================
 
 Description
 =================================
-組織メンバ関係のサブコマンド
+ワークスペースメンバ関係のサブコマンド
 
 
 Available Commands
@@ -25,6 +25,6 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization_member.subcommand.add_parser
-   :prog: annoworkcli organization_member
+   :ref: annoworkcli.workspace_member.subcommand.add_parser
+   :prog: annoworkcli workspace_member
    :nosubcommands:

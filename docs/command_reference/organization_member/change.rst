@@ -1,10 +1,10 @@
 =========================================
-organization_member change
+workspace_member change
 =========================================
 
 Description
 =================================
-組織メンバの情報（ロールなど）を変更します。
+ワークスペースメンバの情報（ロールなど）を変更します。
 
 
 Examples
@@ -14,7 +14,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli my list_organization_member change --organization_id org \
+    $ annoworkcli my list_workspace_member change --workspace_id org \
      --user_id alice bob --role worker
 
 
@@ -23,7 +23,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization_member.change_organization_member_properties.add_parser
-   :prog: annoworkcli organization_member change
+   :ref: annoworkcli.workspace_member.change_workspace_member_properties.add_parser
+   :prog: annoworkcli workspace_member change
    :nosubcommands:
    :nodefaultconst:

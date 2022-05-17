@@ -16,7 +16,7 @@ Examples
 
 .. code-block:: 
 
-   $ annoworkcli annofab visualize_statistics --organization_id org --job_id job \
+   $ annoworkcli annofab visualize_statistics --workspace_id org --job_id job \
      --output_dir out
 
    $ tree out
@@ -63,7 +63,7 @@ AnnoFabプロジェクトのIDは、``--annofab_project_id`` で指定できま�
 
 .. code-block:: 
 
-   $ annoworkcli annofab visualize_statistics --organization_id org --annofab_project_id prj \
+   $ annoworkcli annofab visualize_statistics --workspace_id org --annofab_project_id prj \
      --output_dir out
 
 
@@ -72,7 +72,7 @@ AnnoFabプロジェクトのIDは、``--annofab_project_id`` で指定できま�
 
 .. code-block:: 
 
-   $ annoworkcli annofab visualize_statistics --organization_id org --job_id job \
+   $ annoworkcli annofab visualize_statistics --workspace_id org --job_id job \
     --output_dir out --annofabcli_options --task_query '{"status":"complete}' --minimal
 
 

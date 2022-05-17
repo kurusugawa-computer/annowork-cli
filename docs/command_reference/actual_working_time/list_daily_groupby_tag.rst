@@ -4,17 +4,17 @@ actual_working_time list_daily_groupby_tag
 
 Description
 =================================
-日ごとの実績作業時間を、組織タグで集計した値を出力します。
+日ごとの実績作業時間を、ワークスペースタグで集計した値を出力します。
 
 
 Examples
 =================================
 
-以下のコマンドは、2022-01-01以降の日ごとの実績作業時間情報を、組織タグで集計した値を出力します。
+以下のコマンドは、2022-01-01以降の日ごとの実績作業時間情報を、ワークスペースタグで集計した値を出力します。
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list_daily_groupby_tag --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli actual_working_time list_daily_groupby_tag --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
 
 
@@ -37,7 +37,7 @@ Examples
 
 .. note::
 
-   ``actual_working_hours.total`` は、組織タグを無視して集計した値です。
+   ``actual_working_hours.total`` は、ワークスペースタグを無視して集計した値です。
    ``actual_working_hours.total`` 以外の値の合計値ではないことに、注意してください。
    
    たとえば上記の出力結果だと、``actual_working_hours.total ≠ actual_working_hours.type:acceptor + actual_working_hours.type:monitored`` です。
@@ -49,7 +49,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list_daily --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli actual_working_time list_daily --workspace_id org --start_date 2022-01-01 \
      --show_parent_job --format json --output out2.json
 
 

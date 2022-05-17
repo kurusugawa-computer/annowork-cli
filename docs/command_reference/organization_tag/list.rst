@@ -1,10 +1,10 @@
 =========================================
-organization_tag list
+workspace_tag list
 =========================================
 
 Description
 =================================
-組織タグの一覧を出力します。
+ワークスペースタグの一覧を出力します。
 
 
 
@@ -25,7 +25,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization_tag.list_organization_tag.add_parser
-   :prog: annoworkcli organization_tag list
+   :ref: annoworkcli.workspace_tag.list_workspace_tag.add_parser
+   :prog: annoworkcli workspace_tag list
    :nosubcommands:
    :nodefaultconst:

@@ -1,10 +1,10 @@
 ==================================================
-organization_tag
+workspace_tag
 ==================================================
 
 Description
 =================================
-組織タグ関係のサブコマンド
+ワークスペースタグ関係のサブコマンド
 
 
 Available Commands
@@ -21,6 +21,6 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization_tag.subcommand.add_parser
-   :prog: annoworkcli organization_tag
+   :ref: annoworkcli.workspace_tag.subcommand.add_parser
+   :prog: annoworkcli workspace_tag
    :nosubcommands:

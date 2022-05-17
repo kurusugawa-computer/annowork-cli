@@ -1,10 +1,10 @@
 ==================================================
-organization
+workspace
 ==================================================
 
 Description
 =================================
-組織関係のサブコマンド
+ワークスペース関係のサブコマンド
 
 
 Available Commands
@@ -21,6 +21,6 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.organization.subcommand.add_parser
-   :prog: annoworkcli organization
+   :ref: annoworkcli.workspace.subcommand.add_parser
+   :prog: annoworkcli workspace
    :nosubcommands:

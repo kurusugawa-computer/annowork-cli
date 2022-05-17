@@ -9,7 +9,7 @@ Command Structure
 
     $ annoworkcli <command> <subcommand> [options and parameters]
 
-* ``command`` : ``job`` や ``organization_member`` などのカテゴリに対応します。
+* ``command`` : ``job`` や ``workspace_member`` などのカテゴリに対応します。
 * ``subcommand`` : ``list`` や ``delete`` など、実行する操作に対応します。
 
 
@@ -44,10 +44,10 @@ Getting Help
 .. code-block::
 
     # 標準入力で指定する
-    $ annoworkcli job list --organization_id org --job_id job1 job2
+    $ annoworkcli job list --workspace_id org --job_id job1 job2
 
     # 相対パスでファイルを指定する
-    $ annoworkcli job list --organization_id org --job_id file://job_id.txt
+    $ annoworkcli job list --workspace_id org --job_id file://job_id.txt
 
 
 

@@ -17,7 +17,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli annofab list_working_hours --organization_id org --job_id job \
+    $ annoworkcli annofab list_working_hours --workspace_id org --job_id job \
      --format json --output out.json
 
 
@@ -29,7 +29,7 @@ Examples
          "date": "2021-11-05",
          "job_id": "job",
          "job_name": "MOON",
-         "organization_member_id": "58005ead-f85b-45d8-931b-54ba2837d7b1",
+         "workspace_member_id": "58005ead-f85b-45d8-931b-54ba2837d7b1",
          "user_id": "alice",
          "username": "Alice",
          "actual_working_hours": 1.1666666666666667,
