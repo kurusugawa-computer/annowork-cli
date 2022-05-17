@@ -57,7 +57,7 @@ class PutAnnofabAccountId:
         return True
 
     def main(self, af_workspace_name: str, user_id_list: list[str]):
-        af_workspace_member_list = self.annofab_service.wrapper.get_all_workspace_members(af_workspace_name)
+        af_workspace_member_list = self.annofab_service.wrapper.get_all_organization_members(af_workspace_name)
         af_user_id_account_id_dict: dict[str, str] = {
             member["user_id"]: member["account_id"] for member in af_workspace_member_list
         }
