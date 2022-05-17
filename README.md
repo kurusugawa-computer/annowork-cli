@@ -78,9 +78,9 @@ positional arguments:
     my                  自分自身に関するサブコマンド
 
     workspace_member
-                        組織メンバ関係のサブコマンド
+                        ワークスペースメンバ関係のサブコマンド
 
-    workspace_tag    組織タグ関係のサブコマンド
+    workspace_tag    ワークスペースタグ関係のサブコマンド
 
     schedule            作業計画関係のサブコマンド
 
@@ -96,7 +96,7 @@ $ annoworkcli workspace_member list -h
 usage: annoworkcli workspace_member list [-h] [--endpoint_url ENDPOINT_URL | --is_development | --is_staging] -org workspace_ID
                                             [-org_tag workspace_TAG_ID [workspace_TAG_ID ...]] [-o OUTPUT] [-f {csv,json}]
 
-組織メンバの一覧を出力します。無効化されたメンバも出力します。
+ワークスペースメンバの一覧を出力します。無効化されたメンバも出力します。
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -105,10 +105,10 @@ optional arguments:
                         AnnoWork WebAPIのエンドポイントを指定します。指定しない場合は'https://annowork.com'です。 (default: None)
 
   -org workspace_ID, --workspace_id workspace_ID
-                        対象の組織ID (default: None)
+                        対象のワークスペースID (default: None)
 
   -org_tag workspace_TAG_ID [workspace_TAG_ID ...], --workspace_tag_id workspace_TAG_ID [workspace_TAG_ID ...]
-                        指定した組織タグが付与された組織メンバを出力します。 (default: None)
+                        指定したワークスペースタグが付与されたワークスペースメンバを出力します。 (default: None)
 
   -o OUTPUT, --output OUTPUT
                         出力先 (default: None)
