@@ -57,12 +57,12 @@ password annofab_password
 
 ```
 vagrant@example:~$ annoworkcli -h
-usage: annoworkcli [-h] [--version] {account,actual_working_time,annofab,expected_working_time,job,migration,my,organization_member,organization_tag,schedule} ...
+usage: annoworkcli [-h] [--version] {account,actual_working_time,annofab,expected_working_time,job,migration,my,workspace_member,workspace_tag,schedule} ...
 
 Command Line Interface for AnnoFab
 
 positional arguments:
-  {account,actual_working_time,annofab,expected_working_time,job,migration,my,organization_member,organization_tag,schedule}
+  {account,actual_working_time,annofab,expected_working_time,job,migration,my,workspace_member,workspace_tag,schedule}
     account             ユーザアカウントに関するサブコマンド
 
     actual_working_time
@@ -77,10 +77,10 @@ positional arguments:
 
     my                  自分自身に関するサブコマンド
 
-    organization_member
+    workspace_member
                         組織メンバ関係のサブコマンド
 
-    organization_tag    組織タグ関係のサブコマンド
+    workspace_tag    組織タグ関係のサブコマンド
 
     schedule            作業計画関係のサブコマンド
 
@@ -92,9 +92,9 @@ optional arguments:
 
 
 ```
-$ annoworkcli organization_member list -h
-usage: annoworkcli organization_member list [-h] [--endpoint_url ENDPOINT_URL | --is_development | --is_staging] -org ORGANIZATION_ID
-                                            [-org_tag ORGANIZATION_TAG_ID [ORGANIZATION_TAG_ID ...]] [-o OUTPUT] [-f {csv,json}]
+$ annoworkcli workspace_member list -h
+usage: annoworkcli workspace_member list [-h] [--endpoint_url ENDPOINT_URL | --is_development | --is_staging] -org workspace_ID
+                                            [-org_tag workspace_TAG_ID [workspace_TAG_ID ...]] [-o OUTPUT] [-f {csv,json}]
 
 組織メンバの一覧を出力します。無効化されたメンバも出力します。
 
@@ -104,10 +104,10 @@ optional arguments:
   --endpoint_url ENDPOINT_URL
                         AnnoWork WebAPIのエンドポイントを指定します。指定しない場合は'https://annowork.com'です。 (default: None)
 
-  -org ORGANIZATION_ID, --organization_id ORGANIZATION_ID
+  -org workspace_ID, --workspace_id workspace_ID
                         対象の組織ID (default: None)
 
-  -org_tag ORGANIZATION_TAG_ID [ORGANIZATION_TAG_ID ...], --organization_tag_id ORGANIZATION_TAG_ID [ORGANIZATION_TAG_ID ...]
+  -org_tag workspace_TAG_ID [workspace_TAG_ID ...], --workspace_tag_id workspace_TAG_ID [workspace_TAG_ID ...]
                         指定した組織タグが付与された組織メンバを出力します。 (default: None)
 
   -o OUTPUT, --output OUTPUT
@@ -119,20 +119,20 @@ optional arguments:
 
 ```
 # CSV出力
-$ annoworkcli organization_member list -org org -o out.csv
+$ annoworkcli workspace_member list -org org -o out.csv
 $ cat out.csv
-organization_member_id,organization_id,account_id,user_id,username,role,status,created_datetime,updated_datetime,organization_tag_ids,organization_tag_names,inactivated_datetime
+workspace_member_id,workspace_id,account_id,user_id,username,role,status,created_datetime,updated_datetime,workspace_tag_ids,workspace_tag_names,inactivated_datetime
 12345678-abcd-1234-abcd-1234abcd5678,org,12345678-abcd-1234-abcd-1234abcd5678,alice,Alice,manager,active,2021-11-04T04:27:57.702Z,2021-11-04T04:27:57.702Z,['company_kurusugawa'],['company:来栖川電算'],
 ...
 
 
 # CSV出力
-$ annoworkcli organization_member list -org org -o out.json -f json
+$ annoworkcli workspace_member list -org org -o out.json -f json
 $ cat out.json
 [
   {
-    "organization_member_id": "12345678-abcd-1234-abcd-1234abcd5678",
-    "organization_id": "org",
+    "workspace_member_id": "12345678-abcd-1234-abcd-1234abcd5678",
+    "workspace_id": "org",
     "account_id": "12345678-abcd-1234-abcd-1234abcd5678",
     "user_id": "alice",
     "username": "Alice",
@@ -141,11 +141,11 @@ $ cat out.json
     "created_datetime": "2021-10-28T06:48:40.077Z",
     "updated_datetime": "2021-11-09T01:07:30.766Z",
     "inactivated_datetime": NaN,
-    "organization_tag_ids": [
+    "workspace_tag_ids": [
       "company_kurusugawa",
       "type_monitored"
     ],
-    "organization_tag_names": [
+    "workspace_tag_names": [
       "company:来栖川電算",
       "type:monitored"
     ]
