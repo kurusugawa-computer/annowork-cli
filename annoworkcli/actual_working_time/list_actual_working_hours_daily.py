@@ -25,12 +25,12 @@ logger = logging.getLogger(__name__)
 
 ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]
 """実績作業時間の日ごとの情報を格納する辞書
-key: (date, organization_member_id, job_id), value: 実績作業時間
+key: (date, workspace_member_id, job_id), value: 実績作業時間
 """
 
 ActualWorkingTimeNoteDict = Dict[Tuple[datetime.date, str, str], List[str]]
 """実績作業の備考を格納する辞書
-key: (date, organization_member_id, job_id), value: 備考のlist
+key: (date, workspace_member_id, job_id), value: 備考のlist
 dateは実績のstart_datetimeから算出する
 """
 
@@ -40,7 +40,7 @@ class ActualWorkingHoursDaily(DataClassJsonMixin):
     date: str
     job_id: str
     job_name: str
-    organization_member_id: str
+    workspace_member_id: str
     user_id: str
     username: str
     actual_working_hours: float
@@ -62,8 +62,8 @@ class SimpleJob(DataClassJsonMixin):
 
 
 @dataclass
-class SimpleOrganizationMember(DataClassJsonMixin):
-    organization_member_id: str
+class SimpleworkspaceMember(DataClassJsonMixin):
+    workspace_member_id: str
     user_id: str
     username: str
 
@@ -74,12 +74,12 @@ def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.t
     dt_local_start_datetime = str_to_datetime(actual["start_datetime"]).astimezone(tzinfo)
     dt_local_end_datetime = str_to_datetime(actual["end_datetime"]).astimezone(tzinfo)
 
-    organization_member_id = actual["organization_member_id"]
+    workspace_member_id = actual["workspace_member_id"]
     job_id = actual["job_id"]
 
     if dt_local_start_datetime.date() == dt_local_end_datetime.date():
         actual_working_hours = (dt_local_end_datetime - dt_local_start_datetime).total_seconds() / 3600
-        results_dict[(dt_local_start_datetime.date(), organization_member_id, job_id)] = actual_working_hours
+        results_dict[(dt_local_start_datetime.date(), workspace_member_id, job_id)] = actual_working_hours
     else:
         dt_tmp_local_start_datetime = dt_local_start_datetime
 
@@ -90,11 +90,11 @@ def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.t
                 year=dt_next_date.year, month=dt_next_date.month, day=dt_next_date.day, tzinfo=tzinfo
             )
             actual_working_hours = (dt_tmp_local_end_datetime - dt_tmp_local_start_datetime).total_seconds() / 3600
-            results_dict[(dt_tmp_local_start_datetime.date(), organization_member_id, job_id)] = actual_working_hours
+            results_dict[(dt_tmp_local_start_datetime.date(), workspace_member_id, job_id)] = actual_working_hours
             dt_tmp_local_start_datetime = dt_tmp_local_end_datetime
 
         actual_working_hours = (dt_local_end_datetime - dt_tmp_local_start_datetime).total_seconds() / 3600
-        results_dict[(dt_local_end_datetime.date(), organization_member_id, job_id)] = actual_working_hours
+        results_dict[(dt_local_end_datetime.date(), workspace_member_id, job_id)] = actual_working_hours
 
     return results_dict
 
@@ -108,7 +108,7 @@ def create_actual_working_hours_daily_list(
     notes_dict: ActualWorkingTimeNoteDict = defaultdict(list)
 
     job_dict: dict[str, SimpleJob] = {}
-    member_dict: dict[str, SimpleOrganizationMember] = {}
+    member_dict: dict[str, SimpleworkspaceMember] = {}
 
     # none 判定
     if timezone_offset_hours is not None:
@@ -122,9 +122,9 @@ def create_actual_working_hours_daily_list(
         for key, value in tmp_results.items():
             results_dict[key] += value
 
-        if actual["organization_member_id"] not in member_dict:
-            member_dict[actual["organization_member_id"]] = SimpleOrganizationMember(
-                organization_member_id=actual["organization_member_id"],
+        if actual["workspace_member_id"] not in member_dict:
+            member_dict[actual["workspace_member_id"]] = SimpleworkspaceMember(
+                workspace_member_id=actual["workspace_member_id"],
                 user_id=actual["user_id"],
                 username=actual["username"],
             )
@@ -140,26 +140,26 @@ def create_actual_working_hours_daily_list(
         for actual in actual_working_time_list:
             date = str_to_datetime(actual["start_datetime"]).astimezone(tzinfo).date()
             if actual["note"] is not None and actual["note"] != "":
-                notes_dict[(date, actual["organization_member_id"], actual["job_id"])].append(actual["note"])
+                notes_dict[(date, actual["workspace_member_id"], actual["job_id"])].append(actual["note"])
 
     results_list: list[ActualWorkingHoursDaily] = []
-    for (date, organization_member_id, job_id), actual_working_hours in results_dict.items():
+    for (date, workspace_member_id, job_id), actual_working_hours in results_dict.items():
         if actual_working_hours == 0:
             # 実績作業時間が0の情報は不要なので、出力しないようにする
             continue
 
         job = job_dict[job_id]
-        member = member_dict[organization_member_id]
+        member = member_dict[workspace_member_id]
         results_list.append(
             ActualWorkingHoursDaily(
                 date=str(date),
-                organization_member_id=organization_member_id,
+                workspace_member_id=workspace_member_id,
                 job_id=job_id,
                 actual_working_hours=actual_working_hours,
                 job_name=job.job_name,
                 user_id=member.user_id,
                 username=member.username,
-                notes=notes_dict.get((date, organization_member_id, job_id)),
+                notes=notes_dict.get((date, workspace_member_id, job_id)),
             )
         )
 
@@ -206,14 +206,14 @@ def filter_actual_daily_list(
 
 
 class ListActualWorkingHoursDaily:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
     def add_parent_job_info(
         self, daily_list: Sequence[ActualWorkingHoursDaily]
     ) -> list[ActualWorkingHoursDailyWithParentJob]:
-        all_job_list = self.annowork_service.api.get_jobs(self.organization_id)
+        all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_job_list}
         parent_job_id_set = {get_parent_job_id_from_job_tree(e["job_tree"]) for e in all_job_list}
         if None in parent_job_id_set:
@@ -240,7 +240,7 @@ def get_required_columns(show_parent_job: bool) -> list[str]:
             "job_name",
             "parent_job_id",
             "parent_job_name",
-            "organization_member_id",
+            "workspace_member_id",
             "user_id",
             "username",
             "actual_working_hours",
@@ -251,7 +251,7 @@ def get_required_columns(show_parent_job: bool) -> list[str]:
             "date",
             "job_id",
             "job_name",
-            "organization_member_id",
+            "workspace_member_id",
             "user_id",
             "username",
             "actual_working_hours",
@@ -274,11 +274,11 @@ def main(args):
             "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
-    main_obj = ListActualWorkingHoursDaily(annowork_service, args.organization_id)
+    main_obj = ListActualWorkingHoursDaily(annowork_service, args.workspace_id)
 
     list_actual_working_time_obj = ListActualWorkingTime(
         annowork_service=annowork_service,
-        organization_id=args.organization_id,
+        workspace_id=args.workspace_id,
         timezone_offset_hours=args.timezone_offset,
     )
     actual_working_time_list = list_actual_working_time_obj.get_actual_working_times(
@@ -325,7 +325,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     required_group.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         help="対象の組織ID",
     )

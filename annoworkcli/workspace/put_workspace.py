@@ -12,47 +12,47 @@ from annoworkcli.common.cli import build_annoworkapi
 logger = logging.getLogger(__name__)
 
 
-class PutOrganization:
+class Putworkspace:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
     ):
         self.annowork_service = annowork_service
 
-    def main(self, organization_id: str, organization_name: str, email: str):
-        org = self.annowork_service.wrapper.get_organization_or_none(organization_id)
+    def main(self, workspace_id: str, workspace_name: str, email: str):
+        org = self.annowork_service.wrapper.get_workspace_or_none(workspace_id)
 
         request_body = {
-            "organization_name": organization_name,
+            "workspace_name": workspace_name,
             "email": email,
         }
         if org is not None:
             request_body["last_updated_datetime"] = org["updated_datetime"]
 
-        self.annowork_service.api.put_organization(organization_id, request_body=request_body)
+        self.annowork_service.api.put_workspace(workspace_id, request_body=request_body)
 
-        logger.info(f"組織 {organization_id} を作成/更新しました。")
+        logger.info(f"組織 {workspace_id} を作成/更新しました。")
 
 
 def main(args):
     annowork_service = build_annoworkapi(args)
 
-    PutOrganization(
+    Putworkspace(
         annowork_service=annowork_service,
-    ).main(organization_id=args.organization_id, organization_name=args.organization_name, email=args.email)
+    ).main(workspace_id=args.workspace_id, workspace_name=args.workspace_name, email=args.email)
 
 
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",
     )
 
     parser.add_argument(
-        "--organization_name",
+        "--workspace_name",
         type=str,
         required=True,
         help="組織名",

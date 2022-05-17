@@ -17,22 +17,22 @@ logger = logging.getLogger(__name__)
 
 
 def get_weekly_expected_working_hours_df(
-    expected_working_times: list[dict[str, Any]], organization_members: list[dict[str, Any]]
+    expected_working_times: list[dict[str, Any]], workspace_members: list[dict[str, Any]]
 ) -> pandas.DataFrame:
     """週単位の予定稼働時間が格納されたDataFrameを生成します。
 
     Args:
-        expected_working_times: 予定稼働時間情報。date, organization_member_id, expected_working_hours を参照します。
-        organization_members: 組織メンバ情報。organization_member_id, user_id, username を参照します。
+        expected_working_times: 予定稼働時間情報。date, workspace_member_id, expected_working_hours を参照します。
+        workspace_members: 組織メンバ情報。workspace_member_id, user_id, username を参照します。
 
     Returns:
         以下の列を返すDataFrame。
-            "organization_member_id", "user_id","username", "start_date", "end_date", "expected_working_hours"
+            "workspace_member_id", "user_id","username", "start_date", "end_date", "expected_working_hours"
     """
     df = pandas.DataFrame(expected_working_times)
     # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
     df["date"] = pandas.to_datetime(df["date"])
-    df_weekly = df.groupby("organization_member_id").resample("W", on="date", label="left", closed="left").sum()
+    df_weekly = df.groupby("workspace_member_id").resample("W", on="date", label="left", closed="left").sum()
     df_weekly.reset_index(inplace=True)
 
     # 1週間の始まり（日曜日）と終わり（土曜日）の日付列を設定
@@ -45,12 +45,12 @@ def get_weekly_expected_working_hours_df(
     # 予定稼働時間が0の行は不要なので、除外する
     df_weekly = df_weekly.query("expected_working_hours > 0")
 
-    df_organization_member = pandas.DataFrame(organization_members)
+    df_workspace_member = pandas.DataFrame(workspace_members)
 
-    df = df_weekly.merge(df_organization_member, on="organization_member_id", how="left")
+    df = df_weekly.merge(df_workspace_member, on="workspace_member_id", how="left")
     df.sort_values(["user_id", "start_date"], inplace=True)
 
-    return df[["organization_member_id", "user_id", "username", "start_date", "end_date", "expected_working_hours"]]
+    return df[["workspace_member_id", "user_id", "username", "start_date", "end_date", "expected_working_hours"]]
 
 
 def main(args):
@@ -64,7 +64,7 @@ def main(args):
         print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
-    main_obj = ListExpectedWorkingTime(annowork_service=annowork_service, organization_id=args.organization_id)
+    main_obj = ListExpectedWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id)
 
     if user_id_list is not None:
         expected_working_times = main_obj.get_expected_working_times_by_user_id(
@@ -77,7 +77,7 @@ def main(args):
         logger.warning(f"予定稼働時間情報0件なので、出力しません。")
         return
 
-    df = get_weekly_expected_working_hours_df(expected_working_times, main_obj.organization_members)
+    df = get_weekly_expected_working_hours_df(expected_working_times, main_obj.workspace_members)
 
     logger.info(f"{len(df)} 件の週単位の予定稼働時間情報を出力します。")
 
@@ -93,7 +93,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

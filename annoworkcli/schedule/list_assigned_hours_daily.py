@@ -24,7 +24,7 @@ class AssignedHoursDaily(DataClassJsonMixin):
     date: str
     job_id: str
     job_name: str
-    organization_member_id: str
+    workspace_member_id: str
     user_id: str
     username: str
     assigned_working_hours: float
@@ -32,7 +32,7 @@ class AssignedHoursDaily(DataClassJsonMixin):
 
 AssignedHoursDict = Dict[Tuple[str, str, str], float]
 """アサイン時間の日ごとの情報を格納する辞書
-key: (date, organization_member_id, job_id), value: アサイン時間
+key: (date, workspace_member_id, job_id), value: アサイン時間
 """
 
 
@@ -46,19 +46,19 @@ def _get_min_max_date_from_schedule_list(schedule_list: list[dict[str, Any]]) ->
 
 
 class ListAssignedHoursDaily:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
-        self.list_schedule_obj = ListSchedule(annowork_service, organization_id)
+        self.workspace_id = workspace_id
+        self.list_schedule_obj = ListSchedule(annowork_service, workspace_id)
 
     def get_expected_working_hours_dict(self, schedule_list: list[dict[str, Any]]) -> ExpectedWorkingHoursDict:
         min_date, max_date = _get_min_max_date_from_schedule_list(schedule_list)
         query_params = {"term_start": min_date, "term_end": max_date}
         logger.debug(f"予定稼働時間を取得します。 :: {query_params=}")
         expected_working_times = self.annowork_service.api.get_expected_working_times(
-            self.organization_id, query_params=query_params
+            self.workspace_id, query_params=query_params
         )
-        return {(e["date"], e["organization_member_id"]): e["expected_working_hours"] for e in expected_working_times}
+        return {(e["date"], e["workspace_member_id"]): e["expected_working_hours"] for e in expected_working_times}
 
     def get_assigned_hours_daily_list(
         self,
@@ -79,20 +79,20 @@ class ListAssignedHoursDaily:
         expected_working_hours_dict = self.get_expected_working_hours_dict(schedule_list)
 
         for schedule in schedule_list:
-            organization_member_id = schedule["organization_member_id"]
+            workspace_member_id = schedule["workspace_member_id"]
             job_id = schedule["job_id"]
 
             tmp = create_assigned_hours_dict(schedule, expected_working_hours_dict)
 
             for date, assigned_hours in tmp.items():
-                result_dict[(date, organization_member_id, job_id)] += assigned_hours
+                result_dict[(date, workspace_member_id, job_id)] += assigned_hours
 
-        all_members_dict = {e["organization_member_id"]: e for e in self.list_schedule_obj.organization_members}
-        all_jobs = self.annowork_service.api.get_jobs(self.organization_id)
+        all_members_dict = {e["workspace_member_id"]: e for e in self.list_schedule_obj.workspace_members}
+        all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
         all_jobs_dict = {e["job_id"]: e for e in all_jobs}
 
         result_list: list[AssignedHoursDaily] = []
-        for (date, organization_member_id, job_id), assigned_hours in result_dict.items():
+        for (date, workspace_member_id, job_id), assigned_hours in result_dict.items():
             if assigned_hours == 0:
                 # アサイン時間が0の情報は不要なので、出力しないようにする
                 continue
@@ -103,11 +103,11 @@ class ListAssignedHoursDaily:
                 continue
 
             job = all_jobs_dict[job_id]
-            member = all_members_dict[organization_member_id]
+            member = all_members_dict[workspace_member_id]
             result_list.append(
                 AssignedHoursDaily(
                     date=date,
-                    organization_member_id=organization_member_id,
+                    workspace_member_id=workspace_member_id,
                     job_id=job_id,
                     assigned_working_hours=assigned_hours,
                     job_name=job["job_name"],
@@ -166,7 +166,7 @@ def main(args):
             "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
-    ListAssignedHoursDaily(annowork_service=annowork_service, organization_id=args.organization_id,).main(
+    ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=args.workspace_id,).main(
         job_id_list=job_id_list,
         user_id_list=user_id_list,
         start_date=start_date,
@@ -179,7 +179,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

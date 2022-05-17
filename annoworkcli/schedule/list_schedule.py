@@ -16,7 +16,7 @@ from annoworkcli.common.utils import print_csv, print_json
 logger = logging.getLogger(__name__)
 
 ExpectedWorkingHoursDict = Dict[Tuple[str, str], float]
-"""keyがtuple(date, organization_member_id), valueが予定稼働時間のdict
+"""keyがtuple(date, workspace_member_id), valueが予定稼働時間のdict
 """
 
 
@@ -44,36 +44,36 @@ def create_assigned_hours_dict(
         # 予定稼働時間の比率からアサインされた時間を算出する。
         for dt in pandas.date_range(schedule["start_date"], schedule["end_date"]):
             date = str(dt.date())
-            expected_working_hours = expected_working_hours_dict.get((date, schedule["organization_member_id"]), 0)
+            expected_working_hours = expected_working_hours_dict.get((date, schedule["workspace_member_id"]), 0)
             result[date] = expected_working_hours * schedule["value"] * 0.01
 
     return result
 
 
 class ListSchedule:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
-        self.organization_members = self.annowork_service.api.get_organization_members(
-            self.organization_id, query_params={"includes_inactive_members": True}
+        self.workspace_members = self.annowork_service.api.get_workspace_members(
+            self.workspace_id, query_params={"includes_inactive_members": True}
         )
 
     def _set_assigned_hours(self, schedule_list: list[dict[str, Any]], min_date: str, max_date: str):
         query_params = {"term_start": min_date, "term_end": max_date}
         logger.debug(f"予定稼働時間を取得します。 :: {query_params=}")
         expected_working_times = self.annowork_service.api.get_expected_working_times(
-            self.organization_id, query_params=query_params
+            self.workspace_id, query_params=query_params
         )
         expected_working_hours_dict = {
-            (e["date"], e["organization_member_id"]): e["expected_working_hours"] for e in expected_working_times
+            (e["date"], e["workspace_member_id"]): e["expected_working_hours"] for e in expected_working_times
         }
         for schedule in schedule_list:
             assigned_hours_dict = create_assigned_hours_dict(schedule, expected_working_hours_dict)
             schedule["assigned_working_hours"] = sum(assigned_hours_dict.values())
 
     def set_additional_info_to_schedule(self, schedule_list: list[dict[str, Any]]):
-        """organization_member_id, job_idに紐づく情報, アサインされた時間を付与する。
+        """workspace_member_id, job_idに紐づく情報, アサインされた時間を付与する。
 
         Args:
             schedule_list (list[dict[str,Any]]): (IN/OUT) 実績作業時間のリスト
@@ -81,8 +81,8 @@ class ListSchedule:
         if len(schedule_list) == 0:
             return
 
-        organization_member_dict = {e["organization_member_id"]: e for e in self.organization_members}
-        job_list = self.annowork_service.api.get_jobs(self.organization_id)
+        workspace_member_dict = {e["workspace_member_id"]: e for e in self.workspace_members}
+        job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         job_dict = {e["job_id"]: e for e in job_list}
 
         # 予定稼働時間の取得範囲を決めるために、最小の日付と最大の日付も探す
@@ -93,11 +93,11 @@ class ListSchedule:
             min_date = min(min_date, schedule["start_date"])
             max_date = max(max_date, schedule["end_date"])
 
-            organization_member_id = schedule["organization_member_id"]
-            member = organization_member_dict.get(schedule["organization_member_id"])
+            workspace_member_id = schedule["workspace_member_id"]
+            member = workspace_member_dict.get(schedule["workspace_member_id"])
             if member is None:
                 logger.warning(
-                    f"{organization_member_id=} である組織メンバは存在しません。 " f":: schedule_id= '{schedule['schedule_id']}' "
+                    f"{workspace_member_id=} である組織メンバは存在しません。 " f":: schedule_id= '{schedule['schedule_id']}' "
                 )
                 continue
 
@@ -113,16 +113,16 @@ class ListSchedule:
 
         self._set_assigned_hours(schedule_list, min_date=min_date, max_date=max_date)
 
-    def get_organization_member_id_list_from_user_id(self, user_id_list: Collection[str]) -> list[str]:
-        organization_member_dict = {e["user_id"]: e["organization_member_id"] for e in self.organization_members}
-        organization_member_id_list = []
+    def get_workspace_member_id_list_from_user_id(self, user_id_list: Collection[str]) -> list[str]:
+        workspace_member_dict = {e["user_id"]: e["workspace_member_id"] for e in self.workspace_members}
+        workspace_member_id_list = []
         for user_id in user_id_list:
-            organization_member_id = organization_member_dict.get(user_id)
-            if organization_member_id is None:
+            workspace_member_id = workspace_member_dict.get(user_id)
+            if workspace_member_id is None:
                 logger.warning(f"{user_id=} に該当する組織メンバが存在しませんでした。")
                 continue
-            organization_member_id_list.append(organization_member_id)
-        return organization_member_id_list
+            workspace_member_id_list.append(workspace_member_id)
+        return workspace_member_id_list
 
     def get_schedules(
         self,
@@ -155,18 +155,18 @@ class ListSchedule:
                 query_params["job_id"] = job_id
                 logger.debug(f"作業計画を取得します。 :: {query_params=}")
                 schedule_list.extend(
-                    self.annowork_service.api.get_schedules(self.organization_id, query_params=query_params)
+                    self.annowork_service.api.get_schedules(self.workspace_id, query_params=query_params)
                 )
         else:
             logger.debug(f"作業計画を取得します。 :: {query_params=}")
             schedule_list.extend(
-                self.annowork_service.api.get_schedules(self.organization_id, query_params=query_params)
+                self.annowork_service.api.get_schedules(self.workspace_id, query_params=query_params)
             )
 
         if user_ids is not None:
-            organization_member_id_list = self.get_organization_member_id_list_from_user_id(user_ids)
+            workspace_member_id_list = self.get_workspace_member_id_list_from_user_id(user_ids)
             schedule_list = [
-                e for e in schedule_list if e["organization_member_id"] in set(organization_member_id_list)
+                e for e in schedule_list if e["workspace_member_id"] in set(workspace_member_id_list)
             ]
 
         if is_set_additional_info is not None:
@@ -201,11 +201,11 @@ class ListSchedule:
         else:
             df = pandas.json_normalize(result)
             required_columns = [
-                "organization_id",
+                "workspace_id",
                 "schedule_id",
                 "job_id",
                 "job_name",
-                "organization_member_id",
+                "workspace_member_id",
                 "user_id",
                 "username",
                 "start_date",
@@ -233,7 +233,7 @@ def main(args):
             "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
-    ListSchedule(annowork_service=annowork_service, organization_id=args.organization_id,).main(
+    ListSchedule(annowork_service=annowork_service, workspace_id=args.workspace_id,).main(
         job_id_list=job_id_list,
         user_id_list=user_id_list,
         start_date=start_date,
@@ -246,7 +246,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

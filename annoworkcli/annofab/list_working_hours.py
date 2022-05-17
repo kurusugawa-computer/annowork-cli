@@ -57,7 +57,7 @@ def _get_get_df_working_hours_from_df(
     TMP_SUFFIX = "_tmp"
     # df_merged は outer joinしているため、左側にも欠損値ができる。
     # それを埋めるために、以前に user情報, job情報の一意なdataframeを生成して、欠損値を埋める
-    USER_COLUMNS = ["organization_member_id", "user_id", "username"]
+    USER_COLUMNS = ["workspace_member_id", "user_id", "username"]
     df_merged = df_merged.merge(
         df_user_and_af_account, how="left", on="annofab_account_id", suffixes=(None, TMP_SUFFIX)
     )
@@ -93,22 +93,22 @@ class ListWorkingHoursWithAnnofab:
         self,
         *,
         annowork_service: AnnoworkResource,
-        organization_id: str,
+        workspace_id: str,
         annofab_service: AnnofabResource,
         parallelism: Optional[int] = None,
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
         self.annofab_service = annofab_service
         self.parallelism = parallelism
 
-        self.all_jobs = self.annowork_service.api.get_jobs(self.organization_id)
-        self.all_organization_members = self.annowork_service.api.get_organization_members(
-            self.organization_id, query_params={"includes_inactive_members": True}
+        self.all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
+        self.all_workspace_members = self.annowork_service.api.get_workspace_members(
+            self.workspace_id, query_params={"includes_inactive_members": True}
         )
 
         self.list_actual_working_time_obj = ListActualWorkingTime(
-            annowork_service, organization_id, timezone_offset_hours=TIMEZONE_OFFSET_HOURS
+            annowork_service, workspace_id, timezone_offset_hours=TIMEZONE_OFFSET_HOURS
         )
 
     def get_actual_working_hours_daily(
@@ -141,7 +141,7 @@ class ListWorkingHoursWithAnnofab:
         以下の列を持ちます。
         * user_id
         * username
-        * organization_member_id
+        * workspace_member_id
         * annofab_account_id
         """
         af_account_list = []
@@ -154,7 +154,7 @@ class ListWorkingHoursWithAnnofab:
 
         df_af_account = pandas.DataFrame(af_account_list)
 
-        df_user = pandas.DataFrame(self.all_organization_members)[["user_id", "username", "organization_member_id"]]
+        df_user = pandas.DataFrame(self.all_workspace_members)[["user_id", "username", "workspace_member_id"]]
 
         df = df_user.merge(df_af_account, how="inner", on="user_id")
         return df
@@ -264,7 +264,7 @@ class ListWorkingHoursWithAnnofab:
             "job_name",
         ]
         user_columns = [
-            "organization_member_id",
+            "workspace_member_id",
             "user_id",
             "username",
         ]
@@ -385,7 +385,7 @@ def main(args):
 
     main_obj = ListWorkingHoursWithAnnofab(
         annowork_service=build_annoworkapi(args),
-        organization_id=args.organization_id,
+        workspace_id=args.workspace_id,
         annofab_service=build_annofabapi(),
         parallelism=args.parallelism,
     )
@@ -420,7 +420,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

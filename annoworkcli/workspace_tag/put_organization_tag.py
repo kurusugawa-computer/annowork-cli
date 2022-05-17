@@ -14,48 +14,48 @@ from annoworkcli.common.cli import build_annoworkapi
 logger = logging.getLogger(__name__)
 
 
-class PutOrganizationTag:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str):
+class PutworkspaceTag:
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
-    def main(self, organization_tag_name: str, organization_tag_id: Optional[str]):
-        organization_tags = self.annowork_service.api.get_organization_tags(self.organization_id)
+    def main(self, workspace_tag_name: str, workspace_tag_id: Optional[str]):
+        workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
-        if organization_tag_id is None:
-            organization_tag_id = str(uuid.uuid4())
+        if workspace_tag_id is None:
+            workspace_tag_id = str(uuid.uuid4())
 
-        old_organization_tag = first_true(
-            organization_tags, pred=lambda e: e["organization_tag_id"] == organization_tag_id
+        old_workspace_tag = first_true(
+            workspace_tags, pred=lambda e: e["workspace_tag_id"] == workspace_tag_id
         )
-        request_body = {"organization_tag_name": organization_tag_name}
-        if old_organization_tag is not None:
-            request_body["last_updated_datetime"] = old_organization_tag["updated_datetime"]
+        request_body = {"workspace_tag_name": workspace_tag_name}
+        if old_workspace_tag is not None:
+            request_body["last_updated_datetime"] = old_workspace_tag["updated_datetime"]
 
-        content = self.annowork_service.api.put_organization_tag(
-            self.organization_id, organization_tag_id, request_body=request_body
+        content = self.annowork_service.api.put_workspace_tag(
+            self.workspace_id, workspace_tag_id, request_body=request_body
         )
-        logger.debug(f"{organization_tag_name=} を登録しました。{content=}")
+        logger.debug(f"{workspace_tag_name=} を登録しました。{content=}")
 
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    PutOrganizationTag(annowork_service=annowork_service, organization_id=args.organization_id).main(
-        organization_tag_name=args.organization_tag_name, organization_tag_id=args.organization_tag_id
+    PutworkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
+        workspace_tag_name=args.workspace_tag_name, workspace_tag_id=args.workspace_tag_id
     )
 
 
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",
     )
 
     parser.add_argument(
-        "--organization_tag_name",
+        "--workspace_tag_name",
         type=str,
         required=True,
         help="登録対象の組織タグの名前",
@@ -63,7 +63,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument(
         "-org_tag",
-        "--organization_tag_id",
+        "--workspace_tag_id",
         type=str,
         required=True,
         help="登録対象の組織タグのID",

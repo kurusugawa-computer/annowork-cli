@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 
 class ListActualWorkingTime:
     def __init__(
-        self, annowork_service: AnnoworkResource, organization_id: str, *, timezone_offset_hours: Optional[float]
+        self, annowork_service: AnnoworkResource, workspace_id: str, *, timezone_offset_hours: Optional[float]
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
-        self.organization_members = self.annowork_service.api.get_organization_members(
-            self.organization_id, query_params={"includes_inactive_members": True}
+        self.workspace_members = self.annowork_service.api.get_workspace_members(
+            self.workspace_id, query_params={"includes_inactive_members": True}
         )
 
         # none 判定
@@ -38,9 +38,9 @@ class ListActualWorkingTime:
         self.tzinfo = tzinfo
         """日付に対するタイムゾーン"""
 
-    def get_actual_working_times_by_organization_member(
+    def get_actual_working_times_by_workspace_member(
         self,
-        organization_member_id_list: list[str],
+        workspace_member_id_list: list[str],
         *,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
@@ -56,10 +56,10 @@ class ListActualWorkingTime:
             query_params["term_end"] = term_end
 
         result = []
-        for organization_member_id in organization_member_id_list:
-            logger.debug(f"実績時間情報を取得します。{organization_member_id=}, {query_params=}")
-            tmp = self.annowork_service.api.get_actual_working_times_by_organization_member(
-                self.organization_id, organization_member_id, query_params=query_params
+        for workspace_member_id in workspace_member_id_list:
+            logger.debug(f"実績時間情報を取得します。{workspace_member_id=}, {query_params=}")
+            tmp = self.annowork_service.api.get_actual_working_times_by_workspace_member(
+                self.workspace_id, workspace_member_id, query_params=query_params
             )
             result.extend(tmp)
         return result
@@ -86,13 +86,13 @@ class ListActualWorkingTime:
                 query_params["job_id"] = job_id
                 logger.debug(f"実績時間情報を取得します。{job_id=}, {query_params=}")
                 tmp = self.annowork_service.api.get_actual_working_times(
-                    self.organization_id, query_params=query_params
+                    self.workspace_id, query_params=query_params
                 )
                 result.extend(tmp)
             return result
         else:
             logger.debug(f"実績時間情報を取得します。{query_params=}")
-            return self.annowork_service.api.get_actual_working_times(self.organization_id, query_params=query_params)
+            return self.annowork_service.api.get_actual_working_times(self.workspace_id, query_params=query_params)
 
     @staticmethod
     def get_actual_working_hours(actual_working_time: dict[str, Any]) -> float:
@@ -104,13 +104,13 @@ class ListActualWorkingTime:
     def set_additional_info_to_actual_working_time(
         self, actual_working_time_list: list[dict[str, Any]], is_add_parent_job_info: bool = False
     ):
-        """organization_member_id, job_idに紐づく情報を付与する。
+        """workspace_member_id, job_idに紐づく情報を付与する。
 
         Args:
             actual_working_time_list (list[dict[str,Any]]): (IN/OUT) 実績作業時間のリスト
         """
-        organization_member_dict = {e["organization_member_id"]: e for e in self.organization_members}
-        job_list = self.annowork_service.api.get_jobs(self.organization_id)
+        workspace_member_dict = {e["workspace_member_id"]: e for e in self.workspace_members}
+        job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         job_dict = {e["job_id"]: e for e in job_list}
 
         parent_job_id_set = {get_parent_job_id_from_job_tree(e["job_tree"]) for e in job_list}
@@ -118,11 +118,11 @@ class ListActualWorkingTime:
             parent_job_id_set.remove(None)
 
         for actual in actual_working_time_list:
-            organization_member_id = actual["organization_member_id"]
-            member = organization_member_dict.get(actual["organization_member_id"])
+            workspace_member_id = actual["workspace_member_id"]
+            member = workspace_member_dict.get(actual["workspace_member_id"])
             if member is None:
                 logger.warning(
-                    f"{organization_member_id=} である組織メンバは存在しません。 "
+                    f"{workspace_member_id=} である組織メンバは存在しません。 "
                     f":: actual_working_time_id= '{actual['actual_working_time_id']}' "
                 )
                 continue
@@ -151,20 +151,20 @@ class ListActualWorkingTime:
     def get_child_job_id_list(self, parent_job_id_list: Collection[str]) -> list[str]:
         results = []
         for parent_job_id in parent_job_id_list:
-            job_list = self.annowork_service.api.get_job_children(self.organization_id, job_id=parent_job_id)
+            job_list = self.annowork_service.api.get_job_children(self.workspace_id, job_id=parent_job_id)
             results.extend([job["job_id"] for job in job_list])
         return results
 
-    def get_organization_member_id_list_from_user_id(self, user_id_list: Collection[str]) -> list[str]:
-        organization_member_dict = {e["user_id"]: e["organization_member_id"] for e in self.organization_members}
-        organization_member_id_list = []
+    def get_workspace_member_id_list_from_user_id(self, user_id_list: Collection[str]) -> list[str]:
+        workspace_member_dict = {e["user_id"]: e["workspace_member_id"] for e in self.workspace_members}
+        workspace_member_id_list = []
         for user_id in user_id_list:
-            organization_member_id = organization_member_dict.get(user_id)
-            if organization_member_id is None:
+            workspace_member_id = workspace_member_dict.get(user_id)
+            if workspace_member_id is None:
                 logger.warning(f"{user_id=} に該当する組織メンバが存在しませんでした。")
                 continue
-            organization_member_id_list.append(organization_member_id)
-        return organization_member_id_list
+            workspace_member_id_list.append(workspace_member_id)
+        return workspace_member_id_list
 
     def get_actual_working_times(
         self,
@@ -192,9 +192,9 @@ class ListActualWorkingTime:
             user_id_list:
             is_set_additional_info: Trueなら名前などの付加情報を設定します。
         """
-        organization_member_id_list: Optional[list[str]] = None
+        workspace_member_id_list: Optional[list[str]] = None
         if user_ids is not None:
-            organization_member_id_list = self.get_organization_member_id_list_from_user_id(user_ids)
+            workspace_member_id_list = self.get_workspace_member_id_list_from_user_id(user_ids)
 
         if parent_job_ids is not None:
             # parent_job_id_list と job_id_listが両方not Noneになることはないので、job_id_listを上書きする
@@ -202,9 +202,9 @@ class ListActualWorkingTime:
             logger.debug(f"{parent_job_ids=} の子のジョブの {job_ids=}")
 
         # user_id_list, parent_job_id_list, job_id_listは排他なので、以下のような条件分岐にしている
-        if organization_member_id_list is not None:
-            result = self.get_actual_working_times_by_organization_member(
-                organization_member_id_list=organization_member_id_list, start_date=start_date, end_date=end_date
+        if workspace_member_id_list is not None:
+            result = self.get_actual_working_times_by_workspace_member(
+                workspace_member_id_list=workspace_member_id_list, start_date=start_date, end_date=end_date
             )
             # webapiではjob_idで絞り込めないので、クライアント側で絞り込む
             if job_ids is not None:
@@ -250,13 +250,13 @@ class ListActualWorkingTime:
             df = pandas.DataFrame(result)
             if is_add_parent_job_info:
                 required_columns = [
-                    "organization_id",
+                    "workspace_id",
                     "actual_working_time_id",
                     "job_id",
                     "job_name",
                     "parent_job_id",
                     "parent_job_name",
-                    "organization_member_id",
+                    "workspace_member_id",
                     "user_id",
                     "username",
                     "start_datetime",
@@ -266,11 +266,11 @@ class ListActualWorkingTime:
                 ]
             else:
                 required_columns = [
-                    "organization_id",
+                    "workspace_id",
                     "actual_working_time_id",
                     "job_id",
                     "job_name",
-                    "organization_member_id",
+                    "workspace_member_id",
                     "user_id",
                     "username",
                     "start_datetime",
@@ -298,7 +298,7 @@ def main(args):
 
     ListActualWorkingTime(
         annowork_service=annowork_service,
-        organization_id=args.organization_id,
+        workspace_id=args.workspace_id,
         timezone_offset_hours=args.timezone_offset,
     ).main(
         job_id_list=job_id_list,
@@ -315,7 +315,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

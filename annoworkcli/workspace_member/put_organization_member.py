@@ -14,20 +14,20 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 logger = logging.getLogger(__name__)
 
 
-class PutOrganizationMember:
+class PutworkspaceMember:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
-        organization_id: str,
+        workspace_id: str,
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
-    def put_organization_member(
+    def put_workspace_member(
         self,
         user_id: str,
         role: str,
-        organization_tag_id_list: Optional[Collection[str]],
+        workspace_tag_id_list: Optional[Collection[str]],
         old_member: Optional[dict[str, Any]],
     ):
         """[summary]
@@ -35,44 +35,44 @@ class PutOrganizationMember:
         Args:
             user_id (str): [description]
             role (str): [description]
-            organization_tag_id_list (Optional[list[str]]): [description]
+            workspace_tag_id_list (Optional[list[str]]): [description]
             old_member (Optional[dict[str,Any]]): [description]
         """
         last_updated_datetime = None
         if old_member is not None:
             last_updated_datetime = old_member["updated_datetime"]
-            organization_member_id = old_member["organization_member_id"]
+            workspace_member_id = old_member["workspace_member_id"]
 
         else:
             last_updated_datetime = None
-            organization_member_id = str(uuid.uuid4())
+            workspace_member_id = str(uuid.uuid4())
 
         request_body: dict[str, Any] = {
             "user_id": user_id,
             "role": role,
-            "organization_tags": organization_tag_id_list if organization_tag_id_list is not None else [],
+            "workspace_tags": workspace_tag_id_list if workspace_tag_id_list is not None else [],
         }
         if last_updated_datetime is not None:
             request_body["last_updated_datetime"] = last_updated_datetime
 
-        new_member = self.annowork_service.api.put_organization_member(
-            self.organization_id, organization_member_id, request_body=request_body
+        new_member = self.annowork_service.api.put_workspace_member(
+            self.workspace_id, workspace_member_id, request_body=request_body
         )
-        logger.debug(f"{user_id=} :: 組織メンバを追加しました。 :: username='{new_member['username']}', {organization_member_id=}")
+        logger.debug(f"{user_id=} :: 組織メンバを追加しました。 :: username='{new_member['username']}', {workspace_member_id=}")
         return True
 
-    def main(self, user_id_list: list[str], role: str, organization_tag_id_list: Optional[Collection[str]]):
-        organization_members = self.annowork_service.api.get_organization_members(
-            self.organization_id, query_params={"includes_inactive_members": True}
+    def main(self, user_id_list: list[str], role: str, workspace_tag_id_list: Optional[Collection[str]]):
+        workspace_members = self.annowork_service.api.get_workspace_members(
+            self.workspace_id, query_params={"includes_inactive_members": True}
         )
-        member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in organization_members}
+        member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
         for user_id in user_id_list:
             try:
-                result = self.put_organization_member(
+                result = self.put_workspace_member(
                     user_id,
                     role,
-                    organization_tag_id_list=organization_tag_id_list,
+                    workspace_tag_id_list=workspace_tag_id_list,
                     old_member=member_dict.get(user_id),
                 )
                 if result:
@@ -87,18 +87,18 @@ class PutOrganizationMember:
 def main(args):
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
-    organization_tag_id_list = get_list_from_args(args.organization_tag_id)
+    workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
     assert user_id_list is not None
-    PutOrganizationMember(
+    PutworkspaceMember(
         annowork_service=annowork_service,
-        organization_id=args.organization_id,
-    ).main(user_id_list=user_id_list, role=args.role, organization_tag_id_list=organization_tag_id_list)
+        workspace_id=args.workspace_id,
+    ).main(user_id_list=user_id_list, role=args.role, workspace_tag_id_list=workspace_tag_id_list)
 
 
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",
@@ -123,7 +123,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument(
         "-org_tag",
-        "--organization_tag_id",
+        "--workspace_tag_id",
         type=str,
         nargs="+",
         required=False,

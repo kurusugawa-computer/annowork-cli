@@ -13,13 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class ChangeJobProperties:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str, *, all_yes: bool):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
         self.all_yes = all_yes
 
     def change_job_status(self, job_id: str, status: str) -> bool:
-        job = self.annowork_service.wrapper.get_job_or_none(self.organization_id, job_id)
+        job = self.annowork_service.wrapper.get_job_or_none(self.workspace_id, job_id)
         if job is None:
             logger.warning(f"{job_id=} のジョブは存在しませんでした。")
             return False
@@ -41,7 +41,7 @@ class ChangeJobProperties:
         if job["external_linkage_info"] is not None:
             request_body["external_linkage_info"] = job["external_linkage_info"]
 
-        new_job = self.annowork_service.api.put_job(self.organization_id, job_id, request_body=request_body)
+        new_job = self.annowork_service.api.put_job(self.workspace_id, job_id, request_body=request_body)
         logger.debug(f"ジョブのステータスを変更しました。 :: {new_job}")
         return True
 
@@ -64,7 +64,7 @@ def main(args):
     job_id_list = get_list_from_args(args.job_id)
     assert job_id_list is not None
 
-    ChangeJobProperties(annowork_service=annowork_service, organization_id=args.organization_id, all_yes=args.yes).main(
+    ChangeJobProperties(annowork_service=annowork_service, workspace_id=args.workspace_id, all_yes=args.yes).main(
         job_id_list=job_id_list, status=args.status
     )
 
@@ -72,7 +72,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

@@ -56,17 +56,17 @@ class PutAnnofabAccountId:
         logger.debug(f"{user_id=}: アカウントの外部連携情報に {af_account_id=} を設定しました。")
         return True
 
-    def main(self, af_organization_name: str, user_id_list: list[str]):
-        af_organization_member_list = self.annofab_service.wrapper.get_all_organization_members(af_organization_name)
+    def main(self, af_workspace_name: str, user_id_list: list[str]):
+        af_workspace_member_list = self.annofab_service.wrapper.get_all_workspace_members(af_workspace_name)
         af_user_id_account_id_dict: dict[str, str] = {
-            member["user_id"]: member["account_id"] for member in af_organization_member_list
+            member["user_id"]: member["account_id"] for member in af_workspace_member_list
         }
 
         success_count = 0
         for user_id in user_id_list:
             af_account_id = af_user_id_account_id_dict.get(user_id)
             if af_account_id is None:
-                logger.warning(f"Annofabの組織 '{af_organization_name}' に {user_id=} のユーザは存在しないので、スキップします。")
+                logger.warning(f"Annofabの組織 '{af_workspace_name}' に {user_id=} のユーザは存在しないので、スキップします。")
                 continue
 
             try:
@@ -86,7 +86,7 @@ def main(args):
     assert user_id_list is not None
     PutAnnofabAccountId(
         annowork_service=annowork_service, annofab_service=annofab_service, overwrite=args.overwrite
-    ).main(af_organization_name=args.annofab_organization_name, user_id_list=user_id_list)
+    ).main(af_workspace_name=args.annofab_workspace_name, user_id_list=user_id_list)
 
 
 def parse_args(parser: argparse.ArgumentParser):
@@ -101,7 +101,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument(
         "-af_org",
-        "--annofab_organization_name",
+        "--annofab_workspace_name",
         type=str,
         required=True,
         help="対象ユーザが参加しているAnnoFabの組織名を指定してください。AnnoFabの組織メンバからAnnoFabのaccount_idを取得します。",

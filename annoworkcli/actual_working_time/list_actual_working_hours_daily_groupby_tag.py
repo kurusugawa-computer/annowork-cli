@@ -24,14 +24,14 @@ logger = logging.getLogger(__name__)
 
 
 class ListActualWorkingTimeGroupbyTag:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str, timezone_offset_hours: int):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, timezone_offset_hours: int):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
         self.timezone_offset_hours = timezone_offset_hours
 
     def add_parent_job_info(self, daily_list: list[dict[str, Any]]):
         """引数daily_listに、parent_job情報を追加する。"""
-        all_job_list = self.annowork_service.api.get_jobs(self.organization_id)
+        all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_job_list}
         parent_job_id_set = {get_parent_job_id_from_job_tree(e["job_tree"]) for e in all_job_list}
         if None in parent_job_id_set:
@@ -47,48 +47,48 @@ class ListActualWorkingTimeGroupbyTag:
     def get_actual_working_times_groupby_tag(
         self,
         actual_working_hours_daily: list[ActualWorkingHoursDaily],
-        target_organization_tag_ids: Optional[Collection[str]] = None,
-        target_organization_tag_names: Optional[Collection[str]] = None,
+        target_workspace_tag_ids: Optional[Collection[str]] = None,
+        target_workspace_tag_names: Optional[Collection[str]] = None,
         show_parent_job: bool = False,
     ) -> list[dict[str, Any]]:
         """実績作業時間のlistから、組織タグごとに集計したlistを返す。"""
-        organization_tags = self.annowork_service.api.get_organization_tags(self.organization_id)
+        workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
-        # target_organization_tag_idsとtarget_organization_tag_namesは排他的なので、両方not Noneになることはない
-        assert not (target_organization_tag_ids is not None and target_organization_tag_names is not None)
-        if target_organization_tag_ids is not None:
-            organization_tags = [
-                e for e in organization_tags if e["organization_tag_id"] in set(target_organization_tag_ids)
+        # target_workspace_tag_idsとtarget_workspace_tag_namesは排他的なので、両方not Noneになることはない
+        assert not (target_workspace_tag_ids is not None and target_workspace_tag_names is not None)
+        if target_workspace_tag_ids is not None:
+            workspace_tags = [
+                e for e in workspace_tags if e["workspace_tag_id"] in set(target_workspace_tag_ids)
             ]
-            if len(organization_tags) != len(target_organization_tag_ids):
+            if len(workspace_tags) != len(target_workspace_tag_ids):
                 logger.warning(
-                    f"target_organization_tag_idsに含まれるいくつかのorganization_tag_idは、存在しません。"
-                    f":: {len(target_organization_tag_ids)=}, {len(organization_tags)=}"
+                    f"target_workspace_tag_idsに含まれるいくつかのworkspace_tag_idは、存在しません。"
+                    f":: {len(target_workspace_tag_ids)=}, {len(workspace_tags)=}"
                 )
 
-        if target_organization_tag_names is not None:
-            organization_tags = [
-                e for e in organization_tags if e["organization_tag_name"] in set(target_organization_tag_names)
+        if target_workspace_tag_names is not None:
+            workspace_tags = [
+                e for e in workspace_tags if e["workspace_tag_name"] in set(target_workspace_tag_names)
             ]
-            if len(organization_tags) != len(target_organization_tag_names):
+            if len(workspace_tags) != len(target_workspace_tag_names):
                 logger.warning(
-                    f"target_organization_tag_namesに含まれるいくつかのorganization_tag_nameは、存在しません。"
-                    f":: {len(target_organization_tag_names)=}, {len(organization_tags)=}"
+                    f"target_workspace_tag_namesに含まれるいくつかのworkspace_tag_nameは、存在しません。"
+                    f":: {len(target_workspace_tag_names)=}, {len(workspace_tags)=}"
                 )
 
         # keyはtuple[date, job_id, org_tag]のdict
         dict_hours: dict[tuple[str, str, str], float] = defaultdict(float)
 
         # 組織タグごと日毎の時間を集計する
-        for organization_tag in organization_tags:
-            organization_tag_name = organization_tag["organization_tag_name"]
-            members = self.annowork_service.api.get_organization_tag_members(
-                self.organization_id, organization_tag["organization_tag_id"]
+        for workspace_tag in workspace_tags:
+            workspace_tag_name = workspace_tag["workspace_tag_name"]
+            members = self.annowork_service.api.get_workspace_tag_members(
+                self.workspace_id, workspace_tag["workspace_tag_id"]
             )
-            member_ids = {e["organization_member_id"] for e in members}
+            member_ids = {e["workspace_member_id"] for e in members}
             for elm in actual_working_hours_daily:
-                if elm.organization_member_id in member_ids:
-                    dict_hours[(elm.date, elm.job_id, organization_tag_name)] += elm.actual_working_hours
+                if elm.workspace_member_id in member_ids:
+                    dict_hours[(elm.date, elm.job_id, workspace_tag_name)] += elm.actual_working_hours
 
         # 全体の時間を日毎に集計する
 
@@ -125,7 +125,7 @@ class ListActualWorkingTimeGroupbyTag:
     ) -> list[ActualWorkingHoursDaily]:
         list_actual_working_time_obj = ListActualWorkingTime(
             annowork_service=self.annowork_service,
-            organization_id=self.organization_id,
+            workspace_id=self.workspace_id,
             timezone_offset_hours=self.timezone_offset_hours,
         )
         actual_working_time_list = list_actual_working_time_obj.get_actual_working_times(
@@ -157,8 +157,8 @@ class ListActualWorkingTimeGroupbyTag:
         user_ids: Optional[Collection[str]] = None,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
-        target_organization_tag_ids: Optional[Collection[str]] = None,
-        target_organization_tag_names: Optional[Collection[str]] = None,
+        target_workspace_tag_ids: Optional[Collection[str]] = None,
+        target_workspace_tag_names: Optional[Collection[str]] = None,
         show_parent_job: bool = False,
     ):
         actual_working_hours_daily_list = self.get_actual_working_hours_daily(
@@ -170,8 +170,8 @@ class ListActualWorkingTimeGroupbyTag:
 
         results = self.get_actual_working_times_groupby_tag(
             actual_working_hours_daily_list,
-            target_organization_tag_ids=target_organization_tag_ids,
-            target_organization_tag_names=target_organization_tag_names,
+            target_workspace_tag_ids=target_workspace_tag_ids,
+            target_workspace_tag_names=target_workspace_tag_names,
             show_parent_job=show_parent_job,
         )
 
@@ -218,12 +218,12 @@ def main(args):
             f"'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
-    organization_tag_id_list = get_list_from_args(args.organization_tag_id)
-    organization_tag_name_list = get_list_from_args(args.organization_tag_name)
+    workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
+    workspace_tag_name_list = get_list_from_args(args.workspace_tag_name)
 
     ListActualWorkingTimeGroupbyTag(
         annowork_service=annowork_service,
-        organization_id=args.organization_id,
+        workspace_id=args.workspace_id,
         timezone_offset_hours=args.timezone_offset,
     ).main(
         job_ids=job_id_list,
@@ -231,8 +231,8 @@ def main(args):
         user_ids=user_id_list,
         start_date=args.start_date,
         end_date=args.end_date,
-        target_organization_tag_ids=organization_tag_id_list,
-        target_organization_tag_names=organization_tag_name_list,
+        target_workspace_tag_ids=workspace_tag_id_list,
+        target_workspace_tag_names=workspace_tag_name_list,
         output=args.output,
         output_format=OutputFormat(args.format),
         show_parent_job=args.show_parent_job,
@@ -244,7 +244,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     required_group.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         help="対象の組織ID",
     )
@@ -262,14 +262,14 @@ def parse_args(parser: argparse.ArgumentParser):
     org_tag_group = parser.add_mutually_exclusive_group()
     org_tag_group.add_argument(
         "-org_tag",
-        "--organization_tag_id",
+        "--workspace_tag_id",
         type=str,
         nargs="+",
         help="出力対象の組織タグID。未指定の場合は全ての組織タグを出力します。",
     )
 
     org_tag_group.add_argument(
-        "--organization_tag_name",
+        "--workspace_tag_name",
         type=str,
         nargs="+",
         help="出力対象の組織タグ名。未指定の場合は全ての組織タグを出力します。",

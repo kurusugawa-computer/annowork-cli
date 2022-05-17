@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]
 """実績作業時間の日ごとの情報を格納する辞書
-key: (date, organization_member_id, job_id), value: 実績作業時間
+key: (date, workspace_member_id, job_id), value: 実績作業時間
 """
 
 
@@ -46,16 +46,16 @@ JobIdAnnofabProjectIdDict = Dict[str, str]
 
 
 class ListLabor:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
-        self.all_job_list = self.annowork_service.api.get_jobs(self.organization_id)
+        self.all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
 
         # Annofabが日本時間に固定されているので、それに合わせて timezone_offset_hours を指定する。
         self.list_actual_working_time_obj = ListActualWorkingTime(
             annowork_service=annowork_service,
-            organization_id=organization_id,
+            workspace_id=workspace_id,
             timezone_offset_hours=TIMEZONE_OFFSET_HOURS,
         )
 
@@ -172,7 +172,7 @@ def visualize_statistics(temp_dir: Path, args):
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
-    main_obj = ListLabor(annowork_service, args.organization_id)
+    main_obj = ListLabor(annowork_service, args.workspace_id)
     annofab_labor_list = main_obj.get_annofab_labor_list(
         job_id_list=job_id_list,
         annofab_project_id_list=annofab_project_id_list,
@@ -232,7 +232,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

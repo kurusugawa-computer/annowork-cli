@@ -13,13 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class DeleteJob:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str, *, all_yes: bool):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
         self.all_yes = all_yes
 
     def delete_job(self, job_id: str) -> bool:
-        job = self.annowork_service.wrapper.get_job_or_none(self.organization_id, job_id)
+        job = self.annowork_service.wrapper.get_job_or_none(self.workspace_id, job_id)
         if job is None:
             logger.warning(f"{job_id=} のジョブは存在しませんでした。")
             return False
@@ -35,7 +35,7 @@ class DeleteJob:
             if all_yes:
                 self.all_yes = all_yes
 
-        self.annowork_service.api.delete_job(self.organization_id, job_id)
+        self.annowork_service.api.delete_job(self.workspace_id, job_id)
         logger.debug(f"ジョブを削除しました。 :: {job}")
         return True
 
@@ -59,7 +59,7 @@ def main(args):
     annowork_service = build_annoworkapi(args)
     job_id_list = [args.job_id]
 
-    DeleteJob(annowork_service=annowork_service, organization_id=args.organization_id, all_yes=args.yes).main(
+    DeleteJob(annowork_service=annowork_service, workspace_id=args.workspace_id, all_yes=args.yes).main(
         job_id_list,
     )
 
@@ -67,7 +67,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

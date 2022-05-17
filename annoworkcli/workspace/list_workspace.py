@@ -15,62 +15,62 @@ from annoworkcli.common.utils import print_csv, print_json
 logger = logging.getLogger(__name__)
 
 
-class ListOrganization:
+class Listworkspace:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
     ):
         self.annowork_service = annowork_service
 
-    def get_organization_list(
+    def get_workspace_list(
         self,
-        organization_id_list: Optional[list[str]] = None,
+        workspace_id_list: Optional[list[str]] = None,
     ) -> list[dict[str, Any]]:
-        if organization_id_list is None:
-            return self.annowork_service.api.get_my_organizations()
+        if workspace_id_list is None:
+            return self.annowork_service.api.get_my_workspaces()
 
-        organization_list = []
-        for organization_id in organization_id_list:
-            org = self.annowork_service.wrapper.get_organization_or_none(organization_id)
+        workspace_list = []
+        for workspace_id in workspace_id_list:
+            org = self.annowork_service.wrapper.get_workspace_or_none(workspace_id)
             if org is None:
-                logger.warning(f"{organization_id=} である組織は存在しませんでした。")
+                logger.warning(f"{workspace_id=} である組織は存在しませんでした。")
                 continue
-            organization_list.append(org)
-        return organization_list
+            workspace_list.append(org)
+        return workspace_list
 
     def main(
         self,
         output: Path,
         output_format: OutputFormat,
         *,
-        organization_id_list: Optional[list[str]],
+        workspace_id_list: Optional[list[str]],
     ):
-        organization_list = self.get_organization_list(organization_id_list)
-        if len(organization_list) == 0:
+        workspace_list = self.get_workspace_list(workspace_id_list)
+        if len(workspace_list) == 0:
             logger.warning(f"組織情報は0件なので、出力しません。")
             return
 
-        logger.debug(f"{len(organization_list)} 件の組織一覧を出力します。")
+        logger.debug(f"{len(workspace_list)} 件の組織一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
-            print_json(organization_list, is_pretty=True, output=output)
+            print_json(workspace_list, is_pretty=True, output=output)
         else:
-            df = pandas.DataFrame(organization_list)
+            df = pandas.DataFrame(workspace_list)
             print_csv(df, output=output)
 
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    organization_id_list = get_list_from_args(args.organization_id)
-    ListOrganization(
+    workspace_id_list = get_list_from_args(args.workspace_id)
+    Listworkspace(
         annowork_service=annowork_service,
-    ).main(output=args.output, output_format=OutputFormat(args.format), organization_id_list=organization_id_list)
+    ).main(output=args.output, output_format=OutputFormat(args.format), workspace_id_list=workspace_id_list)
 
 
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         nargs="+",
         required=False,

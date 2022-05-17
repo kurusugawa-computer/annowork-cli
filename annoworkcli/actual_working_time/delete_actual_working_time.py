@@ -23,17 +23,17 @@ class DeleteActualWorkingTime:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
-        organization_id: str,
+        workspace_id: str,
         *,
         timezone_offset_hours: Optional[float],
         all_yes: bool,
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
         self.list_actual_working_time_obj = ListActualWorkingTime(
             annowork_service=annowork_service,
-            organization_id=organization_id,
+            workspace_id=workspace_id,
             timezone_offset_hours=timezone_offset_hours,
         )
 
@@ -55,9 +55,9 @@ class DeleteActualWorkingTime:
                     if all_yes:
                         self.all_yes = all_yes
 
-                actual = self.annowork_service.api.delete_actual_working_time_by_organization_member(
-                    self.organization_id,
-                    organization_member_id=actual["organization_member_id"],
+                actual = self.annowork_service.api.delete_actual_working_time_by_workspace_member(
+                    self.workspace_id,
+                    workspace_member_id=actual["workspace_member_id"],
                     actual_working_time_id=actual["actual_working_time_id"],
                 )
                 logger.debug(f"{index+1} 件目: 実績作業時間を削除しました。:: {actual}")
@@ -121,7 +121,7 @@ class DeleteActualWorkingTime:
             f"start_date={start_date}, end_date={end_date}, "
         )
         if job_id is not None:
-            job = self.annowork_service.api.get_job(self.organization_id, job_id)
+            job = self.annowork_service.api.get_job(self.workspace_id, job_id)
             message += f"job_id={job_id}, job_name={job['job_name']}, "
         if user_id is not None:
             message += f"user_id={user_id}, "
@@ -146,7 +146,7 @@ def main(args):
     actual_working_time_id_list = get_list_from_args(args.actual_working_time_id)
     DeleteActualWorkingTime(
         annowork_service=annowork_service,
-        organization_id=args.organization_id,
+        workspace_id=args.workspace_id,
         timezone_offset_hours=args.timezone_offset,
         all_yes=args.yes,
     ).main(
@@ -161,7 +161,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

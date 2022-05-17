@@ -12,45 +12,45 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 logger = logging.getLogger(__name__)
 
 
-class AppendTagToOrganizationMember:
+class AppendTagToworkspaceMember:
     def __init__(
         self,
         *,
         annowork_service: AnnoworkResource,
-        organization_id: str,
+        workspace_id: str,
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
-    def put_organization_member(
+    def put_workspace_member(
         self,
         user_id: str,
         *,
-        old_organization_tag_ids: Collection[str],
-        organization_tag_ids: Collection[str],
+        old_workspace_tag_ids: Collection[str],
+        workspace_tag_ids: Collection[str],
         old_member: dict[str, Any],
     ) -> bool:
-        organization_member_id = old_member["organization_member_id"]
+        workspace_member_id = old_member["workspace_member_id"]
 
-        new_organization_tags = list(set(old_organization_tag_ids) | set(organization_tag_ids))
+        new_workspace_tags = list(set(old_workspace_tag_ids) | set(workspace_tag_ids))
         request_body: dict[str, Any] = {
             "user_id": user_id,
             "role": old_member["role"],
-            "organization_tags": new_organization_tags,
+            "workspace_tags": new_workspace_tags,
             "last_updated_datetime": old_member["updated_datetime"],
         }
 
-        new_member = self.annowork_service.api.put_organization_member(
-            self.organization_id, organization_member_id, request_body=request_body
+        new_member = self.annowork_service.api.put_workspace_member(
+            self.workspace_id, workspace_member_id, request_body=request_body
         )
         logger.debug(f"{user_id=} :: 組織メンバに組織タグを追加しました。 :: username='{new_member['username']}'")
         return True
 
-    def main(self, user_id_list: list[str], organization_tag_ids: Collection[str]):
-        organization_members = self.annowork_service.api.get_organization_members(
-            self.organization_id, query_params={"includes_inactive_members": True}
+    def main(self, user_id_list: list[str], workspace_tag_ids: Collection[str]):
+        workspace_members = self.annowork_service.api.get_workspace_members(
+            self.workspace_id, query_params={"includes_inactive_members": True}
         )
-        member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in organization_members}
+        member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
         for user_id in user_id_list:
             try:
@@ -59,19 +59,19 @@ class AppendTagToOrganizationMember:
                     logger.warning(f"{user_id=} のユーザは組織メンバに存在しないので、スキップします。")
                     continue
 
-                old_tags = self.annowork_service.api.get_organization_member_tags(
-                    self.organization_id, old_member["organization_member_id"]
+                old_tags = self.annowork_service.api.get_workspace_member_tags(
+                    self.workspace_id, old_member["workspace_member_id"]
                 )
-                old_organization_tag_ids = {e["organization_tag_id"] for e in old_tags}
-                diff_tags = set(organization_tag_ids) - old_organization_tag_ids
+                old_workspace_tag_ids = {e["workspace_tag_id"] for e in old_tags}
+                diff_tags = set(workspace_tag_ids) - old_workspace_tag_ids
                 if len(diff_tags) == 0:
-                    logger.warning(f"{user_id=} には、すでに組織タグ {organization_tag_ids} が設定されているので、スキップします。")
+                    logger.warning(f"{user_id=} には、すでに組織タグ {workspace_tag_ids} が設定されているので、スキップします。")
                     continue
 
-                result = self.put_organization_member(
+                result = self.put_workspace_member(
                     user_id,
-                    old_organization_tag_ids=old_organization_tag_ids,
-                    organization_tag_ids=organization_tag_ids,
+                    old_workspace_tag_ids=old_workspace_tag_ids,
+                    workspace_tag_ids=workspace_tag_ids,
                     old_member=old_member,
                 )
                 if result:
@@ -86,19 +86,19 @@ class AppendTagToOrganizationMember:
 def main(args):
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
-    organization_tag_id_list = get_list_from_args(args.organization_tag_id)
+    workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
     assert user_id_list is not None
-    assert organization_tag_id_list is not None
-    AppendTagToOrganizationMember(
+    assert workspace_tag_id_list is not None
+    AppendTagToworkspaceMember(
         annowork_service=annowork_service,
-        organization_id=args.organization_id,
-    ).main(user_id_list=user_id_list, organization_tag_ids=organization_tag_id_list)
+        workspace_id=args.workspace_id,
+    ).main(user_id_list=user_id_list, workspace_tag_ids=workspace_tag_id_list)
 
 
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",
@@ -115,7 +115,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument(
         "-org_tag",
-        "--organization_tag_id",
+        "--workspace_tag_id",
         type=str,
         nargs="+",
         required=True,

@@ -37,10 +37,10 @@ class ListJob:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
-        organization_id: str,
+        workspace_id: str,
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
 
     def get_job_list(
         self,
@@ -51,7 +51,7 @@ class ListJob:
         is_add_parent_job_info: bool = False,
     ) -> list[dict[str, Any]]:
 
-        all_job_list = self.annowork_service.api.get_jobs(self.organization_id)
+        all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         job_list = all_job_list
         if job_id_list is not None:
             job_list = [job for job in job_list if job["job_id"] in set(job_id_list)]
@@ -115,7 +115,7 @@ def main(args):
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     external_linkage_info_url_list = get_list_from_args(args.external_linkage_info_url)
 
-    ListJob(annowork_service=annowork_service, organization_id=args.organization_id).main(
+    ListJob(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         output=args.output,
         output_format=OutputFormat(args.format),
         job_id_list=job_id_list,
@@ -128,7 +128,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",

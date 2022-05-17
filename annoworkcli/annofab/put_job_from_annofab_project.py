@@ -19,11 +19,11 @@ class PutJobFromAnnofabProject:
         self,
         *,
         annowork_service: AnnoworkResource,
-        organization_id: str,
+        workspace_id: str,
         annofab_service: AnnofabResource,
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
         self.annofab_service = annofab_service
 
     def put_job_from_annofab_project(
@@ -36,7 +36,7 @@ class PutJobFromAnnofabProject:
 
         new_job_id = job_id if job_id is not None else annofab_project_id
 
-        old_job = self.annowork_service.wrapper.get_job_or_none(self.organization_id, new_job_id)
+        old_job = self.annowork_service.wrapper.get_job_or_none(self.workspace_id, new_job_id)
         if old_job is not None:
             logger.warning(f"job_id='{new_job_id}' は既に存在します。ジョブの登録処理をスキップします。")
             return False
@@ -49,7 +49,7 @@ class PutJobFromAnnofabProject:
             "external_linkage_info": {"url": annofab_project_url},
         }
 
-        new_job = self.annowork_service.api.put_job(self.organization_id, new_job_id, request_body=request_body)
+        new_job = self.annowork_service.api.put_job(self.workspace_id, new_job_id, request_body=request_body)
         logger.debug(f"annofab_project_id={annofab_project_id} に対応するジョブを作成しました。 :: {new_job}")
         return True
 
@@ -57,7 +57,7 @@ class PutJobFromAnnofabProject:
 def main(args):
     annowork_service = build_annoworkapi(args)
     main_obj = PutJobFromAnnofabProject(
-        annowork_service=annowork_service, organization_id=args.organization_id, annofab_service=build_annofabapi()
+        annowork_service=annowork_service, workspace_id=args.workspace_id, annofab_service=build_annofabapi()
     )
     main_obj.put_job_from_annofab_project(
         parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id
@@ -67,7 +67,7 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-org",
-        "--organization_id",
+        "--workspace_id",
         type=str,
         required=True,
         help="対象の組織ID",
