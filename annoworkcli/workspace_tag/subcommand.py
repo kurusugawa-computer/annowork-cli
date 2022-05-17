@@ -17,7 +17,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "workspace_tag"
-    subcommand_help = "組織タグ関係のサブコマンド"
+    subcommand_help = "ワークスペースタグ関係のサブコマンド"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help, is_subcommand=False

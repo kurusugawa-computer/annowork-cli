@@ -26,11 +26,11 @@ class DeleteworkspaceMember:
         member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
 
-        logger.info(f"{len(user_id_list)} 件のユーザを組織メンバから削除します。")
+        logger.info(f"{len(user_id_list)} 件のユーザをワークスペースメンバから削除します。")
         for user_id in user_id_list:
             member = member_dict.get(user_id)
             if member is None:
-                logger.warning(f"{user_id=}: ユーザが組織メンバに存在しません。")
+                logger.warning(f"{user_id=}: ユーザがワークスペースメンバに存在しません。")
                 continue
 
             try:
@@ -40,10 +40,10 @@ class DeleteworkspaceMember:
                 )
                 success_count += 1
             except Exception as e:
-                logger.warning(f"{user_id=}: 組織メンバの削除に失敗しました。{e}")
+                logger.warning(f"{user_id=}: ワークスペースメンバの削除に失敗しました。{e}")
                 continue
 
-        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザを組織メンバから削除しました。")
+        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザをワークスペースメンバから削除しました。")
 
 
 def main(args):
@@ -63,7 +63,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
@@ -72,7 +72,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=True,
-        help="組織メンバに追加するuser_id",
+        help="ワークスペースメンバに追加するuser_id",
     )
 
     parser.set_defaults(subcommand_func=main)
@@ -80,7 +80,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "delete"
-    subcommand_help = "組織メンバを削除します。"
+    subcommand_help = "ワークスペースメンバを削除します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

@@ -164,7 +164,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument("--start_date", type=str, required=True, help="削除したい実績作業時間情報の開始日(YYYY-mm-dd)を指定してください。")

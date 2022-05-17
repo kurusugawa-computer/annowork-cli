@@ -43,7 +43,7 @@ class AppendTagToworkspaceMember:
         new_member = self.annowork_service.api.put_workspace_member(
             self.workspace_id, workspace_member_id, request_body=request_body
         )
-        logger.debug(f"{user_id=} :: 組織メンバに組織タグを追加しました。 :: username='{new_member['username']}'")
+        logger.debug(f"{user_id=} :: ワークスペースメンバにワークスペースタグを追加しました。 :: username='{new_member['username']}'")
         return True
 
     def main(self, user_id_list: list[str], workspace_tag_ids: Collection[str]):
@@ -56,7 +56,7 @@ class AppendTagToworkspaceMember:
             try:
                 old_member = member_dict.get(user_id)
                 if old_member is None:
-                    logger.warning(f"{user_id=} のユーザは組織メンバに存在しないので、スキップします。")
+                    logger.warning(f"{user_id=} のユーザはワークスペースメンバに存在しないので、スキップします。")
                     continue
 
                 old_tags = self.annowork_service.api.get_workspace_member_tags(
@@ -65,7 +65,7 @@ class AppendTagToworkspaceMember:
                 old_workspace_tag_ids = {e["workspace_tag_id"] for e in old_tags}
                 diff_tags = set(workspace_tag_ids) - old_workspace_tag_ids
                 if len(diff_tags) == 0:
-                    logger.warning(f"{user_id=} には、すでに組織タグ {workspace_tag_ids} が設定されているので、スキップします。")
+                    logger.warning(f"{user_id=} には、すでにワークスペースタグ {workspace_tag_ids} が設定されているので、スキップします。")
                     continue
 
                 result = self.put_workspace_member(
@@ -77,10 +77,10 @@ class AppendTagToworkspaceMember:
                 if result:
                     success_count += 1
             except Exception as e:
-                logger.warning(f"{user_id=}: 組織タグの付与に失敗しました。{e}", e)
+                logger.warning(f"{user_id=}: ワークスペースタグの付与に失敗しました。{e}", e)
                 continue
 
-        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザに組織タグを付与しました。")
+        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザにワークスペースタグを付与しました。")
 
 
 def main(args):
@@ -101,7 +101,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
@@ -119,7 +119,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=True,
-        help="メンバに付与する組織タグID",
+        help="メンバに付与するワークスペースタグID",
     )
 
     parser.set_defaults(subcommand_func=main)
@@ -127,7 +127,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "append_tag"
-    subcommand_help = "組織メンバに組織タグを追加します。"
+    subcommand_help = "ワークスペースメンバにワークスペースタグを追加します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

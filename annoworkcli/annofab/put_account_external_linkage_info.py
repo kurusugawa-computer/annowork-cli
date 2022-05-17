@@ -66,7 +66,7 @@ class PutAnnofabAccountId:
         for user_id in user_id_list:
             af_account_id = af_user_id_account_id_dict.get(user_id)
             if af_account_id is None:
-                logger.warning(f"Annofabの組織 '{af_workspace_name}' に {user_id=} のユーザは存在しないので、スキップします。")
+                logger.warning(f"Annofabのワークスペース '{af_workspace_name}' に {user_id=} のユーザは存在しないので、スキップします。")
                 continue
 
             try:
@@ -104,7 +104,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--annofab_workspace_name",
         type=str,
         required=True,
-        help="対象ユーザが参加しているAnnoFabの組織名を指定してください。AnnoFabの組織メンバからAnnoFabのaccount_idを取得します。",
+        help="対象ユーザが参加しているAnnoFabのワークスペース名を指定してください。AnnoFabのワークスペースメンバからAnnoFabのaccount_idを取得します。",
     )
 
     parser.add_argument(

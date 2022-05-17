@@ -31,7 +31,7 @@ class Putworkspace:
 
         self.annowork_service.api.put_workspace(workspace_id, request_body=request_body)
 
-        logger.info(f"組織 {workspace_id} を作成/更新しました。")
+        logger.info(f"ワークスペース {workspace_id} を作成/更新しました。")
 
 
 def main(args):
@@ -48,21 +48,21 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
         "--workspace_name",
         type=str,
         required=True,
-        help="組織名",
+        help="ワークスペース名",
     )
 
     parser.add_argument(
         "--email",
         type=str,
         required=True,
-        help="組織管理者のe-mailアドレス",
+        help="ワークスペース管理者のe-mailアドレス",
     )
 
     parser.set_defaults(subcommand_func=main)
@@ -70,7 +70,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "put"
-    subcommand_help = "組織を登録/更新します。"
+    subcommand_help = "ワークスペースを登録/更新します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

@@ -16,7 +16,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "workspace"
-    subcommand_help = "組織関係のサブコマンド"
+    subcommand_help = "ワークスペース関係のサブコマンド"
 
     parser = add_root_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help, is_subcommand=False

@@ -58,7 +58,7 @@ class PutworkspaceMember:
         new_member = self.annowork_service.api.put_workspace_member(
             self.workspace_id, workspace_member_id, request_body=request_body
         )
-        logger.debug(f"{user_id=} :: 組織メンバを追加しました。 :: username='{new_member['username']}', {workspace_member_id=}")
+        logger.debug(f"{user_id=} :: ワークスペースメンバを追加しました。 :: username='{new_member['username']}', {workspace_member_id=}")
         return True
 
     def main(self, user_id_list: list[str], role: str, workspace_tag_id_list: Optional[Collection[str]]):
@@ -78,10 +78,10 @@ class PutworkspaceMember:
                 if result:
                     success_count += 1
             except Exception:
-                logger.warning(f"{user_id=}: 組織メンバの登録に失敗しました。", exc_info=True)
+                logger.warning(f"{user_id=}: ワークスペースメンバの登録に失敗しました。", exc_info=True)
                 continue
 
-        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザを組織メンバに登録しました。")
+        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザをワークスペースメンバに登録しました。")
 
 
 def main(args):
@@ -101,7 +101,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
@@ -110,7 +110,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=True,
-        help="組織メンバに追加するuser_id",
+        help="ワークスペースメンバに追加するuser_id",
     )
 
     parser.add_argument(
@@ -127,7 +127,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=False,
-        help="メンバに付与する組織タグID",
+        help="メンバに付与するワークスペースタグID",
     )
 
     parser.set_defaults(subcommand_func=main)
@@ -135,7 +135,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "put"
-    subcommand_help = "組織メンバを登録します。"
+    subcommand_help = "ワークスペースメンバを登録します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

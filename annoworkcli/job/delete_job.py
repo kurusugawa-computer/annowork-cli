@@ -70,7 +70,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     # 間違えてたくさんのジョブを削除してしまわないようにするため、1つのjob_idしか指定できないようにする

@@ -23,7 +23,7 @@ def get_weekly_expected_working_hours_df(
 
     Args:
         expected_working_times: 予定稼働時間情報。date, workspace_member_id, expected_working_hours を参照します。
-        workspace_members: 組織メンバ情報。workspace_member_id, user_id, username を参照します。
+        workspace_members: ワークスペースメンバ情報。workspace_member_id, user_id, username を参照します。
 
     Returns:
         以下の列を返すDataFrame。
@@ -96,7 +96,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")

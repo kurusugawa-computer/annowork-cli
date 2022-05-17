@@ -43,7 +43,7 @@ class RemoveTagToworkspaceMember:
         new_member = self.annowork_service.api.put_workspace_member(
             self.workspace_id, workspace_member_id, request_body=request_body
         )
-        logger.debug(f"{user_id=} :: 組織メンバから組織タグを削除しました。 :: username='{new_member['username']}'")
+        logger.debug(f"{user_id=} :: ワークスペースメンバからワークスペースタグを削除しました。 :: username='{new_member['username']}'")
         return True
 
     def main(self, user_id_list: list[str], workspace_tag_ids: Collection[str]):
@@ -56,7 +56,7 @@ class RemoveTagToworkspaceMember:
             try:
                 old_member = member_dict.get(user_id)
                 if old_member is None:
-                    logger.warning(f"{user_id=} のユーザは組織メンバに存在しないので、スキップします。")
+                    logger.warning(f"{user_id=} のユーザはワークスペースメンバに存在しないので、スキップします。")
                     continue
 
                 old_tags = self.annowork_service.api.get_workspace_member_tags(
@@ -65,7 +65,7 @@ class RemoveTagToworkspaceMember:
                 old_workspace_tag_ids = {e["workspace_tag_id"] for e in old_tags}
                 diff_tags = old_workspace_tag_ids - set(workspace_tag_ids)
                 if old_workspace_tag_ids == diff_tags:
-                    logger.warning(f"{user_id=} には、すでに組織タグ {workspace_tag_ids} が設定されていないので、スキップします。")
+                    logger.warning(f"{user_id=} には、すでにワークスペースタグ {workspace_tag_ids} が設定されていないので、スキップします。")
                     continue
 
                 result = self.put_workspace_member(
@@ -77,10 +77,10 @@ class RemoveTagToworkspaceMember:
                 if result:
                     success_count += 1
             except Exception as e:
-                logger.warning(f"{user_id=}: 組織タグの削除に失敗しました。{e}", e)
+                logger.warning(f"{user_id=}: ワークスペースタグの削除に失敗しました。{e}", e)
                 continue
 
-        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザから組織タグを削除しました。")
+        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザからワークスペースタグを削除しました。")
 
 
 def main(args):
@@ -102,7 +102,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
@@ -120,7 +120,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=True,
-        help="メンバから削除する組織タグID",
+        help="メンバから削除するワークスペースタグID",
     )
 
     parser.set_defaults(subcommand_func=main)
@@ -128,7 +128,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "remove_tag"
-    subcommand_help = "組織メンバから組織タグを削除します。"
+    subcommand_help = "ワークスペースメンバからワークスペースタグを削除します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

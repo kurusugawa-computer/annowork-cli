@@ -49,14 +49,14 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
         "--workspace_tag_name",
         type=str,
         required=True,
-        help="登録対象の組織タグの名前",
+        help="登録対象のワークスペースタグの名前",
     )
 
     parser.add_argument(
@@ -64,7 +64,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_tag_id",
         type=str,
         required=True,
-        help="登録対象の組織タグのID",
+        help="登録対象のワークスペースタグのID",
     )
 
     parser.set_defaults(subcommand_func=main)
@@ -72,7 +72,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "put"
-    subcommand_help = "組織タグを更新します。"
+    subcommand_help = "ワークスペースタグを更新します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

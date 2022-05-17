@@ -97,7 +97,7 @@ class ListSchedule:
             member = workspace_member_dict.get(schedule["workspace_member_id"])
             if member is None:
                 logger.warning(
-                    f"{workspace_member_id=} である組織メンバは存在しません。 " f":: schedule_id= '{schedule['schedule_id']}' "
+                    f"{workspace_member_id=} であるワークスペースメンバは存在しません。 " f":: schedule_id= '{schedule['schedule_id']}' "
                 )
                 continue
 
@@ -119,7 +119,7 @@ class ListSchedule:
         for user_id in user_id_list:
             workspace_member_id = workspace_member_dict.get(user_id)
             if workspace_member_id is None:
-                logger.warning(f"{user_id=} に該当する組織メンバが存在しませんでした。")
+                logger.warning(f"{user_id=} に該当するワークスペースメンバが存在しませんでした。")
                 continue
             workspace_member_id_list.append(workspace_member_id)
         return workspace_member_id_list
@@ -245,7 +245,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")

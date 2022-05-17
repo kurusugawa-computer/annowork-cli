@@ -43,7 +43,7 @@ class ChangeworkspaceMemberProperties:
         new_member = self.annowork_service.api.put_workspace_member(
             self.workspace_id, workspace_member_id, request_body=request_body
         )
-        logger.debug(f"{user_id=}, {workspace_member_id=}: 組織メンバのロールを変更しました。 :: {new_member}")
+        logger.debug(f"{user_id=}, {workspace_member_id=}: ワークスペースメンバのロールを変更しました。 :: {new_member}")
         return True
 
     def main(self, user_id_list: list[str], role: str):
@@ -56,7 +56,7 @@ class ChangeworkspaceMemberProperties:
             try:
                 old_member = member_dict.get(user_id)
                 if old_member is None:
-                    logger.warning(f"{user_id=} のユーザは組織メンバに存在しないので、スキップします。")
+                    logger.warning(f"{user_id=} のユーザはワークスペースメンバに存在しないので、スキップします。")
                     continue
 
                 if old_member["role"] == role:
@@ -74,10 +74,10 @@ class ChangeworkspaceMemberProperties:
                 if result:
                     success_count += 1
             except Exception as e:
-                logger.warning(f"{user_id=}: 組織メンバの登録に失敗しました。{e}")
+                logger.warning(f"{user_id=}: ワークスペースメンバの登録に失敗しました。{e}")
                 continue
 
-        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザを組織メンバに登録しました。")
+        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザをワークスペースメンバに登録しました。")
 
 
 def main(args):
@@ -96,7 +96,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
@@ -105,7 +105,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=True,
-        help="組織メンバに追加するuser_id",
+        help="ワークスペースメンバに追加するuser_id",
     )
 
     parser.add_argument(
@@ -121,7 +121,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "change"
-    subcommand_help = "組織メンバの情報（ロールなど）を変更します。"
+    subcommand_help = "ワークスペースメンバの情報（ロールなど）を変更します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

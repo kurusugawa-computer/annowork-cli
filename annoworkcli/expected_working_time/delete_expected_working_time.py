@@ -32,7 +32,7 @@ class DeleteExpectedWorkingTime:
         )
         member = more_itertools.first_true(workspace_members, pred=lambda e: e["user_id"] == user_id)
         if member is None:
-            logger.warning(f"{user_id=} のユーザは組織メンバに存在しませんでした。")
+            logger.warning(f"{user_id=} のユーザはワークスペースメンバに存在しませんでした。")
             return []
 
         query_params = {
@@ -76,7 +76,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument("-u", "--user_id", type=str, required=True, help="削除対象のユーザID")

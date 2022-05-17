@@ -235,7 +235,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     job_id_group = parser.add_mutually_exclusive_group(required=True)

@@ -51,7 +51,7 @@ class ListActualWorkingTimeGroupbyTag:
         target_workspace_tag_names: Optional[Collection[str]] = None,
         show_parent_job: bool = False,
     ) -> list[dict[str, Any]]:
-        """実績作業時間のlistから、組織タグごとに集計したlistを返す。"""
+        """実績作業時間のlistから、ワークスペースタグごとに集計したlistを返す。"""
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
         # target_workspace_tag_idsとtarget_workspace_tag_namesは排他的なので、両方not Noneになることはない
@@ -75,7 +75,7 @@ class ListActualWorkingTimeGroupbyTag:
         # keyはtuple[date, job_id, org_tag]のdict
         dict_hours: dict[tuple[str, str, str], float] = defaultdict(float)
 
-        # 組織タグごと日毎の時間を集計する
+        # ワークスペースタグごと日毎の時間を集計する
         for workspace_tag in workspace_tags:
             workspace_tag_name = workspace_tag["workspace_tag_name"]
             members = self.annowork_service.api.get_workspace_tag_members(
@@ -171,7 +171,7 @@ class ListActualWorkingTimeGroupbyTag:
             show_parent_job=show_parent_job,
         )
 
-        logger.info(f"{len(results)} 件の組織タグで集計した実績作業時間の一覧を出力します。")
+        logger.info(f"{len(results)} 件のワークスペースタグで集計した実績作業時間の一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(results, is_pretty=True, output=output)
@@ -242,7 +242,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "-org",
         "--workspace_id",
         type=str,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
@@ -261,14 +261,14 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_tag_id",
         type=str,
         nargs="+",
-        help="出力対象の組織タグID。未指定の場合は全ての組織タグを出力します。",
+        help="出力対象のワークスペースタグID。未指定の場合は全てのワークスペースタグを出力します。",
     )
 
     org_tag_group.add_argument(
         "--workspace_tag_name",
         type=str,
         nargs="+",
-        help="出力対象の組織タグ名。未指定の場合は全ての組織タグを出力します。",
+        help="出力対象のワークスペースタグ名。未指定の場合は全てのワークスペースタグを出力します。",
     )
 
     parser.add_argument(
@@ -297,7 +297,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "list_daily_groupby_tag"
-    subcommand_help = "日ごとの実績作業時間を、組織タグで集計した値を出力します。"
+    subcommand_help = "日ごとの実績作業時間を、ワークスペースタグで集計した値を出力します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

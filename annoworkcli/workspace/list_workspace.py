@@ -33,7 +33,7 @@ class Listworkspace:
         for workspace_id in workspace_id_list:
             org = self.annowork_service.wrapper.get_workspace_or_none(workspace_id)
             if org is None:
-                logger.warning(f"{workspace_id=} である組織は存在しませんでした。")
+                logger.warning(f"{workspace_id=} であるワークスペースは存在しませんでした。")
                 continue
             workspace_list.append(org)
         return workspace_list
@@ -47,10 +47,10 @@ class Listworkspace:
     ):
         workspace_list = self.get_workspace_list(workspace_id_list)
         if len(workspace_list) == 0:
-            logger.warning(f"組織情報は0件なので、出力しません。")
+            logger.warning(f"ワークスペース情報は0件なので、出力しません。")
             return
 
-        logger.debug(f"{len(workspace_list)} 件の組織一覧を出力します。")
+        logger.debug(f"{len(workspace_list)} 件のワークスペース一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(workspace_list, is_pretty=True, output=output)
@@ -74,7 +74,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=False,
-        help="対象の組織IDを指定してください。未指定の場合は、自身の所属している組織一覧を出力します。",
+        help="対象のワークスペースIDを指定してください。未指定の場合は、自身の所属しているワークスペース一覧を出力します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
@@ -93,7 +93,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "list"
-    subcommand_help = "組織の一覧を取得します。"
+    subcommand_help = "ワークスペースの一覧を取得します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

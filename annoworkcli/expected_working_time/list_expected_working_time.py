@@ -39,7 +39,7 @@ class ListExpectedWorkingTime:
         for user_id in user_id_list:
             workspace_member_id = workspace_member_dict.get(user_id)
             if workspace_member_id is None:
-                logger.warning(f"{user_id=} に該当する組織メンバが存在しませんでした。")
+                logger.warning(f"{user_id=} に該当するワークスペースメンバが存在しませんでした。")
                 continue
 
             logger.debug(f"予定稼働時間情報を取得します。{query_params=}")
@@ -70,7 +70,7 @@ class ListExpectedWorkingTime:
             workspace_member_id = elm["workspace_member_id"]
             member = workspace_member_dict.get(workspace_member_id)
             if member is None:
-                logger.warning(f"{workspace_member_id=} である組織メンバは存在しません。 :: date={elm['date']}")
+                logger.warning(f"{workspace_member_id=} であるワークスペースメンバは存在しません。 :: date={elm['date']}")
                 continue
 
             elm.update(
@@ -148,7 +148,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")

@@ -21,7 +21,7 @@ class Listworkspace:
         self.workspace_id = workspace_id
 
     def set_additional_info(self, workspace_members: list[dict[str, Any]]):
-        logger.debug(f"{len(workspace_members)} 件のメンバの組織タグ情報を取得します。")
+        logger.debug(f"{len(workspace_members)} 件のメンバのワークスペースタグ情報を取得します。")
         for member in workspace_members:
             workspace_tags = self.annowork_service.api.get_workspace_member_tags(
                 self.workspace_id, member["workspace_member_id"]
@@ -59,10 +59,10 @@ class Listworkspace:
         workspace_members.sort(key=lambda e: e["user_id"].lower())
 
         if len(workspace_members) == 0:
-            logger.warning(f"組織メンバ情報は0件なので、出力しません。")
+            logger.warning(f"ワークスペースメンバ情報は0件なので、出力しません。")
             return
 
-        logger.debug(f"{len(workspace_members)} 件の組織メンバ一覧を出力します。")
+        logger.debug(f"{len(workspace_members)} 件のワークスペースメンバ一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(workspace_members, is_pretty=True, output=output)
@@ -88,7 +88,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
@@ -96,13 +96,13 @@ def parse_args(parser: argparse.ArgumentParser):
         "--workspace_tag_id",
         nargs="+",
         type=str,
-        help="指定した組織タグが付与された組織メンバを出力します。",
+        help="指定したワークスペースタグが付与されたワークスペースメンバを出力します。",
     )
 
     parser.add_argument(
         "--show_workspace_tag",
         action="store_true",
-        help="組織タグに関する情報も出力します。",
+        help="ワークスペースタグに関する情報も出力します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
@@ -120,7 +120,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "list"
-    subcommand_help = "組織メンバの一覧を出力します。無効化されたメンバも出力します。"
+    subcommand_help = "ワークスペースメンバの一覧を出力します。無効化されたメンバも出力します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help
