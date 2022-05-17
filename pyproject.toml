@@ -27,12 +27,12 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 pyyaml = "*"
-annoworkapi = ">=2.0"
+annoworkapi =  { version = "*", allow-prereleases = true}
 annofabapi = ">=0.52.4"
 more-itertools = "*"
 pandas = "*"
 isodate = "*"
-annofabcli = ">=1.58.0"
+annofabcli = ">=1.64.0"
 
 [tool.poetry.scripts]
 annoworkcli = "annoworkcli.__main__:main"
