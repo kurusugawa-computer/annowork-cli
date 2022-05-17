@@ -324,7 +324,7 @@ def parse_args(parser: argparse.ArgumentParser):
     required_group = parser.add_mutually_exclusive_group(required=True)
 
     required_group.add_argument(
-        "-org",
+        "-w",
         "--workspace_id",
         type=str,
         help="対象のワークスペースID",

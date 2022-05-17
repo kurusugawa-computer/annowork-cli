@@ -50,7 +50,7 @@ def main(args):
 
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
-        "-org",
+        "-w",
         "--workspace_id",
         type=str,
         required=True,
