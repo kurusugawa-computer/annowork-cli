@@ -11,8 +11,8 @@ import annoworkcli.expected_working_time.subcommand
 import annoworkcli.job.subcommand
 import annoworkcli.my.subcommand
 import annoworkcli.organization.subcommand
-import annoworkcli.organization_member.subcommand
-import annoworkcli.organization_tag.subcommand
+import annoworkcli.workspace_member.subcommand
+import annoworkcli.workspace_tag.subcommand
 import annoworkcli.schedule.subcommand
 from annoworkcli.common.cli import PrettyHelpFormatter
 from annoworkcli.common.utils import set_default_logger
