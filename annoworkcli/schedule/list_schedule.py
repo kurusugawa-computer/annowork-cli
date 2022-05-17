@@ -159,15 +159,11 @@ class ListSchedule:
                 )
         else:
             logger.debug(f"作業計画を取得します。 :: {query_params=}")
-            schedule_list.extend(
-                self.annowork_service.api.get_schedules(self.workspace_id, query_params=query_params)
-            )
+            schedule_list.extend(self.annowork_service.api.get_schedules(self.workspace_id, query_params=query_params))
 
         if user_ids is not None:
             workspace_member_id_list = self.get_workspace_member_id_list_from_user_id(user_ids)
-            schedule_list = [
-                e for e in schedule_list if e["workspace_member_id"] in set(workspace_member_id_list)
-            ]
+            schedule_list = [e for e in schedule_list if e["workspace_member_id"] in set(workspace_member_id_list)]
 
         if is_set_additional_info is not None:
             self.set_additional_info_to_schedule(schedule_list)

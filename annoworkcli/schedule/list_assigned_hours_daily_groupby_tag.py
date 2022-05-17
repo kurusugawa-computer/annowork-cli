@@ -36,9 +36,7 @@ class ListAssignedHoursDailyGroupbyTag:
         # target_workspace_tag_idsとtarget_workspace_tag_namesは排他的なので、両方not Noneになることはない
         assert not (target_workspace_tag_ids is not None and target_workspace_tag_names is not None)
         if target_workspace_tag_ids is not None:
-            workspace_tags = [
-                e for e in workspace_tags if e["workspace_tag_id"] in set(target_workspace_tag_ids)
-            ]
+            workspace_tags = [e for e in workspace_tags if e["workspace_tag_id"] in set(target_workspace_tag_ids)]
             if len(workspace_tags) != len(target_workspace_tag_ids):
                 logger.warning(
                     f"target_workspace_tag_idsに含まれるいくつかのworkspace_tag_idは、存在しません。"
@@ -46,9 +44,7 @@ class ListAssignedHoursDailyGroupbyTag:
                 )
 
         if target_workspace_tag_names is not None:
-            workspace_tags = [
-                e for e in workspace_tags if e["workspace_tag_name"] in set(target_workspace_tag_names)
-            ]
+            workspace_tags = [e for e in workspace_tags if e["workspace_tag_name"] in set(target_workspace_tag_names)]
             if len(workspace_tags) != len(target_workspace_tag_names):
                 logger.warning(
                     "target_workspace_tag_namesに含まれるいくつかのworkspace_tag_nameは、存在しません。"

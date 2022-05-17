@@ -10,10 +10,10 @@ import annoworkcli.annofab.subcommand
 import annoworkcli.expected_working_time.subcommand
 import annoworkcli.job.subcommand
 import annoworkcli.my.subcommand
+import annoworkcli.schedule.subcommand
 import annoworkcli.workspace.subcommand
 import annoworkcli.workspace_member.subcommand
 import annoworkcli.workspace_tag.subcommand
-import annoworkcli.schedule.subcommand
 from annoworkcli.common.cli import PrettyHelpFormatter
 from annoworkcli.common.utils import set_default_logger
 

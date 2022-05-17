@@ -85,9 +85,7 @@ class ListActualWorkingTime:
             for job_id in job_id_list:
                 query_params["job_id"] = job_id
                 logger.debug(f"実績時間情報を取得します。{job_id=}, {query_params=}")
-                tmp = self.annowork_service.api.get_actual_working_times(
-                    self.workspace_id, query_params=query_params
-                )
+                tmp = self.annowork_service.api.get_actual_working_times(self.workspace_id, query_params=query_params)
                 result.extend(tmp)
             return result
         else:

@@ -25,9 +25,7 @@ class PutworkspaceTag:
         if workspace_tag_id is None:
             workspace_tag_id = str(uuid.uuid4())
 
-        old_workspace_tag = first_true(
-            workspace_tags, pred=lambda e: e["workspace_tag_id"] == workspace_tag_id
-        )
+        old_workspace_tag = first_true(workspace_tags, pred=lambda e: e["workspace_tag_id"] == workspace_tag_id)
         request_body = {"workspace_tag_name": workspace_tag_name}
         if old_workspace_tag is not None:
             request_body["last_updated_datetime"] = old_workspace_tag["updated_datetime"]

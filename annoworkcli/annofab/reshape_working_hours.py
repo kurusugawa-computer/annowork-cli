@@ -19,11 +19,8 @@ import annoworkcli
 from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
-from annoworkcli.common.workspace_tag import (
-    get_company_from_workspace_tag_name,
-    is_company_from_workspace_tag_name,
-)
 from annoworkcli.common.utils import print_csv
+from annoworkcli.common.workspace_tag import get_company_from_workspace_tag_name, is_company_from_workspace_tag_name
 from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDaily
 
 logger = logging.getLogger(__name__)
@@ -783,9 +780,7 @@ class ReshapeWorkingHours:
             annofab_service=annofab_service,
             parallelism=parallelism,
         )
-        self.list_assigned_obj = ListAssignedHoursDaily(
-            annowork_service=annowork_service, workspace_id=workspace_id
-        )
+        self.list_assigned_obj = ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=workspace_id)
 
     def get_job_id_list_from_af_project_id(self, annofab_project_id_list: list[str]) -> list[str]:
         annofab_project_id_set = set(annofab_project_id_list)
@@ -842,9 +837,7 @@ class ReshapeWorkingHours:
         company_tags = [e for e in tags if is_company_from_workspace_tag_name(e["workspace_tag_name"])]
         result = []
         for tag in company_tags:
-            tmp_list = self.annowork_service.api.get_workspace_tag_members(
-                self.workspace_id, tag["workspace_tag_id"]
-            )
+            tmp_list = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, tag["workspace_tag_id"])
             for member in tmp_list:
                 member["company"] = get_company_from_workspace_tag_name(tag["workspace_tag_name"])
             result.extend(tmp_list)
