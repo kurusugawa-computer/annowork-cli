@@ -5,6 +5,7 @@ import argparse
 import getpass
 import json
 import logging
+import os
 from enum import Enum
 from typing import Any, List, Optional, Tuple
 
@@ -212,12 +213,28 @@ def prompt_yesnoall(msg: str) -> Tuple[bool, bool]:
 
 
 def build_annoworkapi(args: argparse.Namespace) -> annoworkapi.resource.Resource:
+    """annoworkapiのインスタンスを生成します。
+
+    annoworkのendpoint_urlは次の順序で優先されます。
+     1. コマンドライン引数 `--endpoint_url`
+     2. 環境変数 `ANNOWORK_ENDPOINT_URL`
+
+    Args:
+        args (argparse.Namespace): コマンドライン引数の情報
+
+    Returns:
+        annoworkapi.resource.Resource: annoworkapiのインスタンス
+    """
     endpoint_url = annoworkapi.api.DEFAULT_ENDPOINT_URL
+
+    if "ANNOWORK_ENDPOINT_URL" in os.environ:
+        endpoint_url = os.environ["ANNOWORK_ENDPOINT_URL"]
+
     if args.endpoint_url is not None:
         endpoint_url = args.endpoint_url
 
     if endpoint_url != annoworkapi.api.DEFAULT_ENDPOINT_URL:
-        logger.info(f"endpoint_url= '{endpoint_url}' ")
+        logger.info(f"endpoint_url='{endpoint_url}'")
 
     try:
         return annoworkapi.build(endpoint_url=endpoint_url)
