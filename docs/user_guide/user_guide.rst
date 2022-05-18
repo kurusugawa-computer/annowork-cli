@@ -82,6 +82,6 @@ Getting Help
 デフォルトのエンドポイントURLは ``https://annowork.com`` ですが、 ``https://localhost`` などを指定することも可能です。
 
 エンドポイントURLは環境変数またはコマンドラインのオプションで指定できます。次の順序で優先されます。
- 1. コマンドライン引数 `--endpoint_url`
- 2. 環境変数 `ANNOWORK_ENDPOINT_URL`
+ 1. コマンドライン引数 ``--endpoint_url``
+ 2. 環境変数 ``ANNOWORK_ENDPOINT_URL``
 
