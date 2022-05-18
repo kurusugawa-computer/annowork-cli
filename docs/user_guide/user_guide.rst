@@ -75,3 +75,13 @@ Getting Help
     DEBUG    : 2022-01-12 10:43:46,154 : annoworkapi.api                : Sent a request :: {'request': {'http_method': 'get', 'url': 'https://annowork.com/api/v1/my/account', 'query_params': None, 'header_params': None, 'request_body': None}, 'response': {'status_code': 200, 'content_length': 365}}
     INFO     : 2022-01-12 10:43:46,155 : annoworkcli.common.utils       : out/my.json に出力しました。
 
+
+
+エンドポイントURLの設定（開発者用）
+=================================================
+デフォルトのエンドポイントURLは ``https://annowork.com`` ですが、 ``https://localhost`` などを指定することも可能です。
+
+エンドポイントURLは環境変数またはコマンドラインのオプションで指定できます。次の順序で優先されます。
+ 1. コマンドライン引数 `--endpoint_url`
+ 2. 環境変数 `ANNOWORK_ENDPOINT_URL`
+
