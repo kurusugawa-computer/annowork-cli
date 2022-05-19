@@ -179,7 +179,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     org_tag_group = parser.add_mutually_exclusive_group()
     org_tag_group.add_argument(
-        "-org_tag",
+        "-wt",
         "--workspace_tag_id",
         type=str,
         nargs="+",

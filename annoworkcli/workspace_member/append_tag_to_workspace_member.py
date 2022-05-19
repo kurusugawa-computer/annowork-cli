@@ -114,7 +114,7 @@ def parse_args(parser: argparse.ArgumentParser):
     )
 
     parser.add_argument(
-        "-org_tag",
+        "-wt",
         "--workspace_tag_id",
         type=str,
         nargs="+",
