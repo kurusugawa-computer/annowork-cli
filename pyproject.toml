@@ -27,7 +27,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 pyyaml = "*"
-annoworkapi =  { version = "*", allow-prereleases = true}
+annoworkapi = ">=3.0.1"
 annofabapi = ">=0.52.4"
 more-itertools = "*"
 pandas = "*"

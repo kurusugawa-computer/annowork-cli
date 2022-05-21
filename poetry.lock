@@ -45,7 +45,7 @@ requests = "*"
 
 [[package]]
 name = "annoworkapi"
-version = "3.0.0b0"
+version = "3.0.1"
 description = "Python Clinet Library of AnnoWork WebAPI"
 category = "main"
 optional = false
@@ -1223,7 +1223,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "bcb8358c9bb97dbd2067a8b670c646e37f4264136df6d6096d04bc827b5e659d"
+content-hash = "b2d55345ca8292fe5e931864db46df6f0020efae83a892152f839f102ece85dc"
 
 [metadata.files]
 alabaster = [
@@ -1239,8 +1239,8 @@ annofabcli = [
     {file = "annofabcli-1.64.0.tar.gz", hash = "sha256:6b639161775fcbd3b0066a5a34f9234d5b4fcff8278c71e4f9c727728191cb75"},
 ]
 annoworkapi = [
-    {file = "annoworkapi-3.0.0b0-py3-none-any.whl", hash = "sha256:40e0046249b3410658c68d8da16125a94f6018ad138a186b5ba1576bb266d239"},
-    {file = "annoworkapi-3.0.0b0.tar.gz", hash = "sha256:bd1ce59d78dd4b1164e8a82570c49dcb3f5bb3ee36073d2ef6671db91cdc9992"},
+    {file = "annoworkapi-3.0.1-py3-none-any.whl", hash = "sha256:65155aa3763274cde3c9c9c3ea9adb2ce0b9d6264d33874f3acd393a4887d541"},
+    {file = "annoworkapi-3.0.1.tar.gz", hash = "sha256:bd22d8dabc5b62403e9c4b72a091d0a92c3c6d5b037192586b0e2fea13da481e"},
 ]
 appnope = [
     {file = "appnope-0.1.3-py2.py3-none-any.whl", hash = "sha256:265a455292d0bd8a72453494fa24df5a11eb18373a60c7c0430889f22548605e"},
