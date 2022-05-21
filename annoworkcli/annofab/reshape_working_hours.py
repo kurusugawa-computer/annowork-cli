@@ -19,11 +19,8 @@ import annoworkcli
 from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
-from annoworkcli.common.organization_tag import (
-    get_company_from_organization_tag_name,
-    is_company_from_organization_tag_name,
-)
 from annoworkcli.common.utils import print_csv
+from annoworkcli.common.workspace_tag import get_company_from_workspace_tag_name, is_company_from_workspace_tag_name
 from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDaily
 
 logger = logging.getLogger(__name__)
@@ -770,22 +767,20 @@ class ReshapeWorkingHours:
         self,
         *,
         annowork_service: AnnoworkResource,
-        organization_id: str,
+        workspace_id: str,
         annofab_service: AnnofabResource,
         parallelism: Optional[int] = None,
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
-        self.all_jobs = self.annowork_service.api.get_jobs(self.organization_id)
+        self.workspace_id = workspace_id
+        self.all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
         self.list_actual_obj = ListWorkingHoursWithAnnofab(
             annowork_service=annowork_service,
-            organization_id=organization_id,
+            workspace_id=workspace_id,
             annofab_service=annofab_service,
             parallelism=parallelism,
         )
-        self.list_assigned_obj = ListAssignedHoursDaily(
-            annowork_service=annowork_service, organization_id=organization_id
-        )
+        self.list_assigned_obj = ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=workspace_id)
 
     def get_job_id_list_from_af_project_id(self, annofab_project_id_list: list[str]) -> list[str]:
         annofab_project_id_set = set(annofab_project_id_list)
@@ -838,21 +833,21 @@ class ReshapeWorkingHours:
         return pandas.DataFrame(result)
 
     def get_df_user_company(self) -> pandas.DataFrame:
-        tags = self.annowork_service.api.get_organization_tags(self.organization_id)
-        company_tags = [e for e in tags if is_company_from_organization_tag_name(e["organization_tag_name"])]
+        tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
+        company_tags = [e for e in tags if is_company_from_workspace_tag_name(e["workspace_tag_name"])]
         result = []
         for tag in company_tags:
-            tmp_list = self.annowork_service.api.get_organization_tag_members(
-                self.organization_id, tag["organization_tag_id"]
-            )
+            tmp_list = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, tag["workspace_tag_id"])
             for member in tmp_list:
-                member["company"] = get_company_from_organization_tag_name(tag["organization_tag_name"])
+                member["company"] = get_company_from_workspace_tag_name(tag["workspace_tag_name"])
             result.extend(tmp_list)
 
         df = pandas.DataFrame(result)[["user_id", "username", "company"]]
         df_duplicated = df[df.duplicated(subset=["user_id"])]
         if len(df_duplicated) > 0:
-            logger.warning(f"{len(df_duplicated)} 件のユーザに複数の会社情報が組織タグとして設定されています。:: {list(df_duplicated['user_id'])}")
+            logger.warning(
+                f"{len(df_duplicated)} 件のユーザに複数の会社情報がワークスペースタグとして設定されています。" f":: {list(df_duplicated['user_id'])}"
+            )
             df = df.drop_duplicates(subset=["user_id"])
         return df
 
@@ -1031,7 +1026,7 @@ def get_empty_df_actual() -> pandas.DataFrame:
             "date",
             "job_id",
             "job_name",
-            "organization_member_id",
+            "workspace_member_id",
             "user_id",
             "username",
             "actual_working_hours",
@@ -1048,7 +1043,7 @@ def get_empty_df_assigned() -> pandas.DataFrame:
             "date",
             "job_id",
             "job_name",
-            "organization_member_id",
+            "workspace_member_id",
             "user_id",
             "username",
             "assigned_working_hours",
@@ -1059,7 +1054,7 @@ def get_empty_df_assigned() -> pandas.DataFrame:
 def main(args):
     main_obj = ReshapeWorkingHours(
         annowork_service=build_annoworkapi(args),
-        organization_id=args.organization_id,
+        workspace_id=args.workspace_id,
         annofab_service=build_annofabapi(),
         parallelism=args.parallelism,
     )
@@ -1141,11 +1136,11 @@ def main(args):
 def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument(
-        "-org",
-        "--organization_id",
+        "-w",
+        "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument(
@@ -1237,7 +1232,7 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
         "\n"
         "* 小数点以下2桁目まで表示\n"
         "* 比較対象の比率と差分を表示\n"
-        "* organization_member_idなどGUIに直接関係ない項目は表示しない\n"
+        "* workspace_member_idなどGUIに直接関係ない項目は表示しない\n"
     )
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=description)

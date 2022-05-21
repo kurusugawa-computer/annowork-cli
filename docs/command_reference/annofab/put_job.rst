@@ -22,7 +22,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli annofab put_job --organization org --parent_job_id pjob --annofab_project_id af_prj
+    $ annoworkcli annofab put_job --workspace org --parent_job_id pjob --annofab_project_id af_prj
      
 
 

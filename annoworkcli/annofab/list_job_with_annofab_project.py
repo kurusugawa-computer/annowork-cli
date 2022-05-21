@@ -42,15 +42,15 @@ class ListJobWithAnnofabProject:
         self,
         *,
         annowork_service: AnnoworkResource,
-        organization_id: str,
+        workspace_id: str,
         annofab_service: AnnofabResource,
         parallelism: Optional[int] = None,
     ):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
+        self.workspace_id = workspace_id
         self.annofab_service = annofab_service
         self.parallelism = parallelism
-        self.list_job_obj = ListJob(annowork_service, organization_id)
+        self.list_job_obj = ListJob(annowork_service, workspace_id)
 
     def get_af_project_dict(self, job_list: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         """
@@ -92,7 +92,7 @@ class ListJobWithAnnofabProject:
         if annofab_project_id_list is not None:
             job_list = [job for job in job_list if get_annofab_project_id_from_job(job) in set(annofab_project_id_list)]
 
-        all_job_dict = {e["job_id"]: e for e in self.annowork_service.api.get_jobs(self.organization_id)}
+        all_job_dict = {e["job_id"]: e for e in self.annowork_service.api.get_jobs(self.workspace_id)}
 
         af_project_dict = self.get_af_project_dict(job_list)
 
@@ -138,7 +138,7 @@ def main(args):
 
     main_obj = ListJobWithAnnofabProject(
         annowork_service=annowork_service,
-        organization_id=args.organization_id,
+        workspace_id=args.workspace_id,
         annofab_service=build_annofabapi(),
         parallelism=args.parallelism,
     )
@@ -164,11 +164,11 @@ def main(args):
 
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
-        "-org",
-        "--organization_id",
+        "-w",
+        "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     job_id_group = parser.add_mutually_exclusive_group()

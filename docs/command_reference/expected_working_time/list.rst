@@ -15,7 +15,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli actual_working_time list --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
 
 
@@ -24,8 +24,8 @@ Examples
 
    [
       {
-         "organization_id": "org",
-         "organization_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
+         "workspace_id": "org",
+         "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "date": "2022-01-02",
          "expected_working_hours": 3,
          "created_datetime": "2021-11-24T22:14:31.030Z",

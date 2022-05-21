@@ -9,7 +9,7 @@ Command Structure
 
     $ annoworkcli <command> <subcommand> [options and parameters]
 
-* ``command`` : ``job`` や ``organization_member`` などのカテゴリに対応します。
+* ``command`` : ``job`` や ``workspace_member`` などのカテゴリに対応します。
 * ``subcommand`` : ``list`` や ``delete`` など、実行する操作に対応します。
 
 
@@ -44,10 +44,10 @@ Getting Help
 .. code-block::
 
     # 標準入力で指定する
-    $ annoworkcli job list --organization_id org --job_id job1 job2
+    $ annoworkcli job list --workspace_id org --job_id job1 job2
 
     # 相対パスでファイルを指定する
-    $ annoworkcli job list --organization_id org --job_id file://job_id.txt
+    $ annoworkcli job list --workspace_id org --job_id file://job_id.txt
 
 
 
@@ -82,6 +82,6 @@ Getting Help
 デフォルトのエンドポイントURLは ``https://annowork.com`` ですが、 ``https://localhost`` などを指定することも可能です。
 
 エンドポイントURLは環境変数またはコマンドラインのオプションで指定できます。次の順序で優先されます。
- 1. コマンドライン引数 `--endpoint_url`
- 2. 環境変数 `ANNOWORK_ENDPOINT_URL`
+ 1. コマンドライン引数 ``--endpoint_url``
+ 2. 環境変数 ``ANNOWORK_ENDPOINT_URL``
 

@@ -3,7 +3,7 @@ from typing import Optional
 
 import annoworkcli
 import annoworkcli.my.get_my_account
-import annoworkcli.my.list_my_organization_member
+import annoworkcli.my.list_my_workspace_member
 
 
 def parse_args(parser: argparse.ArgumentParser):
@@ -12,7 +12,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     # サブコマンドの定義
     annoworkcli.my.get_my_account.add_parser(subparsers)
-    annoworkcli.my.list_my_organization_member.add_parser(subparsers)
+    annoworkcli.my.list_my_workspace_member.add_parser(subparsers)
 
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:

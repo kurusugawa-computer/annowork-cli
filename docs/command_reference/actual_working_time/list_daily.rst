@@ -16,7 +16,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list_daily --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli actual_working_time list_daily --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
 
 
@@ -28,7 +28,7 @@ Examples
          "date": "2022-01-02",
          "job_id": "caa0da6f-34aa-40cb-abc0-976c9aab3b40",
          "job_name": "MOON",
-         "organization_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
+         "workspace_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
          "user_id": "alic3",
          "username": "Alice",
          "actual_working_hours": 2.716666666666667,
@@ -42,7 +42,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list_daily --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli actual_working_time list_daily --workspace_id org --start_date 2022-01-01 \
      --show_parent_job --format json --output out2.json
 
 
@@ -55,7 +55,7 @@ Examples
          "date": "2022-01-02",
          "job_id": "caa0da6f-34aa-40cb-abc0-976c9aab3b40",
          "job_name": "MOON",
-         "organization_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
+         "workspace_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
          "user_id": "alice",
          "username": "Alice",
          "actual_working_hours": 2.716666666666667,

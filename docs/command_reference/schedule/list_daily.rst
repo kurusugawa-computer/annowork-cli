@@ -15,7 +15,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli schedule list_daily --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli schedule list_daily --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
 
 
@@ -27,7 +27,7 @@ Examples
          "date": "2022-01-02",
          "job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
          "job_name": "MOON",
-         "organization_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
+         "workspace_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
          "user_id": "alice",
          "username": "Alice",
          "assigned_working_hours": 5.0

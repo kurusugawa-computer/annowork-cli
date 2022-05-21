@@ -15,7 +15,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli expected_working_time delete --organization_id org \
+    $ annoworkcli expected_working_time delete --workspace_id org \
      --start_date 2022-01-01 --end_date 2022-01-03 --user_id alice 
 
 

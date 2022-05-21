@@ -15,7 +15,7 @@ Available Commands
    :titlesonly:
 
    get
-   list_organization_member
+   list_workspace_member
 
 Usage Details
 =================================

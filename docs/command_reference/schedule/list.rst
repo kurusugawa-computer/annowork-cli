@@ -15,7 +15,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli schedule list --organization_id org --start_date 2022-01-01 \
+    $ annoworkcli schedule list --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
 
 
@@ -25,9 +25,9 @@ Examples
    [
       {
          "schedule_id": "b3fa6635-b6ea-49dc-b1cd-c23a50ed26f1",
-         "organization_id": "org",
+         "workspace_id": "org",
          "job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
-         "organization_member_id": "53ba2c39-5c02-4df4-abdb-eab0143ac0c7",
+         "workspace_member_id": "53ba2c39-5c02-4df4-abdb-eab0143ac0c7",
          "start_date": "2021-12-28",
          "end_date": "2022-01-03",
          "type": "percentage",

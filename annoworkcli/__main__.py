@@ -10,10 +10,10 @@ import annoworkcli.annofab.subcommand
 import annoworkcli.expected_working_time.subcommand
 import annoworkcli.job.subcommand
 import annoworkcli.my.subcommand
-import annoworkcli.organization.subcommand
-import annoworkcli.organization_member.subcommand
-import annoworkcli.organization_tag.subcommand
 import annoworkcli.schedule.subcommand
+import annoworkcli.workspace.subcommand
+import annoworkcli.workspace_member.subcommand
+import annoworkcli.workspace_tag.subcommand
 from annoworkcli.common.cli import PrettyHelpFormatter
 from annoworkcli.common.utils import set_default_logger
 
@@ -35,9 +35,9 @@ def create_parser() -> argparse.ArgumentParser:
     annoworkcli.expected_working_time.subcommand.add_parser(subparsers)
     annoworkcli.job.subcommand.add_parser(subparsers)
     annoworkcli.my.subcommand.add_parser(subparsers)
-    annoworkcli.organization.subcommand.add_parser(subparsers)
-    annoworkcli.organization_member.subcommand.add_parser(subparsers)
-    annoworkcli.organization_tag.subcommand.add_parser(subparsers)
+    annoworkcli.workspace.subcommand.add_parser(subparsers)
+    annoworkcli.workspace_member.subcommand.add_parser(subparsers)
+    annoworkcli.workspace_tag.subcommand.add_parser(subparsers)
     annoworkcli.schedule.subcommand.add_parser(subparsers)
 
     return parser

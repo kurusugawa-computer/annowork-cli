@@ -16,7 +16,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli annofab reshape_working_hours --organization_id org --shape_type total_by_user \
+    $ annoworkcli annofab reshape_working_hours --workspace_id org --shape_type total_by_user \
      --start_date 2022-01-01 --end_date 2022-01-31 --output total_by_user.csv
 
 
@@ -25,13 +25,13 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli annofab list_working_hours --organization_id org \
+    $ annoworkcli annofab list_working_hours --workspace_id org \
      --start_date 2022-01-01 --end_date 2022-01-31 --output actual.csv
 
-    $ annoworkcli  schedule list_daily --organization_id org \
+    $ annoworkcli  schedule list_daily --workspace_id org \
      --start_date 2022-01-01 --end_date 2022-01-31 --output assigned.csv
 
-    $ annoworkcli annofab reshape_working_hours --organization_id org \ 
+    $ annoworkcli annofab reshape_working_hours --workspace_id org \ 
      --actual_file actual.csv --assigned_file assigned.csv --shape_type total_by_user --output total_by_user.csv
 
 

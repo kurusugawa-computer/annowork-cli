@@ -20,7 +20,7 @@ inifile = configparser.ConfigParser()
 inifile.read("./pytest.ini", "UTF-8")
 annowork_config = dict(inifile.items("annowork"))
 
-organization_id = annowork_config["organization_id"]
+workspace_id = annowork_config["workspace_id"]
 
 
 COMMAND_NAME = "actual_working_time"
@@ -31,8 +31,8 @@ def test_list():
         [
             COMMAND_NAME,
             "list",
-            "--organization_id",
-            organization_id,
+            "--workspace_id",
+            workspace_id,
             "--start_date",
             "2022-01-01",
             "--end_date",
@@ -48,8 +48,8 @@ def test_list_daily():
         [
             COMMAND_NAME,
             "list_daily",
-            "--organization_id",
-            organization_id,
+            "--workspace_id",
+            workspace_id,
             "--start_date",
             "2022-01-01",
             "--end_date",
@@ -67,8 +67,8 @@ def test_list_daily_groupby_tag():
         [
             COMMAND_NAME,
             "list_daily_groupby_tag",
-            "--organization_id",
-            organization_id,
+            "--workspace_id",
+            workspace_id,
             "--start_date",
             "2022-01-01",
             "--end_date",

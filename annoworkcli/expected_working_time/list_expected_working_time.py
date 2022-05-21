@@ -17,17 +17,17 @@ logger = logging.getLogger(__name__)
 
 
 class ListExpectedWorkingTime:
-    def __init__(self, annowork_service: AnnoworkResource, organization_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
         self.annowork_service = annowork_service
-        self.organization_id = organization_id
-        self.organization_members = self.annowork_service.api.get_organization_members(
-            self.organization_id, query_params={"includes_inactive_members": True}
+        self.workspace_id = workspace_id
+        self.workspace_members = self.annowork_service.api.get_workspace_members(
+            self.workspace_id, query_params={"includes_inactive_members": True}
         )
 
     def get_expected_working_times_by_user_id(
         self, user_id_list: list[str], *, start_date: Optional[str] = None, end_date: Optional[str] = None
     ) -> list[dict[str, Any]]:
-        organization_member_dict = {e["user_id"]: e["organization_member_id"] for e in self.organization_members}
+        workspace_member_dict = {e["user_id"]: e["workspace_member_id"] for e in self.workspace_members}
 
         query_params = {}
         if start_date is not None:
@@ -37,14 +37,14 @@ class ListExpectedWorkingTime:
 
         result = []
         for user_id in user_id_list:
-            organization_member_id = organization_member_dict.get(user_id)
-            if organization_member_id is None:
-                logger.warning(f"{user_id=} に該当する組織メンバが存在しませんでした。")
+            workspace_member_id = workspace_member_dict.get(user_id)
+            if workspace_member_id is None:
+                logger.warning(f"{user_id=} に該当するワークスペースメンバが存在しませんでした。")
                 continue
 
             logger.debug(f"予定稼働時間情報を取得します。{query_params=}")
-            tmp = self.annowork_service.api.get_expected_working_times_by_organization_member(
-                self.organization_id, organization_member_id, query_params=query_params
+            tmp = self.annowork_service.api.get_expected_working_times_by_workspace_member(
+                self.workspace_id, workspace_member_id, query_params=query_params
             )
             result.extend(tmp)
         return result
@@ -62,15 +62,15 @@ class ListExpectedWorkingTime:
             query_params["term_end"] = end_date
 
         logger.debug(f"予定稼働時間情報を取得します。{query_params=}")
-        return self.annowork_service.api.get_expected_working_times(self.organization_id, query_params=query_params)
+        return self.annowork_service.api.get_expected_working_times(self.workspace_id, query_params=query_params)
 
     def set_member_info_to_working_times(self, working_times: list[dict[str, Any]]):
-        organization_member_dict = {e["organization_member_id"]: e for e in self.organization_members}
+        workspace_member_dict = {e["workspace_member_id"]: e for e in self.workspace_members}
         for elm in working_times:
-            organization_member_id = elm["organization_member_id"]
-            member = organization_member_dict.get(organization_member_id)
+            workspace_member_id = elm["workspace_member_id"]
+            member = workspace_member_dict.get(workspace_member_id)
             if member is None:
-                logger.warning(f"{organization_member_id=} である組織メンバは存在しません。 :: date={elm['date']}")
+                logger.warning(f"{workspace_member_id=} であるワークスペースメンバは存在しません。 :: date={elm['date']}")
                 continue
 
             elm.update(
@@ -109,9 +109,9 @@ class ListExpectedWorkingTime:
         else:
             df = pandas.json_normalize(result)
             required_columns = [
-                "organization_id",
+                "workspace_id",
                 "date",
-                "organization_member_id",
+                "workspace_member_id",
                 "user_id",
                 "username",
                 "expected_working_hours",
@@ -133,7 +133,7 @@ def main(args):
         print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
-    ListExpectedWorkingTime(annowork_service=annowork_service, organization_id=args.organization_id).main(
+    ListExpectedWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         user_id_list=user_id_list,
         start_date=args.start_date,
         end_date=args.end_date,
@@ -144,11 +144,11 @@ def main(args):
 
 def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
-        "-org",
-        "--organization_id",
+        "-w",
+        "--workspace_id",
         type=str,
         required=True,
-        help="対象の組織ID",
+        help="対象のワークスペースID",
     )
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")

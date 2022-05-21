@@ -14,9 +14,9 @@ Command Reference
    expected_working_time/index
    job/index
    my/index
-   organization/index
-   organization_member/index
-   organization_tag/index
+   workspace/index
+   workspace_member/index
+   workspace_tag/index
    schedule/index
 
 Usage Details

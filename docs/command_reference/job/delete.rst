@@ -15,7 +15,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli job delete --organization_id org --job_id job 
+    $ annoworkcli job delete --workspace_id org --job_id job 
 
 
 
