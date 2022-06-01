@@ -57,8 +57,8 @@ class Listworkspace:
         result = []
         for user_id in user_ids:
             member = more_itertools.first_true(
-                members, pred=lambda e: e["user_id"] == user_id
-            )  # pylint: ignore=cell-var-from-loop
+                members, pred=lambda e: e["user_id"] == user_id  # pylint: disable=cell-var-from-loop
+            )
             if member is not None:
                 result.append(member)
             else:
