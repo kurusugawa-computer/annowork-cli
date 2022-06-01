@@ -4,15 +4,15 @@ annofab put_account_external_linkage_info
 
 Description
 =================================
-アカウントの外部連携情報に、AnnoFabから取得したaccount_idを設定します。
-AnnoFabのuser_idはAnnoWorkのuser_idと一致している必要があります。
+アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。
+Annofabのuser_idはAnnoworkのuser_idと一致している必要があります。
 
 
 
 Examples
 =================================
 
-以下のコマンドは、ユーザ ``alice`` の外部連携情報に、AnnoFabワークスペース ``af_org`` に所属するユーザ ``alice`` の情報を設定します。
+以下のコマンドは、ユーザ ``alice`` の外部連携情報に、Annofabワークスペース ``af_org`` に所属するユーザ ``alice`` の情報を設定します。
 
 
 .. code-block:: 

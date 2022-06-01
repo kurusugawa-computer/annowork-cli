@@ -4,8 +4,8 @@ annofab
 
 Description
 =================================
-AnnoFabにアクセスするサブコマンドです。
-AnnoFabの認証情報を事前に設定しておく必要があります。
+Annofabにアクセスするサブコマンドです。
+Annofabの認証情報を事前に設定しておく必要があります。
 
 
 Available Commands

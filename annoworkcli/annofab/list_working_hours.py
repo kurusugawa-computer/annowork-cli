@@ -46,7 +46,7 @@ def _get_get_df_working_hours_from_df(
     )
 
     if len(df_af_working_hours) == 0:
-        logger.warning(f"AnnoFabの作業時間情報が0件でした。")
+        logger.warning(f"Annofabの作業時間情報が0件でした。")
         df_aw_working_hours["annofab_working_hours"] = 0
         return df_aw_working_hours
 
@@ -178,7 +178,7 @@ class ListWorkingHoursWithAnnofab:
     ) -> list[dict[str, Any]]:
         try:
             logger.debug(
-                f"annofab_project_id= '{af_project_id}' のAnnoFabプロジェクトの作業時間を取得します。:: {start_date=}, {end_date=}"
+                f"annofab_project_id= '{af_project_id}' のAnnofabプロジェクトの作業時間を取得します。:: {start_date=}, {end_date=}"
             )
             account_statistics = self.annofab_service.wrapper.get_account_daily_statistics(
                 af_project_id, from_date=start_date, to_date=end_date
@@ -220,7 +220,7 @@ class ListWorkingHoursWithAnnofab:
         """
         result: list[dict[str, Any]] = []
 
-        logger.debug(f"{len(af_project_ids)} 件のAnnoFabプロジェクトの作業時間を取得します。")
+        logger.debug(f"{len(af_project_ids)} 件のAnnofabプロジェクトの作業時間を取得します。")
 
         if self.parallelism is not None:
             partial_func = functools.partial(
@@ -439,7 +439,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=False,
-        help="絞り込み対象であるAnnoFabプロジェクトのproject_idを指定してください。",
+        help="絞り込み対象であるAnnofabプロジェクトのproject_idを指定してください。",
     )
 
     parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
@@ -469,7 +469,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "list_working_hours"
-    subcommand_help = "日ごとの実績作業時間と、ジョブに紐づくAnnoFabプロジェクトの作業時間を一緒に出力します。"
+    subcommand_help = "日ごとの実績作業時間と、ジョブに紐づくAnnofabプロジェクトの作業時間を一緒に出力します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help
