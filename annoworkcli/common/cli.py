@@ -94,7 +94,7 @@ def add_parser(
         group.add_argument(
             "--endpoint_url",
             type=str,
-            help=f"AnnoWork WebAPIのエンドポイントを指定します。指定しない場合は ``{DEFAULT_ENDPOINT_URL}`` です。",
+            help=f"Annowork WebAPIのエンドポイントを指定します。指定しない場合は ``{DEFAULT_ENDPOINT_URL}`` です。",
         )
 
         return parent_parser
@@ -242,11 +242,11 @@ def build_annoworkapi(args: argparse.Namespace) -> annoworkapi.resource.Resource
         # 環境変数, netrcフィアルに認証情報が設定されていなかったので、標準入力から認証情報を入力させる。
         login_user_id = ""
         while login_user_id == "":
-            login_user_id = input("Enter AnnoWork User ID: ")
+            login_user_id = input("Enter Annowork User ID: ")
 
         login_password = ""
         while login_password == "":
-            login_password = getpass.getpass("Enter AnnoWork Password: ")
+            login_password = getpass.getpass("Enter Annowork Password: ")
 
         return annoworkapi.resource.Resource(
             endpoint_url=endpoint_url, login_user_id=login_user_id, login_password=login_password
