@@ -32,7 +32,7 @@ annofabapi = ">=0.52.4"
 more-itertools = "*"
 pandas = "*"
 isodate = "*"
-annofabcli = ">=1.64.0"
+annofabcli = ">=1.61.2"
 
 [tool.poetry.scripts]
 annoworkcli = "annoworkcli.__main__:main"
