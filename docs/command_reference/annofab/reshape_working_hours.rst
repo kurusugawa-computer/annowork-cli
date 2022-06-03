@@ -4,14 +4,14 @@ annofab reshape_working_hours
 
 Description
 =================================
-AnnoWorkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。
+Annoworkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。
 
 
 
 Examples
 =================================
 
-以下のコマンドは、2022-01-01から2022-01-31までの期間で、AnnoWorkの実績作業時間とアサイン時間、AnnoFabの作業時間を、ユーザごとに比較したCSVを出力します。
+以下のコマンドは、2022-01-01から2022-01-31までの期間で、Annoworkの実績作業時間とアサイン時間、Annofabの作業時間を、ユーザごとに比較したCSVを出力します。
 出力結果詳細は後述を参照してください。
 
 .. code-block:: 
@@ -44,9 +44,9 @@ Examples
 列名の内容は以下の通りです。
 
 
-* assigned_working_hours : AnnoWorkのアサイン時間
-* actual_working_hours : AnnoWorkの実績時間
-* monitored_working_hours : AnnoFabの作業時間（AnnoFabのアノテーションエディタで計測された作業時間）
+* assigned_working_hours : Annoworkのアサイン時間
+* actual_working_hours : Annoworkの実績時間
+* monitored_working_hours : Annofabの作業時間（Annofabのアノテーションエディタで計測された作業時間）
 * activity_rate : アサイン時間に対する実績作業時間の比率（ ``= actual_working_hours / assigned_working_hours`` ）
 * activity_diff : アサインに対する実績作業時間の差分（ ``= assigned_working_hours - actual_working_hours`` ）
 * monitor_rate : 実績作業時間に対する計測作業時間の比率（ ``= monitored_working_hours / actual_working_hours`` ）

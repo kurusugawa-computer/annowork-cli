@@ -1225,9 +1225,9 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "reshape_working_hours"
-    subcommand_help = "AnnoWorkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。"
+    subcommand_help = "Annoworkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。"
     description = (
-        "AnnoWorkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。\n"
+        "Annoworkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。\n"
         "レポートとして利用できるようにするため、以下を対応しています。\n"
         "\n"
         "* 小数点以下2桁目まで表示\n"

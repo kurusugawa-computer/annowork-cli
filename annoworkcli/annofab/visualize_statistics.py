@@ -73,7 +73,7 @@ class ListLabor:
         for annofab_project_id in annofab_project_id_list:
             job_id_list = annofab_project_id_dict.get(annofab_project_id)
             if job_id_list is None:
-                logger.warning(f"ジョブの外部連携情報に、AnnoFabのプロジェクトID '{annofab_project_id}' を表すURLが設定されたジョブは見つかりませんでした。")
+                logger.warning(f"ジョブの外部連携情報に、AnnofabのプロジェクトID '{annofab_project_id}' を表すURLが設定されたジョブは見つかりませんでした。")
                 continue
 
             for job_id in job_id_list:
@@ -92,7 +92,7 @@ class ListLabor:
         for job_id in job_id_list:
             annofab_project_id = job_id_dict.get(job_id)
             if annofab_project_id is None:
-                logger.warning(f"{job_id=} のジョブの外部連携情報にAnnoFabのプロジェクトを表すURLは設定されていませんでした。")
+                logger.warning(f"{job_id=} のジョブの外部連携情報にAnnofabのプロジェクトを表すURLは設定されていませんでした。")
                 continue
 
             result[job_id] = annofab_project_id
@@ -200,7 +200,7 @@ def visualize_statistics(temp_dir: Path, args):
     elif job_id_list is not None:
         job_id_annofab_project_id_dict = main_obj.get_job_id_annofab_project_id_dict_from_job_id(job_id_list)
         if len(job_id_annofab_project_id_dict) == 0:
-            logger.error(f"AnnoFabプロジェクトに紐づくジョブが0件なので、終了します。")
+            logger.error(f"Annofabプロジェクトに紐づくジョブが0件なので、終了します。")
             return
         command.extend(["--project_id"] + list(job_id_annofab_project_id_dict.values()))
 
@@ -240,7 +240,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     job_id_group = parser.add_mutually_exclusive_group(required=True)
     job_id_group.add_argument("-j", "--job_id", type=str, nargs="+", help="絞り込み対象のジョブID")
-    job_id_group.add_argument("-af_p", "--annofab_project_id", type=str, nargs="+", help="絞り込み対象のAnnoFabのプロジェクトID")
+    job_id_group.add_argument("-af_p", "--annofab_project_id", type=str, nargs="+", help="絞り込み対象のAnnofabのプロジェクトID")
 
     parser.add_argument("-o", "--output_dir", type=Path, required=True, help="出力先ディレクトリ")
 
@@ -262,9 +262,9 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "visualize_statistics"
-    subcommand_help = "AnnoFabの統計情報を実績作業時間と組み合わせて可視化します。"
+    subcommand_help = "Annofabの統計情報を実績作業時間と組み合わせて可視化します。"
     description = (
-        "AnnoFabの統計情報を実績作業時間と組み合わせて可視化します。\n"
+        "Annofabの統計情報を実績作業時間と組み合わせて可視化します。\n"
         "``annofabcli statistics visualize`` コマンドのラッパーになります。\n"
         "ドキュメントは https://annofab-cli.readthedocs.io/ja/latest/command_reference/statistics/visualize.html を参照してください。\n"
     )

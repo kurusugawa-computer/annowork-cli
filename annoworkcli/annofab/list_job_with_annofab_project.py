@@ -194,7 +194,7 @@ def parse_args(parser: argparse.ArgumentParser):
         type=str,
         nargs="+",
         required=False,
-        help="絞り込み対象であるAnnoFabプロジェクトのproject_idを指定してください。",
+        help="絞り込み対象であるAnnofabプロジェクトのproject_idを指定してください。",
     )
 
     parser.add_argument(

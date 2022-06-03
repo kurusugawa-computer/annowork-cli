@@ -4,7 +4,7 @@ annofab visualize_statistics
 
 Description
 =================================
-AnnoFabの統計情報を実績作業時間と組み合わせて可視化します。
+Annofabの統計情報を実績作業時間と組み合わせて可視化します。
 
 
 
@@ -59,7 +59,7 @@ Examples
 
 
 
-AnnoFabプロジェクトのIDは、``--annofab_project_id`` で指定できます。
+AnnofabプロジェクトのIDは、``--annofab_project_id`` で指定できます。
 
 .. code-block:: 
 

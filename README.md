@@ -1,6 +1,6 @@
 
 # annowork-cli
-AnnoWorkのCLIです。
+AnnoworkのCLIです。
 
 
 [![Build Status](https://app.travis-ci.com/kurusugawa-computer/annowork-cli.svg?branch=main)](https://app.travis-ci.com/kurusugawa-computer/annowork-cli)

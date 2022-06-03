@@ -104,7 +104,7 @@ def parse_args(parser: argparse.ArgumentParser):
         "--annofab_workspace_name",
         type=str,
         required=True,
-        help="対象ユーザが参加しているAnnoFabのワークスペース名を指定してください。AnnoFabのワークスペースメンバからAnnoFabのaccount_idを取得します。",
+        help="対象ユーザが参加しているAnnofabのワークスペース名を指定してください。AnnofabのワークスペースメンバからAnnofabのaccount_idを取得します。",
     )
 
     parser.add_argument(
@@ -119,7 +119,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "put_account_external_linkage_info"
-    subcommand_help = "アカウントの外部連携情報に、AnnoFabから取得したaccount_idを設定します。\n" "AnnoFabのuser_idはAnnoWorkのuser_idと一致している必要があります。"
+    subcommand_help = "アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。\n" "Annofabのuser_idはAnnoworkのuser_idと一致している必要があります。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

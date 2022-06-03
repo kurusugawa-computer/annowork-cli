@@ -12,12 +12,12 @@ Examples
 =================================
 
 
-以下のコマンドは、AnnoFabのプロジェクトID ``af_prj`` のプロジェクトを、ジョブID ``pjob`` のジョブ配下に追加します。
+以下のコマンドは、AnnofabのプロジェクトID ``af_prj`` のプロジェクトを、ジョブID ``pjob`` のジョブ配下に追加します。
 具体的には、以下の通りジョブの情報が追加されます。
 
-* job_name: AnnoFabプロジェクトの名前
-* url: AnnoFabプロジェクトのURL
-* job_id: ``--job_id`` に指定した値。未指定の場合はAnnoFabプロジェクトのプロジェクトID
+* job_name: Annofabプロジェクトの名前
+* url: AnnofabプロジェクトのURL
+* job_id: ``--job_id`` に指定した値。未指定の場合はAnnofabプロジェクトのプロジェクトID
 
 
 .. code-block:: 
