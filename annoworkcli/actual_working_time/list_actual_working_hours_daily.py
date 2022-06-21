@@ -177,7 +177,7 @@ def get_actual_working_time_list_from_input_file(input_file: Path) -> list[dict[
         list[dict[str,Any]]: [description]
     """
     if input_file.suffix.lower() == ".json":
-        with input_file.open() as f:
+        with input_file.open(encoding="utf-8") as f:
             return json.load(f)
 
     elif input_file.suffix.lower() == ".csv":

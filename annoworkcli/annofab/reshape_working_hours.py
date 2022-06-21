@@ -752,7 +752,7 @@ def get_dataframe_from_input_file(input_file: Path) -> pandas.DataFrame:
         list[dict[str,Any]]: [description]
     """
     if input_file.suffix.lower() == ".json":
-        with input_file.open() as f:
+        with input_file.open(encoding="utf-8") as f:
             tmp = json.load(f)
             return pandas.DataFrame(tmp)
 
