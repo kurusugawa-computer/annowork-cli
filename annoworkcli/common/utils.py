@@ -21,7 +21,10 @@ T = TypeVar("T")  # Can be anything
 
 def read_lines(filepath: str) -> List[str]:
     """ファイルを行単位で読み込む。改行コードを除く"""
-    with open(filepath, encoding="utf-8") as f:
+
+    # BOM付きUTF-8のファイルも読み込めるようにする
+    # annoworkが出力するCSVはデフォルトでBOM付きUTF-8。これを加工してannoworkcliに読み込ませる場合もあるので、BOM付きUTF-8に対応させた
+    with open(filepath, encoding="utf-8-sig") as f:
         lines = f.readlines()
     return [e.rstrip("\r\n") for e in lines]
 

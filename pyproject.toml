@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "annoworkcli"
-version = "3.1.1"
+version = "3.1.2"
 description = ""
 authors = ["yuji38kwmt"]
 license = "MIT"
