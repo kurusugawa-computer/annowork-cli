@@ -197,7 +197,7 @@ def prompt_yesnoall(msg: str) -> Tuple[bool, bool]:
         msg: 確認メッセージ
 
     Returns:
-        Tuple[yesno, allflag]. yesno:Trueならyes. allflag: Trueならall.
+        Tuple[yesno, is_all]. yesno:Trueならyes. is_all: Trueならall.
 
     """
     while True:

@@ -13,6 +13,7 @@
     ],
     "words": [
         "annofab",
+        "annofabapi",
         "annofabcli",
         "annowork",
         "annoworkapi",
@@ -21,6 +22,7 @@
         "astype",
         "asyncio",
         "bokeh",
+        "dataframe",
         "dateutil",
         "dtype",
         "dtypes",
@@ -44,6 +46,8 @@
         "pylint",
         "tzlocal",
         "unarchived",
-        "unsubscriptable"
+        "unsubscriptable",
+        "worktime",
+        "yesnoall"
     ]
 }

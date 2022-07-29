@@ -40,7 +40,7 @@ class PutAnnofabAccountId:
 
         if tmp := get_annofab_account_id(content["external_linkage_info"]) is not None and not self.overwrite:
             logger.debug(
-                f"{user_id=}: 'external_linkage_info.annofab.accont_id' は既に '{tmp}' が設定されているので、スキップします。"
+                f"{user_id=}: 'external_linkage_info.annofab.account_id' は既に '{tmp}' が設定されているので、スキップします。"
                 f"上書きする場合は'--overwrite`を指定してください。"
             )
             return False
