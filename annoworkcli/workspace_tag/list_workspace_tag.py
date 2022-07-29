@@ -13,7 +13,7 @@ from annoworkcli.common.utils import print_csv, print_json
 logger = logging.getLogger(__name__)
 
 
-class ListworkspaceTag:
+class ListWorkspaceTag:
     def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
@@ -43,7 +43,7 @@ class ListworkspaceTag:
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    ListworkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
+    ListWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         output=args.output, output_format=OutputFormat(args.format)
     )
 

@@ -13,7 +13,7 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 logger = logging.getLogger(__name__)
 
 
-class ChangeworkspaceMemberProperties:
+class ChangeWorkspaceMemberProperties:
     def __init__(
         self,
         *,
@@ -33,8 +33,8 @@ class ChangeworkspaceMemberProperties:
     ) -> bool:
         workspace_member_id = old_member["workspace_member_id"]
 
+        # request_bodyにuser_idを指定しない理由: user_idを指定すると、脱退済のユーザーが組織に招待されてしまうため
         request_body: dict[str, Any] = {
-            "user_id": user_id,
             "role": role,
             "workspace_tags": list(old_workspace_tag_ids),
             "last_updated_datetime": old_member["updated_datetime"],
@@ -84,7 +84,7 @@ def main(args):
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
-    ChangeworkspaceMemberProperties(
+    ChangeWorkspaceMemberProperties(
         annowork_service=annowork_service,
         workspace_id=args.workspace_id,
     ).main(user_id_list=user_id_list, role=args.role)

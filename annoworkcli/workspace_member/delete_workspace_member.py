@@ -12,7 +12,7 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 logger = logging.getLogger(__name__)
 
 
-class DeleteworkspaceMember:
+class DeleteWorkspaceMember:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
@@ -51,7 +51,7 @@ def main(args):
 
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
-    DeleteworkspaceMember(
+    DeleteWorkspaceMember(
         annowork_service=annowork_service,
         workspace_id=args.workspace_id,
     ).main(user_id_list=user_id_list)

@@ -14,7 +14,7 @@ from annoworkcli.common.cli import build_annoworkapi
 logger = logging.getLogger(__name__)
 
 
-class PutworkspaceTag:
+class PutWorkspaceTag:
     def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
@@ -38,7 +38,7 @@ class PutworkspaceTag:
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    PutworkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
+    PutWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         workspace_tag_name=args.workspace_tag_name, workspace_tag_id=args.workspace_tag_id
     )
 

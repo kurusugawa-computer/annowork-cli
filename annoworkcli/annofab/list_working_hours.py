@@ -56,7 +56,7 @@ def _get_get_df_working_hours_from_df(
 
     TMP_SUFFIX = "_tmp"
     # df_merged は outer joinしているため、左側にも欠損値ができる。
-    # それを埋めるために、以前に user情報, job情報の一意なdataframeを生成して、欠損値を埋める
+    # それを埋めるために、以前に user情報, job情報の一意な dataframe を生成して、欠損値を埋める
     USER_COLUMNS = ["workspace_member_id", "user_id", "username"]
     df_merged = df_merged.merge(
         df_user_and_af_account, how="left", on="annofab_account_id", suffixes=(None, TMP_SUFFIX)
@@ -210,7 +210,7 @@ class ListWorkingHoursWithAnnofab:
     def _get_af_working_hours(
         self, af_project_ids: Collection[str], start_date: str, end_date: str
     ) -> pandas.DataFrame:
-        """Annofabの作業時間情報が格納されたDataFramaを返す。
+        """Annofabの作業時間情報が格納されたDataFrameを返す。
 
         以下の列がある。
         * date
