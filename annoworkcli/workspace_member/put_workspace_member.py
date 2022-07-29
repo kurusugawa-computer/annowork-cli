@@ -14,7 +14,7 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 logger = logging.getLogger(__name__)
 
 
-class PutworkspaceMember:
+class PutWorkspaceMember:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
@@ -89,7 +89,7 @@ def main(args):
     user_id_list = get_list_from_args(args.user_id)
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
     assert user_id_list is not None
-    PutworkspaceMember(
+    PutWorkspaceMember(
         annowork_service=annowork_service,
         workspace_id=args.workspace_id,
     ).main(user_id_list=user_id_list, role=args.role, workspace_tag_id_list=workspace_tag_id_list)
