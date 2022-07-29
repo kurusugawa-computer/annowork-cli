@@ -12,7 +12,7 @@ from annoworkcli.common.cli import build_annoworkapi
 logger = logging.getLogger(__name__)
 
 
-class Putworkspace:
+class PutWorkspace:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
@@ -37,7 +37,7 @@ class Putworkspace:
 def main(args):
     annowork_service = build_annoworkapi(args)
 
-    Putworkspace(
+    PutWorkspace(
         annowork_service=annowork_service,
     ).main(workspace_id=args.workspace_id, workspace_name=args.workspace_name, email=args.email)
 
