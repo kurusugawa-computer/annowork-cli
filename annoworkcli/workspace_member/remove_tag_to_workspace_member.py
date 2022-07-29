@@ -12,7 +12,7 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 logger = logging.getLogger(__name__)
 
 
-class RemoveTagToworkspaceMember:
+class RemoveTagToWorkspaceMember:
     def __init__(
         self,
         *,
@@ -33,8 +33,8 @@ class RemoveTagToworkspaceMember:
         workspace_member_id = old_member["workspace_member_id"]
 
         new_workspace_tags = list(set(old_workspace_tag_ids) - set(workspace_tag_ids))
+        # request_bodyにuser_idを指定しない理由: user_idを指定すると、脱退済のユーザーが組織に招待されてしまうため
         request_body: dict[str, Any] = {
-            "user_id": user_id,
             "role": old_member["role"],
             "workspace_tags": new_workspace_tags,
             "last_updated_datetime": old_member["updated_datetime"],
@@ -90,7 +90,7 @@ def main(args):
     assert user_id_list is not None
     assert workspace_tag_id_list is not None
 
-    RemoveTagToworkspaceMember(
+    RemoveTagToWorkspaceMember(
         annowork_service=annowork_service,
         workspace_id=args.workspace_id,
     ).main(user_id_list=user_id_list, workspace_tag_ids=workspace_tag_id_list)
