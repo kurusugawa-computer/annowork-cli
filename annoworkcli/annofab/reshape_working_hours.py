@@ -620,8 +620,9 @@ class ReshapeDataFrame:
         SUM_ROW_NAME = "合計"
 
         # usernameでgroupbyすると同性同名の場合に正しく集計できないので、usernameにuser_idを加えて一意になるようにした。
-        df_actual["username"] = df_actual["username"] + "\n" + df_actual["user_id"]
-        df_assigned["username"] = df_assigned["username"] + "\n" + df_assigned["user_id"]
+        # usernameとuser_idは`:`で区切って、プログラムで扱いやすくする
+        df_actual["username"] = df_actual["username"] + ":" + df_actual["user_id"]
+        df_assigned["username"] = df_assigned["username"] + ":" + df_assigned["user_id"]
 
         df_sum_actual = df_actual.groupby(["date", "username"])[["actual_working_hours", "annofab_working_hours"]].sum()
         # df_sum_actual が0件のときは、列がないので追加する
