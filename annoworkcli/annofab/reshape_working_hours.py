@@ -1131,7 +1131,7 @@ def main(args):
     output_path: Optional[Path] = args.output
 
     if len(df_output) == 0:
-        logger.warning(f"出力対象のデータは0件なので、'{output_path if output_path is not None else '標準出力'}'には出力しません。")
+        logger.warning(f"出力対象のデータは0件なので、'{output_path if output_path is not None else '標準出力'}'に出力しません。")
         return
 
     print_csv(df_output, output=args.output)
