@@ -1128,9 +1128,12 @@ def main(args):
         df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type, show_parent_job=args.show_parent_job
     )
 
+    output_path: Optional[Path] = args.output
+
     if len(df_output) == 0:
-        logger.warning(f"出力対象のデータは0件なので、出力しません。")
+        logger.warning(f"出力対象のデータは0件なので、'{output_path if output_path is not None else '標準出力'}'には出力しません。")
         return
+
     print_csv(df_output, output=args.output)
 
 
