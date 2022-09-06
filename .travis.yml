@@ -8,7 +8,8 @@ python:
 
 install:
   - pip install pip --upgrade
-  - pip install poetry
+  # poetry1.2.0だと、pillowのインストールで失敗する(https://app.travis-ci.com/github/kurusugawa-computer/annowork-cli/jobs/581658649#L932)ので、poetry1.2.0未満にする
+  - pip install "poetry<1.2"
   - travis_retry poetry install
 
 before_script:
