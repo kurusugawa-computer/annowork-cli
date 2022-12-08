@@ -799,9 +799,9 @@ class ReshapeWorkingHours:
         *,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
-        user_ids: Collection[str] = None,
-        parent_job_ids: Collection[str] = None,
-        job_ids: Collection[str] = None,
+        user_ids: Optional[Collection[str]] = None,
+        parent_job_ids: Optional[Collection[str]] = None,
+        job_ids: Optional[Collection[str]] = None,
     ):
         """実績作業時間とannofab作業時間を比較したDataFrameを取得する。
 
@@ -822,8 +822,8 @@ class ReshapeWorkingHours:
         *,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
-        parent_job_ids: Collection[str] = None,
-        user_ids: Collection[str] = None,
+        parent_job_ids: Optional[Collection[str]] = None,
+        user_ids: Optional[Collection[str]] = None,
     ):
         result = self.list_assigned_obj.get_assigned_hours_daily_list(
             start_date=start_date,
