@@ -65,13 +65,12 @@ def _get_get_df_working_hours_from_df(
         df_merged[user_column].fillna(df_merged[f"{user_column}{TMP_SUFFIX}"], inplace=True)
 
     # job_id, job_nameの欠損値を、df_job_and_af_project を使って埋める
-    JOB_COLUMNS = ["job_id", "job_name"]
     # af_projectに紐付いているジョブとaf_projectのDataFrameを生成して、それを使って欠損値を埋める
     df_job_id_af_project = df_job_and_af_project[df_job_and_af_project["annofab_project_id"].notna()]
-    df_merged = df_merged.merge(df_job_id_af_project, how="left", on="annofab_project_id", suffixes=(None, TMP_SUFFIX))
-    for job_column in JOB_COLUMNS:
-        df_merged[job_column].fillna(df_merged[f"{job_column}{TMP_SUFFIX}"], inplace=True)
-
+    df_merged = df_merged.merge(
+        df_job_id_af_project, how="left", on=["annofab_project_id", "job_id"], suffixes=(None, TMP_SUFFIX)
+    )
+    df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"], inplace=True)
     df_merged.fillna(
         {
             "actual_working_hours": 0,
@@ -81,8 +80,7 @@ def _get_get_df_working_hours_from_df(
     )
 
     return df_merged[
-        ["date"]
-        + JOB_COLUMNS
+        ["date", "job_id", "job_name"]
         + USER_COLUMNS
         + ["actual_working_hours", "annofab_project_id", "annofab_account_id", "annofab_working_hours", "notes"]
     ]
