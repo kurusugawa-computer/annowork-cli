@@ -32,7 +32,9 @@ def get_weekly_expected_working_hours_df(
     df = pandas.DataFrame(expected_working_times)
     # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
     df["date"] = pandas.to_datetime(df["date"])
-    df_weekly = df.groupby("workspace_member_id").resample("W", on="date", label="left", closed="left").sum()
+    df_weekly = (
+        df.groupby("workspace_member_id").resample("W", on="date", label="left", closed="left").sum(numeric_only=True)
+    )
     df_weekly.reset_index(inplace=True)
 
     # 1週間の始まり（日曜日）と終わり（土曜日）の日付列を設定

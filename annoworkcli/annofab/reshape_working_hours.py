@@ -358,7 +358,9 @@ class ReshapeDataFrame:
             df_job_parent_job.set_index("job_id"), how="left"
         )
         df_sum_actual = (
-            df_sum_actual_groupby_job_id.reset_index(level="user_id").groupby(by=["user_id", "parent_job_id"]).sum()
+            df_sum_actual_groupby_job_id.reset_index(level="user_id")
+            .groupby(by=["user_id", "parent_job_id"])
+            .sum(numeric_only=True)
         )
 
         # df_sum_actual が0件のときは、列がないので追加する
