@@ -33,14 +33,19 @@
 		"--env=ANNOFAB_PASSWORD"
 	],
 	"postStartCommand": "poetry install",
-	"extensions": [
-		"bungcip.better-toml",
-		"jgclark.vscode-todo-highlight",
-		"lextudio.restructuredtext",
-		"mosapride.zenkaku",
-		"ms-python.python",
-		"ms-python.vscode-pylance",
-		"njpwerner.autodocstring",
-		"streetsidesoftware.code-spell-checker"
-	]
+	"customizations": {
+		"vscode": {			
+			"extensions": [
+				"mosapride.zenkaku",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"streetsidesoftware.code-spell-checker",
+				"bungcip.better-toml",
+				"njpwerner.autodocstring",
+				"mechatroner.rainbow-csv",
+				"lextudio.restructuredtext"
+			]
+		}
+	}
+
 }
