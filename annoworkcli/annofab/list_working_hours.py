@@ -198,9 +198,7 @@ class ListWorkingHoursWithAnnofab:
         df_af_project["annofab_project_id"] = df_af_project["job_id"].apply(
             lambda e: get_annofab_project_id_from_job(all_job_dict[e])
         )
-        df_af_project["annofab_project_title"] = df_af_project["annofab_project_id"].apply(
-            get_project_title
-        )
+        df_af_project["annofab_project_title"] = df_af_project["annofab_project_id"].apply(get_project_title)
 
         df = df_job.merge(df_af_project, how="inner", on="job_id")
         return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
@@ -354,7 +352,7 @@ class ListWorkingHoursWithAnnofab:
             set(df_actual_working_hours["job_id"].unique()) | (set(job_ids) if job_ids is not None else set())
         )
         print(f"{df_job_and_af_project=}")
-        
+
         af_project_ids = [e for e in df_job_and_af_project["annofab_project_id"].unique() if not pandas.isna(e)]
         df_af_working_hours = self._get_af_working_hours(
             af_project_ids=af_project_ids,
