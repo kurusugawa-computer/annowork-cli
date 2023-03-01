@@ -73,7 +73,9 @@ def filter_df(
         df = df[df["user_id"].isin(set(user_ids))]
 
     if job_ids is not None:
-        df = df[df["job_id"].isin(set(job_ids))]
+        # job_idが空の行は対象にする。Annoworkに実績はないが、Annofabで作業しているケース（実績の入力漏れ）があるため
+        # numpy.nanだけでなくpandas.NAなどを指定する理由：空セルはpandasのdtypesによって変わるため
+        df = df[df["job_id"].isin(set(job_ids) | {None, numpy.nan, pandas.NA, ""})]
     return df
 
 
@@ -998,6 +1000,9 @@ class ReshapeWorkingHours:
             tuple[pandas.DataFrame, pandas.DataFrame]: 絞り込まれたdf_actual, df_assigned
         """
         child_job_ids: Optional[Collection] = None
+        print(f"df_actual11={df_actual}")
+        df_actual.to_csv("df_actual11.csv")
+
         if parent_job_ids is not None:
             child_job_ids = {
                 e["job_id"]
@@ -1011,6 +1016,8 @@ class ReshapeWorkingHours:
             df_actual = filter_df(
                 df_actual, job_ids=job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
             )
+            print(f"df_actual12={df_actual}")
+            df_actual.to_csv("df_actual12.csv")
 
         if job_ids is not None:
             # アサインは親ジョブに紐付けているため、job_idに対応するアサインはない。したがって、0件にする。
@@ -1094,6 +1101,9 @@ def main(args):
         if len(df_actual) == 0:
             df_actual = get_empty_df_actual()
 
+    print(f"{df_actual=}")
+    df_actual.to_csv("df_actual.csv")
+
     if args.assigned_file is not None:
         df_assigned = get_dataframe_from_input_file(args.assigned_file)
     else:
@@ -1125,10 +1135,14 @@ def main(args):
         parent_job_ids=parent_job_id_list,
         job_ids=job_id_list,
     )
+    print(f"{df_actual=}")
+    df_actual.to_csv("df_actual2.csv")
 
     df_output = main_obj.get_df_output(
         df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type, show_parent_job=args.show_parent_job
     )
+    print(f"{df_output=}")
+    df_actual.to_csv("df_output.csv")
 
     output_path: Optional[Path] = args.output
 
