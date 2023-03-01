@@ -66,11 +66,25 @@ def _get_get_df_working_hours_from_df(
 
     # job_id, job_nameの欠損値を、df_job_and_af_project を使って埋める
     # af_projectに紐付いているジョブとaf_projectのDataFrameを生成して、それを使って欠損値を埋める
-    df_job_id_af_project = df_job_and_af_project[df_job_and_af_project["annofab_project_id"].notna()]
-    df_merged = df_merged.merge(
-        df_job_id_af_project, how="left", on=["annofab_project_id", "job_id"], suffixes=(None, TMP_SUFFIX)
+    # drop_duplicatesの理由: AnnoworkのジョブとAnnofabのプロジェクトが1対1で紐づくときだけ、df_mergeのjob_idとjob_nameの欠損値を埋めるようにするため
+    df_job_id_af_project = df_job_and_af_project[df_job_and_af_project["annofab_project_id"].notna()].drop_duplicates(
+        ["annofab_project_id"], keep=False
     )
+    df_merged = df_merged.merge(
+        df_job_id_af_project[["job_id", "job_name", "annofab_project_id"]],
+        how="left",
+        on=["annofab_project_id"],
+        suffixes=(None, TMP_SUFFIX),
+    )
+    df_merged["job_id"].fillna(df_merged[f"job_id{TMP_SUFFIX}"], inplace=True)
     df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"], inplace=True)
+
+    # annofab_project_titleを結合するために、annofab_projectだけのDataFrameを生成する
+    df_af_project = df_job_and_af_project.drop_duplicates(subset=["annofab_project_id"])[
+        ["annofab_project_id", "annofab_project_title"]
+    ]
+    df_merged = df_merged.merge(df_af_project, on="annofab_project_id", how="left")
+
     df_merged.fillna(
         {
             "actual_working_hours": 0,
@@ -82,7 +96,14 @@ def _get_get_df_working_hours_from_df(
     return df_merged[
         ["date", "job_id", "job_name"]
         + USER_COLUMNS
-        + ["actual_working_hours", "annofab_project_id", "annofab_account_id", "annofab_working_hours", "notes"]
+        + [
+            "actual_working_hours",
+            "annofab_project_id",
+            "annofab_project_title",
+            "annofab_account_id",
+            "annofab_working_hours",
+            "notes",
+        ]
     ]
 
 
@@ -150,15 +171,29 @@ class ListWorkingHoursWithAnnofab:
                 logger.warning(f"{user_id=} の外部連携情報にAnnofabのaccount_idは設定されていませんでした。")
             af_account_list.append({"user_id": user_id, "annofab_account_id": annofab_account_id})
 
-        df_af_account = pandas.DataFrame(af_account_list)
+        df_af_account = pandas.DataFrame(af_account_list, columns=["user_id", "annofab_account_id"])
 
-        df_user = pandas.DataFrame(self.all_workspace_members)[["user_id", "username", "workspace_member_id"]]
+        df_user = pandas.DataFrame(self.all_workspace_members, columns=["user_id", "username", "workspace_member_id"])
 
         df = df_user.merge(df_af_account, how="inner", on="user_id")
         return df
 
     def _get_df_job_and_af_project(self, job_ids: Collection[str]) -> pandas.DataFrame:
-        """job_id,annofab_project_idが格納されたpandas.DataFrameを返します。"""
+        """
+        job_idとAnnofabのプロジェクト情報が格納されたpandas.DataFrameを返します。
+        以下の列を持ちます。
+            * job_id
+            * annofab_project_id
+            * annofab_project_title
+
+        """
+
+        def get_project_title(project_id: str) -> Optional[str]:
+            project = self.annofab_service.wrapper.get_project_or_none(project_id)
+            if project is None:
+                return None
+            return project["title"]
+
         all_job_dict = {e["job_id"]: e for e in self.all_jobs}
 
         df_job = pandas.DataFrame(self.all_jobs)
@@ -167,12 +202,13 @@ class ListWorkingHoursWithAnnofab:
         df_af_project["annofab_project_id"] = df_af_project["job_id"].apply(
             lambda e: get_annofab_project_id_from_job(all_job_dict[e])
         )
+        df_af_project["annofab_project_title"] = df_af_project["annofab_project_id"].apply(get_project_title)
 
         df = df_job.merge(df_af_project, how="inner", on="job_id")
-        return df[["job_id", "job_name", "annofab_project_id"]]
+        return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
 
     def _get_af_working_hours_from_af_project(
-        self, af_project_id: str, start_date: str, end_date: str
+        self, af_project_id: str, start_date: Optional[str], end_date: Optional[str]
     ) -> list[dict[str, Any]]:
         try:
             logger.debug(
@@ -206,7 +242,7 @@ class ListWorkingHoursWithAnnofab:
         return result
 
     def _get_af_working_hours(
-        self, af_project_ids: Collection[str], start_date: str, end_date: str
+        self, af_project_ids: Collection[str], start_date: Optional[str], end_date: Optional[str]
     ) -> pandas.DataFrame:
         """Annofabの作業時間情報が格納されたDataFrameを返す。
 
@@ -266,7 +302,7 @@ class ListWorkingHoursWithAnnofab:
             "user_id",
             "username",
         ]
-        annofab_columns = ["annofab_project_id", "annofab_account_id", "annofab_working_hours"]
+        annofab_columns = ["annofab_project_id", "annofab_project_title", "annofab_account_id", "annofab_working_hours"]
 
         if is_show_parent_job:
             parent_job_columns = [
@@ -291,24 +327,39 @@ class ListWorkingHoursWithAnnofab:
         user_ids: Optional[Collection[str]] = None,
         is_show_parent_job: bool = False,
     ) -> pandas.DataFrame:
-        def _get_start_date(df: pandas.DataFrame) -> str:
+        def _get_start_date(df: pandas.DataFrame) -> Optional[str]:
+            min_date = df["date"].min() if len(df) > 0 else None
             if start_date is None:
-                return df["date"].min()
-            return min(start_date, df["date"].min())
+                return min_date
+            if min_date is not None:
+                return min(start_date, min_date)
+            return None
 
-        def _get_end_date(df: pandas.DataFrame) -> str:
+        def _get_end_date(df: pandas.DataFrame) -> Optional[str]:
+            max_date = df["date"].max() if len(df) > 0 else None
             if end_date is None:
-                return df["date"].max()
-            return max(end_date, df["date"].max())
+                return max_date
+            if max_date is not None:
+                return max(end_date, max_date)
+            return None
 
         actual_working_hours_daily_list = self.get_actual_working_hours_daily(
             job_ids=job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
         )
-
-        df_actual_working_hours = pandas.DataFrame(actual_working_hours_daily_list)
-        if len(df_actual_working_hours) == 0:
-            logger.warning(f"実績作業時間情報が0件でした。")
-            return pandas.DataFrame()
+        logger.info(f"実績作業時間は{len(actual_working_hours_daily_list)}件です。")
+        df_actual_working_hours = pandas.DataFrame(
+            actual_working_hours_daily_list,
+            columns=[
+                "date",
+                "job_id",
+                "job_name",
+                "workspace_member_id",
+                "user_id",
+                "username",
+                "actual_working_hours",
+                "notes",
+            ],
+        )
 
         # df_actual_working_hours には含まれていないユーザがAnnofabプロジェクトで作業している可能性があるので、
         # user_id_listが指定された場合は、そのユーザのAnnofabアカウント情報も取得する。
@@ -321,6 +372,7 @@ class ListWorkingHoursWithAnnofab:
         )
 
         af_project_ids = [e for e in df_job_and_af_project["annofab_project_id"].unique() if not pandas.isna(e)]
+
         df_af_working_hours = self._get_af_working_hours(
             af_project_ids=af_project_ids,
             start_date=_get_start_date(df_actual_working_hours),
