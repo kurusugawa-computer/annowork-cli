@@ -208,7 +208,7 @@ class ListWorkingHoursWithAnnofab:
         return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
 
     def _get_af_working_hours_from_af_project(
-        self, af_project_id: str, start_date: str, end_date: str
+        self, af_project_id: str, start_date: Optional[str], end_date: Optional[str]
     ) -> list[dict[str, Any]]:
         try:
             logger.debug(
@@ -242,7 +242,7 @@ class ListWorkingHoursWithAnnofab:
         return result
 
     def _get_af_working_hours(
-        self, af_project_ids: Collection[str], start_date: str, end_date: str
+        self, af_project_ids: Collection[str], start_date: Optional[str], end_date: Optional[str]
     ) -> pandas.DataFrame:
         """Annofabの作業時間情報が格納されたDataFrameを返す。
 
