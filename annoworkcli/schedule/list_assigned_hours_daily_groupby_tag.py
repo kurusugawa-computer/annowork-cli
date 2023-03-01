@@ -149,7 +149,10 @@ def main(args):
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
     workspace_tag_name_list = get_list_from_args(args.workspace_tag_name)
 
-    ListAssignedHoursDailyGroupbyTag(annowork_service=annowork_service, workspace_id=args.workspace_id,).main(
+    ListAssignedHoursDailyGroupbyTag(
+        annowork_service=annowork_service,
+        workspace_id=args.workspace_id,
+    ).main(
         job_id_list=job_id_list,
         user_id_list=user_id_list,
         start_date=start_date,

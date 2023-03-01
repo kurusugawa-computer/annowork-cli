@@ -9,7 +9,6 @@ import annoworkcli.actual_working_time.list_actual_working_time
 
 
 def parse_args(parser: argparse.ArgumentParser):
-
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

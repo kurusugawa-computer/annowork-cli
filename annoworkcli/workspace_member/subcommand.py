@@ -11,7 +11,6 @@ import annoworkcli.workspace_member.remove_tag_to_workspace_member
 
 
 def parse_args(parser: argparse.ArgumentParser):
-
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

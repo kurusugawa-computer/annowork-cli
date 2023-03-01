@@ -7,7 +7,6 @@ import annoworkcli.account.put_external_linkage_info
 
 
 def parse_args(parser: argparse.ArgumentParser):
-
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

@@ -7,7 +7,6 @@ import annoworkcli.my.list_my_workspace_member
 
 
 def parse_args(parser: argparse.ArgumentParser):
-
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

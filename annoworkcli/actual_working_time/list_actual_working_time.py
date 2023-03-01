@@ -45,7 +45,6 @@ class ListActualWorkingTime:
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> list[dict[str, Any]]:
-
         query_params = {}
         term_start, term_end = get_term_start_end_from_date_for_actual_working_time(
             start_date, end_date, tzinfo=self.tzinfo
@@ -175,7 +174,6 @@ class ListActualWorkingTime:
         is_set_additional_info: bool = False,
         is_add_parent_job_info: bool = False,
     ) -> list[dict[str, Any]]:
-
         """実績業時間情報を取得する。
 
         以下の引数は排他的である。

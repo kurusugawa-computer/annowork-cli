@@ -9,7 +9,6 @@ import annoworkcli.expected_working_time.list_expected_working_time_weekly
 
 
 def parse_args(parser: argparse.ArgumentParser):
-
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義
