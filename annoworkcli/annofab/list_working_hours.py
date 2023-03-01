@@ -40,7 +40,7 @@ def _get_get_df_working_hours_from_df(
     df_aw_working_hours = df_actual_working_hours.merge(
         df_user_and_af_account[["user_id", "annofab_account_id"]], how="left", on="user_id"
     ).merge(
-        df_job_and_af_project[["job_id", "annofab_project_id"]],
+        df_job_and_af_project[["job_id", "annofab_project_id", "annofab_project_title"]],
         how="left",
         on="job_id",
     )
@@ -82,7 +82,14 @@ def _get_get_df_working_hours_from_df(
     return df_merged[
         ["date", "job_id", "job_name"]
         + USER_COLUMNS
-        + ["actual_working_hours", "annofab_project_id", "annofab_account_id", "annofab_working_hours", "notes"]
+        + [
+            "actual_working_hours",
+            "annofab_project_id",
+            "annofab_project_title",
+            "annofab_account_id",
+            "annofab_working_hours",
+            "notes",
+        ]
     ]
 
 
@@ -158,7 +165,21 @@ class ListWorkingHoursWithAnnofab:
         return df
 
     def _get_df_job_and_af_project(self, job_ids: Collection[str]) -> pandas.DataFrame:
-        """job_id,annofab_project_idが格納されたpandas.DataFrameを返します。"""
+        """
+        job_idとAnnofabのプロジェクト情報が格納されたpandas.DataFrameを返します。
+        以下の列を持ちます。
+            * job_id
+            * annofab_project_id
+            * annofab_project_title
+
+        """
+
+        def get_project_title(project_id: str) -> Optional[str]:
+            project = self.annofab_service.wrapper.get_project_or_none(project_id)
+            if project is None:
+                return None
+            return project["title"]
+
         all_job_dict = {e["job_id"]: e for e in self.all_jobs}
 
         df_job = pandas.DataFrame(self.all_jobs)
@@ -167,9 +188,12 @@ class ListWorkingHoursWithAnnofab:
         df_af_project["annofab_project_id"] = df_af_project["job_id"].apply(
             lambda e: get_annofab_project_id_from_job(all_job_dict[e])
         )
+        df_af_project["annofab_project_title"] = df_af_project["annofab_project_id"].apply(
+            lambda e: get_project_title(e)
+        )
 
         df = df_job.merge(df_af_project, how="inner", on="job_id")
-        return df[["job_id", "job_name", "annofab_project_id"]]
+        return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
 
     def _get_af_working_hours_from_af_project(
         self, af_project_id: str, start_date: str, end_date: str
@@ -319,6 +343,7 @@ class ListWorkingHoursWithAnnofab:
         df_job_and_af_project = self._get_df_job_and_af_project(
             set(df_actual_working_hours["job_id"].unique()) | (set(job_ids) if job_ids is not None else set())
         )
+        print(f"{df_job_and_af_project=}")
 
         af_project_ids = [e for e in df_job_and_af_project["annofab_project_id"].unique() if not pandas.isna(e)]
         df_af_working_hours = self._get_af_working_hours(
