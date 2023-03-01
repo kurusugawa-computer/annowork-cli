@@ -24,6 +24,7 @@
         "bokeh",
         "dataframe",
         "dateutil",
+        "dropna",
         "dtype",
         "dtypes",
         "fillna",
