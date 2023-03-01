@@ -351,7 +351,6 @@ class ListWorkingHoursWithAnnofab:
         df_job_and_af_project = self._get_df_job_and_af_project(
             set(df_actual_working_hours["job_id"].unique()) | (set(job_ids) if job_ids is not None else set())
         )
-        print(f"{df_job_and_af_project=}")
 
         af_project_ids = [e for e in df_job_and_af_project["annofab_project_id"].unique() if not pandas.isna(e)]
         df_af_working_hours = self._get_af_working_hours(

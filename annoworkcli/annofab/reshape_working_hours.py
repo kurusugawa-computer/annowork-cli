@@ -156,7 +156,7 @@ class ReshapeDataFrame:
         if "annofab_working_hours" not in df_sum_actual.columns:
             df_sum_actual["annofab_working_hours"] = 0
 
-        df_sum_assigned = df_assigned.groupby("user_id")[["assigned_working_hours"]].sum()
+        df_sum_assigned = df_assigned.groupby("user_id")[["assigned_working_hours"]].sum(numeric_only=True)
         # df_sum_assigned が0件のときは、assigned_working_hours 列がないので、追加する。
         if "assigned_working_hours" not in df_sum_assigned.columns:
             df_sum_assigned["assigned_working_hours"] = 0
@@ -641,7 +641,7 @@ class ReshapeDataFrame:
         if "annofab_working_hours" not in df_sum_actual.columns:
             df_sum_actual["annofab_working_hours"] = 0
 
-        df_sum_assigned = df_assigned.groupby(["date", "username"])[["assigned_working_hours"]].sum()
+        df_sum_assigned = df_assigned.groupby(["date", "username"])[["assigned_working_hours"]].sum(numeric_only=True)
         # df_sum_assigned が0件のときは、assigned_working_hours 列がないので、追加する。
         if "assigned_working_hours" not in df_sum_assigned.columns:
             df_sum_assigned["assigned_working_hours"] = 0
@@ -1218,7 +1218,6 @@ def parse_args(parser: argparse.ArgumentParser):
             "* total_by_user: ユーザごとに作業時間を集計します。 \n"
             "* total_by_job: ジョブごとに作業時間を集計します。 ``--assigned_file`` は不要です。 \n"
             "* total_by_parent_job: 親ジョブごとに作業時間を集計します。 \n"
-            "* total_by_job: ジョブごとに作業時間を集計します。 \n"
             "* total: 作業時間を合計します。 \n"
             "* list_by_date_user_job: 作業時間の一覧を日付、ユーザ、ジョブ単位で出力します。 ``--assigned_file`` は不要です。 \n"
             "* list_by_date_user_parent_job: 作業時間の一覧を日付、ユーザ、親ジョブ単位で出力します。 ``--assigned_file`` は不要です。 \n"
