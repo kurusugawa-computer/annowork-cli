@@ -66,21 +66,25 @@ def _get_get_df_working_hours_from_df(
 
     # job_id, job_nameの欠損値を、df_job_and_af_project を使って埋める
     # af_projectに紐付いているジョブとaf_projectのDataFrameを生成して、それを使って欠損値を埋める
-    df_job_id_af_project = df_job_and_af_project[df_job_and_af_project["annofab_project_id"].notna()]
-
+    # drop_duplicatesの理由: AnnoworkのジョブとAnnofabのプロジェクトが1対1で紐づくときだけ、df_mergeのjob_idとjob_nameの欠損値を埋めるようにするため
+    df_job_id_af_project = df_job_and_af_project[df_job_and_af_project["annofab_project_id"].notna()].drop_duplicates(
+        ["annofab_project_id"], keep=False
+    )
     df_merged = df_merged.merge(
         df_job_id_af_project[["job_id", "job_name", "annofab_project_id"]],
         how="left",
-        on=["annofab_project_id", "job_id"],
+        on=["annofab_project_id"],
         suffixes=(None, TMP_SUFFIX),
     )
+    df_merged["job_id"].fillna(df_merged[f"job_id{TMP_SUFFIX}"], inplace=True)
+    df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"], inplace=True)
+
     # annofab_project_titleを結合するために、annofab_projectだけのDataFrameを生成する
     df_af_project = df_job_and_af_project.drop_duplicates(subset=["annofab_project_id"])[
         ["annofab_project_id", "annofab_project_title"]
     ]
     df_merged = df_merged.merge(df_af_project, on="annofab_project_id", how="left")
 
-    df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"], inplace=True)
     df_merged.fillna(
         {
             "actual_working_hours": 0,
