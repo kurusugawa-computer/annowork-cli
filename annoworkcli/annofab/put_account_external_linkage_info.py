@@ -30,7 +30,6 @@ class PutAnnofabAccountId:
         self.overwrite = overwrite
 
     def put_account_annofab_info_for_user(self, user_id: str, af_account_id: str) -> bool:
-
         content = self.annowork_service.wrapper.get_account_external_linkage_info_or_none(user_id)
         if content is None:
             logger.warning(f"{user_id=}: 指定したユーザ情報は存在しません。")

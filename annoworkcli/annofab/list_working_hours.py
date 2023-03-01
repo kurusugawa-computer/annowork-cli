@@ -417,7 +417,6 @@ class ListWorkingHoursWithAnnofab:
 
 
 def main(args):
-
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
@@ -467,7 +466,6 @@ def main(args):
 
 
 def parse_args(parser: argparse.ArgumentParser):
-
     parser.add_argument(
         "-w",
         "--workspace_id",

@@ -166,7 +166,10 @@ def main(args):
             "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
-    ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=args.workspace_id,).main(
+    ListAssignedHoursDaily(
+        annowork_service=annowork_service,
+        workspace_id=args.workspace_id,
+    ).main(
         job_id_list=job_id_list,
         user_id_list=user_id_list,
         start_date=start_date,

@@ -50,7 +50,6 @@ class ListJob:
         external_linkage_info_url_list: Optional[list[str]] = None,
         is_add_parent_job_info: bool = False,
     ) -> list[dict[str, Any]]:
-
         all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         job_list = all_job_list
         if job_id_list is not None:

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "annoworkcli"
-version = "3.1.6"
+version = "3.2.0"
 description = ""
 authors = ["yuji38kwmt"]
 license = "MIT"
@@ -46,11 +46,11 @@ pytest-xdist = "*"
 pytest-cov = "*"
 
 isort = "*"
-mypy = "*"
-pylint = "*"
+mypy = ">=1"
+pylint = ">=2.16"
 autoflake = "*"
-flake8 = "*"
-black = "<23"
+flake8 = ">=6"
+black = ">=23"
 
 # type stub package
 types-requests = "*"
