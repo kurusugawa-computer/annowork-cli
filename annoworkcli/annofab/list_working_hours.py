@@ -171,9 +171,9 @@ class ListWorkingHoursWithAnnofab:
                 logger.warning(f"{user_id=} の外部連携情報にAnnofabのaccount_idは設定されていませんでした。")
             af_account_list.append({"user_id": user_id, "annofab_account_id": annofab_account_id})
 
-        df_af_account = pandas.DataFrame(af_account_list)
+        df_af_account = pandas.DataFrame(af_account_list, columns=["user_id", "annofab_account_id"])
 
-        df_user = pandas.DataFrame(self.all_workspace_members)[["user_id", "username", "workspace_member_id"]]
+        df_user = pandas.DataFrame(self.all_workspace_members, columns=["user_id", "username", "workspace_member_id"])
 
         df = df_user.merge(df_af_account, how="inner", on="user_id")
         return df
@@ -327,24 +327,39 @@ class ListWorkingHoursWithAnnofab:
         user_ids: Optional[Collection[str]] = None,
         is_show_parent_job: bool = False,
     ) -> pandas.DataFrame:
-        def _get_start_date(df: pandas.DataFrame) -> str:
+        def _get_start_date(df: pandas.DataFrame) -> Optional[str]:
+            min_date = df["date"].min() if len(df) > 0 else None
             if start_date is None:
-                return df["date"].min()
-            return min(start_date, df["date"].min())
+                return min_date
+            if min_date is not None:
+                return min(start_date, min_date)
+            return None
 
-        def _get_end_date(df: pandas.DataFrame) -> str:
+        def _get_end_date(df: pandas.DataFrame) -> Optional[str]:
+            max_date = df["date"].max() if len(df) > 0 else None
             if end_date is None:
-                return df["date"].max()
-            return max(end_date, df["date"].max())
+                return max_date
+            if max_date is not None:
+                return max(end_date, max_date)
+            return None
 
         actual_working_hours_daily_list = self.get_actual_working_hours_daily(
             job_ids=job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
         )
-
-        df_actual_working_hours = pandas.DataFrame(actual_working_hours_daily_list)
-        if len(df_actual_working_hours) == 0:
-            logger.warning(f"実績作業時間情報が0件でした。")
-            return pandas.DataFrame()
+        logger.info(f"実績作業時間は{len(actual_working_hours_daily_list)}件です。")
+        df_actual_working_hours = pandas.DataFrame(
+            actual_working_hours_daily_list,
+            columns=[
+                "date",
+                "job_id",
+                "job_name",
+                "workspace_member_id",
+                "user_id",
+                "username",
+                "actual_working_hours",
+                "notes",
+            ],
+        )
 
         # df_actual_working_hours には含まれていないユーザがAnnofabプロジェクトで作業している可能性があるので、
         # user_id_listが指定された場合は、そのユーザのAnnofabアカウント情報も取得する。
@@ -357,6 +372,7 @@ class ListWorkingHoursWithAnnofab:
         )
 
         af_project_ids = [e for e in df_job_and_af_project["annofab_project_id"].unique() if not pandas.isna(e)]
+
         df_af_working_hours = self._get_af_working_hours(
             af_project_ids=af_project_ids,
             start_date=_get_start_date(df_actual_working_hours),
