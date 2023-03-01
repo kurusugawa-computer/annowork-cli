@@ -219,7 +219,9 @@ class ReshapeDataFrame:
             アサイン時間はparent_jobに対して指定するので、アサイン時間情報は参照しない。
         """
         # dropna=Falseを指定する理由: 複数のジョブが同じAnnofabプロジェクトを参照している場合、ジョブを特定できないためjob_idが空になるときがあるため
-        df_sum_actual = df_actual.groupby("job_id", dropna=False)[["actual_working_hours", "annofab_working_hours"]].sum()
+        df_sum_actual = df_actual.groupby("job_id", dropna=False)[
+            ["actual_working_hours", "annofab_working_hours"]
+        ].sum()
         # df_sum_actual が0件のときは、列がないので追加する
         if "actual_working_hours" not in df_sum_actual.columns:
             df_sum_actual["actual_working_hours"] = 0
@@ -227,9 +229,9 @@ class ReshapeDataFrame:
             df_sum_actual["annofab_working_hours"] = 0
 
         # job_id, job_name, parent_job_id, parent_job_name, annofab_project_id 列を持つ列
-        df_job = df_actual.drop_duplicates(subset=["job_id"])[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]].set_index(
-            "job_id"
-        )
+        df_job = df_actual.drop_duplicates(subset=["job_id"])[
+            ["job_id", "job_name", "annofab_project_id", "annofab_project_title"]
+        ].set_index("job_id")
         if df_job_parent_job is not None:
             df_job = df_job.join(df_job_parent_job.set_index("job_id"), how="left")
 
@@ -285,7 +287,10 @@ class ReshapeDataFrame:
         """`--shape_type total_by_parent_job`に対応するDataFrameを生成する。"""
 
         df_tmp_actual = df_actual.merge(df_job_parent_job, how="left", on="job_id", suffixes=("_tmp", None))
-        df_sum_actual = df_tmp_actual.groupby("parent_job_id")[["actual_working_hours", "annofab_working_hours"]].sum()
+        # dropna=Falseを指定する理由: 複数のジョブが同じAnnofabプロジェクトを参照している場合、ジョブを特定できないためjob_idが空になるときがあるため
+        df_sum_actual = df_tmp_actual.groupby("parent_job_id", dropna=False)[
+            ["actual_working_hours", "annofab_working_hours"]
+        ].sum()
         df_sum_actual.reset_index(inplace=True)
         # df_sum_actual が0件のときは、列がないので追加する
         if "actual_working_hours" not in df_sum_actual.columns:
@@ -293,7 +298,7 @@ class ReshapeDataFrame:
         if "annofab_working_hours" not in df_sum_actual.columns:
             df_sum_actual["annofab_working_hours"] = 0
 
-        df_sum_assigned = df_assigned.groupby("job_id")[["assigned_working_hours"]].sum()
+        df_sum_assigned = df_assigned.groupby("job_id")[["assigned_working_hours"]].sum(numeric_only=True)
         df_sum_assigned.reset_index(inplace=True)
         # df_sum_assigned が0件のときは、assigned_working_hours 列がないので、追加する。
         if "assigned_working_hours" not in df_sum_assigned.columns:
@@ -312,7 +317,6 @@ class ReshapeDataFrame:
             },
             inplace=True,
         )
-
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
         df["activity_rate"] = df["actual_working_hours"] / df["assigned_working_hours"]
         df["activity_diff"] = df["assigned_working_hours"] / df["actual_working_hours"]
