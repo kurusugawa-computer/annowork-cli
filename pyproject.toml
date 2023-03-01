@@ -50,7 +50,7 @@ mypy = "*"
 pylint = "*"
 autoflake = "*"
 flake8 = "*"
-black = "*"
+black = "<23"
 
 # type stub package
 types-requests = "*"
