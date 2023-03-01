@@ -40,7 +40,7 @@ def _get_get_df_working_hours_from_df(
     df_aw_working_hours = df_actual_working_hours.merge(
         df_user_and_af_account[["user_id", "annofab_account_id"]], how="left", on="user_id"
     ).merge(
-        df_job_and_af_project[["job_id", "annofab_project_id", "annofab_project_title"]],
+        df_job_and_af_project[["job_id", "annofab_project_id"]],
         how="left",
         on="job_id",
     )
@@ -67,9 +67,19 @@ def _get_get_df_working_hours_from_df(
     # job_id, job_nameの欠損値を、df_job_and_af_project を使って埋める
     # af_projectに紐付いているジョブとaf_projectのDataFrameを生成して、それを使って欠損値を埋める
     df_job_id_af_project = df_job_and_af_project[df_job_and_af_project["annofab_project_id"].notna()]
+
     df_merged = df_merged.merge(
-        df_job_id_af_project, how="left", on=["annofab_project_id", "job_id"], suffixes=(None, TMP_SUFFIX)
+        df_job_id_af_project[["job_id", "job_name", "annofab_project_id"]],
+        how="left",
+        on=["annofab_project_id", "job_id"],
+        suffixes=(None, TMP_SUFFIX),
     )
+    # annofab_project_titleを結合するために、annofab_projectだけのDataFrameを生成する
+    df_af_project = df_job_and_af_project.drop_duplicates(subset=["annofab_project_id"])[
+        ["annofab_project_id", "annofab_project_title"]
+    ]
+    df_merged = df_merged.merge(df_af_project, on="annofab_project_id", how="left")
+
     df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"], inplace=True)
     df_merged.fillna(
         {
@@ -290,7 +300,7 @@ class ListWorkingHoursWithAnnofab:
             "user_id",
             "username",
         ]
-        annofab_columns = ["annofab_project_id", "annofab_account_id", "annofab_working_hours"]
+        annofab_columns = ["annofab_project_id", "annofab_project_title", "annofab_account_id", "annofab_working_hours"]
 
         if is_show_parent_job:
             parent_job_columns = [
@@ -343,7 +353,6 @@ class ListWorkingHoursWithAnnofab:
         df_job_and_af_project = self._get_df_job_and_af_project(
             set(df_actual_working_hours["job_id"].unique()) | (set(job_ids) if job_ids is not None else set())
         )
-        print(f"{df_job_and_af_project=}")
 
         af_project_ids = [e for e in df_job_and_af_project["annofab_project_id"].unique() if not pandas.isna(e)]
         df_af_working_hours = self._get_af_working_hours(
