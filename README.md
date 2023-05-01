@@ -85,4 +85,5 @@ date,job_id,job_name,workspace_member_id,user_id,username,actual_working_hours,n
 2. VSCodeのdevcontainerを起動します。
 
 
-
+# 開発者向けの情報
+https://github.com/kurusugawa-computer/annowork-cli/wiki
