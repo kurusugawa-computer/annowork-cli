@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "annoworkcli"
-version = "3.2.0"
+version = "3.2.1"
 description = "AnnoworkのCLI(Command Line Interface)"
 authors = ["Kurusugawa Computer Inc."]
 license = "MIT"
