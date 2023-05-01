@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "annoworkcli"
 version = "3.2.0"
-description = ""
-authors = ["yuji38kwmt"]
+description = "AnnoworkのCLI(Command Line Interface)"
+authors = ["Kurusugawa Computer Inc."]
 license = "MIT"
 keywords=["annowork", "cli"]
 readme="README.md"
@@ -16,9 +16,6 @@ classifiers = [
         "Topic :: Utilities",
         "Operating System :: OS Independent",
 ]
-
-
-
 
 
 [tool.poetry.dependencies]
@@ -35,33 +32,41 @@ annofabcli = ">=1.61.2"
 [tool.poetry.scripts]
 annoworkcli = "annoworkcli.__main__:main"
 
-[tool.poetry.dev-dependencies]
-pytest = "*"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7"
 pytest-xdist = "*"
 pytest-cov = "*"
 
-isort = "*"
-mypy = ">=1"
-pylint = ">=2.16"
+[tool.poetry.group.formatter.dependencies]
 autoflake = "*"
-flake8 = ">=6"
-black = ">=23"
+isort = "*"
+black = "^23"
 
-# type stub package
+[tool.poetry.group.linter.dependencies]
+mypy = "^1"
+pylint = "^2.16"
+flake8 = "^6"
+
+# typeshed
 types-requests = "*"
 types-python-dateutil = "*"
 types-PyYAML = "*"
 
-ipython = "*"
 
-# Document library
-
-# sphinx 4.4.0, pydata-sphinx-theme 0.8.0 では、 テーブルの幅が大きいときに、横スクロールバーが表示されないので、バージョンを固定する
-sphinx = "~4.2"
-pydata-sphinx-theme = "~0.6"
-
+[tool.poetry.group.documentation.dependencies]
+sphinx = "^6.1"
+pydata-sphinx-theme = ">=0.13"
 sphinx-last-updated-by-git = "*"
 sphinx-argparse = "*"
+
+[tool.poetry.group.dev]
+# 開発するときのみ必要なライブラリ。インストールしなくても開発はできるので、オプショナルにする
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+ipython = "*"
+
 
 [tool.black]
 line-length = 120
