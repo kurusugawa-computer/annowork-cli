@@ -5,10 +5,7 @@ ifndef LINT_FILES
 	export LINT_FILES:=annoworkcli
 endif
 
-.PHONY: init lint format test docs publish
-init:
-	pip install poetry --upgrade
-	poetry install
+.PHONY: init lint format test docs
 
 format:
 	poetry run autoflake  --in-place --remove-all-unused-imports  --ignore-init-module-imports --recursive ${FORMAT_FILES}
@@ -22,9 +19,6 @@ lint:
 
 test:
 	poetry run pytest -n auto  --cov=annoworkcli --cov-report=html tests
-
-publish:
-	poetry publish --build
 
 docs:
 	cd docs && poetry run make html
