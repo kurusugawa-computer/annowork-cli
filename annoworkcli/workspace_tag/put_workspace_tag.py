@@ -72,7 +72,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "put"
-    subcommand_help = "ワークスペースタグを更新します。"
+    subcommand_help = "ワークスペースタグを作成または更新します。"
 
     parser = annoworkcli.common.cli.add_parser(
         subparsers, subcommand_name, subcommand_help, description=subcommand_help

@@ -11,14 +11,26 @@ Description
 Examples
 =================================
 
-TODO
+以下のコマンドは、ワークスペースタグの一覧を出力します。
+
+.. code-block:: 
+
+    $ annoworkcli workspace_tag list --workspace_id ws \
+     --format json --output out.json
 
 
+.. code-block:: json
+   :caption: out.json
 
-出力結果
-=================================
-
-TODO
+   [
+      {
+         "workspace_tag_id": "company_kurusugawa",
+         "workspace_id": "ws",
+         "workspace_tag_name": "company:来栖川電算",
+         "created_datetime": "2022-03-14T04:15:05.243Z",
+         "updated_datetime": "2022-03-14T04:15:05.243Z"
+      }
+   ]
 
 
 Usage Details
