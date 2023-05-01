@@ -29,13 +29,22 @@ from annoworkcli.common.utils import print_csv, print_json
 logger = logging.getLogger(__name__)
 
 
-def _get_get_df_working_hours_from_df(
+def _get_df_working_hours_from_df(
     *,
     df_actual_working_hours: pandas.DataFrame,
     df_user_and_af_account: pandas.DataFrame,
     df_job_and_af_project: pandas.DataFrame,
     df_af_working_hours: pandas.DataFrame,
 ) -> pandas.DataFrame:
+    """
+    引数で受け取ったDataFrameをマージしたDataFrameを返します。
+
+    Args:
+        df_actual_working_hours: 実績作業時間情報
+        df_user_and_af_account: ユーザ情報とAnnofabアカウント情報
+        df_job_and_af_project: ジョブ情報とAnnofabプロジェクト情報
+        df_af_working_hours: Annofabの作業時間情報
+    """
     # annowork側の作業時間情報
     df_aw_working_hours = df_actual_working_hours.merge(
         df_user_and_af_account[["user_id", "annofab_account_id"]], how="left", on="user_id"
@@ -44,11 +53,6 @@ def _get_get_df_working_hours_from_df(
         how="left",
         on="job_id",
     )
-
-    if len(df_af_working_hours) == 0:
-        logger.warning(f"Annofabの作業時間情報が0件でした。")
-        df_aw_working_hours["annofab_working_hours"] = 0
-        return df_aw_working_hours
 
     df_merged = df_aw_working_hours.merge(
         df_af_working_hours, how="outer", on=["date", "annofab_project_id", "annofab_account_id"]
@@ -84,7 +88,6 @@ def _get_get_df_working_hours_from_df(
         ["annofab_project_id", "annofab_project_title"]
     ]
     df_merged = df_merged.merge(df_af_project, on="annofab_project_id", how="left")
-
     df_merged.fillna(
         {
             "actual_working_hours": 0,
@@ -181,11 +184,13 @@ class ListWorkingHoursWithAnnofab:
     def _get_df_job_and_af_project(self, job_ids: Collection[str]) -> pandas.DataFrame:
         """
         job_idとAnnofabのプロジェクト情報が格納されたpandas.DataFrameを返します。
-        以下の列を持ちます。
-            * job_id
-            * annofab_project_id
-            * annofab_project_title
 
+        Returns:
+            job_idとAnnofabのプロジェクト情報が格納されたpandas.DataFrame。
+            以下の列が存在します。
+                * job_id
+                * annofab_project_id
+                * annofab_project_title
         """
 
         def get_project_title(project_id: str) -> Optional[str]:
@@ -246,7 +251,7 @@ class ListWorkingHoursWithAnnofab:
     ) -> pandas.DataFrame:
         """Annofabの作業時間情報が格納されたDataFrameを返す。
 
-        以下の列がある。
+        返すDataFrameには以下の列が存在します。
         * date
         * annofab_project_id
         * annofab_account_id
@@ -379,13 +384,12 @@ class ListWorkingHoursWithAnnofab:
             end_date=_get_end_date(df_actual_working_hours),
         )
 
-        df = _get_get_df_working_hours_from_df(
+        df = _get_df_working_hours_from_df(
             df_actual_working_hours=df_actual_working_hours,
             df_user_and_af_account=df_user_and_af_account,
             df_job_and_af_project=df_job_and_af_project,
             df_af_working_hours=df_af_working_hours,
         )
-
         if user_ids is not None:
             df = df[df["user_id"].isin(set(user_ids))]
 
