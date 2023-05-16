@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "annoworkcli"
-version = "3.2.1"
+version = "0.0.0"  # `poetry-dynamic-versioning`を使ってGitHubのバージョンタグを取得している。変更不要
 description = "AnnoworkのCLI(Command Line Interface)"
 authors = ["Kurusugawa Computer Inc."]
 license = "MIT"
@@ -83,7 +83,13 @@ ignore_missing_imports = true
 check_untyped_defs = true
 
 
+[tool.poetry-dynamic-versioning]
+enable = true
+format = "{base}"
+
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+
