@@ -48,24 +48,24 @@ requests = "*"
 
 [[package]]
 name = "annofabcli"
-version = "1.76.1"
+version = "1.77.3"
 description = "Utility Command Line Interface for AnnoFab"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "annofabcli-1.76.1-py3-none-any.whl", hash = "sha256:5237bb334eef51c46f99aa8a2669a5b81bc253d17e2c043161894990b3ec6313"},
-    {file = "annofabcli-1.76.1.tar.gz", hash = "sha256:d27e8d92c53466d4efbc92d8cde0dab424ffd7a2902eddb56b7ff8d281c27016"},
+    {file = "annofabcli-1.77.3-py3-none-any.whl", hash = "sha256:827fc868b8031b8c6577f7e8c26b383a32159b02b05d8d144122a00f2f5424b4"},
+    {file = "annofabcli-1.77.3.tar.gz", hash = "sha256:af69b76c3bb52872e77c99e0f3e89e5182b2ce1290675eae69b8662e4cbf2dd3"},
 ]
 
 [package.dependencies]
 annofabapi = ">=0.67.1"
-bokeh = ">=3.0,<4.0"
+bokeh = ">=3.1,<4.0"
 dictdiffer = "*"
 isodate = "*"
 jmespath = "*"
 more-itertools = "*"
-pandas = "*"
+pandas = ">=2.0,<3.0"
 Pillow = "*"
 pyquery = "*"
 python-datauri = "*"
