@@ -86,4 +86,4 @@ date,job_id,job_name,workspace_member_id,user_id,username,actual_working_hours,n
 
 
 # 開発者向けの情報
-https://github.com/kurusugawa-computer/annowork-cli/wiki
+https://github.com/kurusugawa-computer/annowork-cli/blob/main/README_for_developer.md
