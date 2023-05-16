@@ -74,16 +74,5 @@ date,job_id,job_name,workspace_member_id,user_id,username,actual_working_hours,n
 
 
 
-
-# VSCode Devcontainerを使って開発する方法
-1. 以下の環境変数を定義します。
-    * `ANNOFAB_USER_ID`
-    * `ANNOFAB_PASSWORD`
-    * `ANNOWORK_USER_ID`
-    * `ANNOWORK_PASSWORD`
-
-2. VSCodeのdevcontainerを起動します。
-
-
 # 開発者向けの情報
-https://github.com/kurusugawa-computer/annowork-cli/wiki
+https://github.com/kurusugawa-computer/annowork-cli/blob/main/README_for_developer.md
