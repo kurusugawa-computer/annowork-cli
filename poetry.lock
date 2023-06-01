@@ -48,19 +48,19 @@ requests = "*"
 
 [[package]]
 name = "annofabcli"
-version = "1.76.1"
+version = "1.77.5"
 description = "Utility Command Line Interface for AnnoFab"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "annofabcli-1.76.1-py3-none-any.whl", hash = "sha256:5237bb334eef51c46f99aa8a2669a5b81bc253d17e2c043161894990b3ec6313"},
-    {file = "annofabcli-1.76.1.tar.gz", hash = "sha256:d27e8d92c53466d4efbc92d8cde0dab424ffd7a2902eddb56b7ff8d281c27016"},
+    {file = "annofabcli-1.77.5-py3-none-any.whl", hash = "sha256:ac1d23d358614824199791c5e6aa39f82286708f217b0b8c16cd77aee839a6f5"},
+    {file = "annofabcli-1.77.5.tar.gz", hash = "sha256:f5864ad5b08858e4761b9dccc5dd4df72f6e4b4dad1d55322ecf7f0712a4f986"},
 ]
 
 [package.dependencies]
 annofabapi = ">=0.67.1"
-bokeh = ">=3.0,<4.0"
+bokeh = ">=3.0.0,<3.1.0"
 dictdiffer = "*"
 isodate = "*"
 jmespath = "*"
@@ -71,6 +71,7 @@ pyquery = "*"
 python-datauri = "*"
 pyyaml = "*"
 requests = "*"
+typing-extensions = ">=4.5,<5.0"
 
 [[package]]
 name = "annoworkapi"
@@ -264,20 +265,20 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "bokeh"
-version = "3.1.0"
+version = "3.0.3"
 description = "Interactive plots and applications in the browser from Python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "bokeh-3.1.0-py3-none-any.whl", hash = "sha256:9d38ed3b130e1e043447694934c02deb1ae4adfeda1136b8b8eaed9cb26de11c"},
-    {file = "bokeh-3.1.0.tar.gz", hash = "sha256:9047dfe50a671b5e19ca588fd90a8e6bff197114a5dbd6a59cc2678942c27887"},
+    {file = "bokeh-3.0.3-py3-none-any.whl", hash = "sha256:d30e4f6220efc824c5da0dcb58138abed0e6a2d524c942409c8ca1098031e374"},
+    {file = "bokeh-3.0.3.tar.gz", hash = "sha256:1c28471ef5e6110ba5bed513137fd26054ebc4454bc768650eaeefc53b898a8a"},
 ]
 
 [package.dependencies]
 contourpy = ">=1"
 Jinja2 = ">=2.9"
-numpy = ">=1.16"
+numpy = ">=1.11.3"
 packaging = ">=16.8"
 pandas = ">=1.2"
 pillow = ">=7.1.0"
