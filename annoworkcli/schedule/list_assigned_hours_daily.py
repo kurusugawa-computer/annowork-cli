@@ -21,12 +21,21 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class AssignedHoursDaily(DataClassJsonMixin):
+    """
+    日ごとのアサイン時間情報を格納するクラス
+
+    Notes:
+        job_name, user_id, usernameがOptional型である理由
+            存在しないjob_id, workspace_member_idである可能性があるため。レアケースだが、このようなアサインデータはAnnowork画面で作成できる。
+
+    """
+
     date: str
     job_id: str
-    job_name: str
+    job_name: Optional[str]
     workspace_member_id: str
-    user_id: str
-    username: str
+    user_id: Optional[str]
+    username: Optional[str]
     assigned_working_hours: float
 
 
@@ -102,17 +111,25 @@ class ListAssignedHoursDaily:
             if end_date is not None and not date <= end_date:
                 continue
 
-            job = all_jobs_dict[job_id]
-            member = all_members_dict[workspace_member_id]
+            job = all_jobs_dict.get(job_id)
+            if job is None:
+                logger.warning(
+                    f"{job_id=} であるジョブは存在しません。 " f":: date='{date}', workspace_member_id='{workspace_member_id}'"
+                )
+
+            member = all_members_dict.get(workspace_member_id)
+            if member is None:
+                logger.warning(f"{workspace_member_id=} であるメンバーは存在しません。 " f":: date='{date}', job_id='{job_id}'")
+
             result_list.append(
                 AssignedHoursDaily(
                     date=date,
                     workspace_member_id=workspace_member_id,
                     job_id=job_id,
                     assigned_working_hours=assigned_hours,
-                    job_name=job["job_name"],
-                    user_id=member["user_id"],
-                    username=member["username"],
+                    job_name=job["job_name"] if job is not None else None,
+                    user_id=member["user_id"] if member is not None else None,
+                    username=member["username"] if member is not None else None,
                 )
             )
 
