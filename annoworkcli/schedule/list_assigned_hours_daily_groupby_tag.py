@@ -68,7 +68,7 @@ class ListAssignedHoursDailyGroupbyTag:
         # 全体の時間を日毎に集計する
 
         # key:job_id, value:job_nameのdict
-        job_dict: dict[str, str] = {}
+        job_dict: dict[str, Optional[str]] = {}
         for elm in assigned_hours_list:
             dict_hours[elm.date, elm.job_id, "total"] += elm.assigned_working_hours
             job_dict[elm.job_id] = elm.job_name
