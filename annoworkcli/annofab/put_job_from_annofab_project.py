@@ -4,11 +4,11 @@ import argparse
 import logging
 from typing import Optional
 
-from annofabapi import build as build_annofabapi
 from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+from annoworkcli.annofab.utils import build_annofabapi_resource_and_login
 from annoworkcli.common.cli import build_annoworkapi
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,9 @@ class PutJobFromAnnofabProject:
 def main(args):
     annowork_service = build_annoworkapi(args)
     main_obj = PutJobFromAnnofabProject(
-        annowork_service=annowork_service, workspace_id=args.workspace_id, annofab_service=build_annofabapi()
+        annowork_service=annowork_service,
+        workspace_id=args.workspace_id,
+        annofab_service=build_annofabapi_resource_and_login(mfa_code=args.annofab_mfa_code),
     )
     main_obj.put_job_from_annofab_project(
         parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id
@@ -96,7 +98,7 @@ def parse_args(parser: argparse.ArgumentParser):
         required=False,
         help="追加するジョブのjob_idを指定してください。未指定の場合は ``--annofab_project_id`` の値と同じです。",
     )
-
+    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.set_defaults(subcommand_func=main)
 
 

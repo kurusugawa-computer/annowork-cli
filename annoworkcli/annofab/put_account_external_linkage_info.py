@@ -4,11 +4,11 @@ import argparse
 import logging
 from typing import Any, Optional
 
-from annofabapi import build as build_annofabapi
 from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+from annoworkcli.annofab.utils import build_annofabapi_resource_and_login
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 
 logger = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class PutAnnofabAccountId:
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    annofab_service = build_annofabapi()
+    annofab_service = build_annofabapi_resource_and_login(mfa_code=args.annofab_mfa_code)
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
     PutAnnofabAccountId(
@@ -112,7 +112,7 @@ def parse_args(parser: argparse.ArgumentParser):
         default=False,
         help="上書きする",
     )
-
+    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.set_defaults(subcommand_func=main)
 
 

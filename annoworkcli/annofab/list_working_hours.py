@@ -10,7 +10,6 @@ from typing import Any, Collection, Optional
 
 import pandas
 import requests
-from annofabapi import build as build_annofabapi
 from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -22,6 +21,7 @@ from annoworkcli.actual_working_time.list_actual_working_hours_daily import (
     filter_actual_daily_list,
 )
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
+from annoworkcli.annofab.utils import build_annofabapi_resource_and_login
 from annoworkcli.common.annofab import TIMEZONE_OFFSET_HOURS, get_annofab_project_id_from_job, isoduration_to_hour
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
@@ -439,7 +439,7 @@ def main(args):
     main_obj = ListWorkingHoursWithAnnofab(
         annowork_service=build_annoworkapi(args),
         workspace_id=args.workspace_id,
-        annofab_service=build_annofabapi(),
+        annofab_service=build_annofabapi_resource_and_login(mfa_code=args.annofab_mfa_code),
         parallelism=args.parallelism,
     )
 
@@ -515,7 +515,7 @@ def parse_args(parser: argparse.ArgumentParser):
     )
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
-
+    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.set_defaults(subcommand_func=main)
 
 
