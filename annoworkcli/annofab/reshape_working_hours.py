@@ -10,13 +10,13 @@ from typing import Any, Collection, Optional
 
 import numpy
 import pandas
-from annofabapi import build as build_annofabapi
 from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
 from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
+from annoworkcli.annofab.utils import build_annofabapi_resource_and_login
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv
@@ -1067,7 +1067,7 @@ def main(args):
     main_obj = ReshapeWorkingHours(
         annowork_service=build_annoworkapi(args),
         workspace_id=args.workspace_id,
-        annofab_service=build_annofabapi(),
+        annofab_service=build_annofabapi_resource_and_login(mfa_code=args.annofab_mfa_code),
         parallelism=args.parallelism,
     )
 
@@ -1232,7 +1232,7 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
-
+    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.set_defaults(subcommand_func=main)
 
 

@@ -7,13 +7,13 @@ from pathlib import Path
 from typing import Any, Optional
 
 import pandas
-from annofabapi import build as build_annofabapi
 from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.annofab import get_annofab_project_id_from_url
 from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+from annoworkcli.annofab.utils import build_annofabapi_resource_and_login
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
@@ -113,7 +113,7 @@ class ListJobWithAnnofabProject:
                 job["annofab"] = None
                 continue
 
-            af_project = af_project_dict[af_project_id]
+            af_project = af_project_dict.get(af_project_id)
             if af_project is None:
                 logger.warning(
                     f"annofab_project_id='{af_project_id}' のAnnofabプロジェクトを取得できませんでした。:: job_id={job['job_id']}"
@@ -139,7 +139,7 @@ def main(args):
     main_obj = ListJobWithAnnofabProject(
         annowork_service=annowork_service,
         workspace_id=args.workspace_id,
-        annofab_service=build_annofabapi(),
+        annofab_service=build_annofabapi_resource_and_login(mfa_code=args.annofab_mfa_code),
         parallelism=args.parallelism,
     )
     job_list = main_obj.get_job_list_added_annofab_project(
@@ -211,6 +211,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
 
+    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.set_defaults(subcommand_func=main)
 
 
