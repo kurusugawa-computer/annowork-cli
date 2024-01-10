@@ -213,6 +213,9 @@ def visualize_statistics(temp_dir: Path, args):
     if args.output_dir is not None:
         command.extend(["--output_dir", str(args.output_dir)])
 
+    if args.annofab_mfa_code is not None:
+        command.extend(["--mfa_code", str(args.annofab_mfa_code)])
+
     if args.annofabcli_options is not None:
         command.extend(args.annofabcli_options)
 
@@ -248,6 +251,8 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
 
     parser.add_argument("--temp_dir", type=Path, required=False, help="テンポラリディレクトリ")
+
+    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
 
     # 残りの引数は `annofabcli statistics visualize`コマンドにそのまま渡す
     parser.add_argument(
