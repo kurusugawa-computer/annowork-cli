@@ -74,13 +74,13 @@ typing-extensions = ">=4.5,<5.0"
 
 [[package]]
 name = "annoworkapi"
-version = "3.0.4"
-description = "Python Clinet Library of Annowork WebAPI"
+version = "3.0.1"
+description = "Python Clinet Library of AnnoWork WebAPI"
 optional = false
-python-versions = ">=3.8.1,<4.0.0"
+python-versions = ">=3.8,<4.0"
 files = [
-    {file = "annoworkapi-3.0.4-py3-none-any.whl", hash = "sha256:c9e29de6a41862d3da668b29bc01f37310a19200f1d913921a2c8736262edfed"},
-    {file = "annoworkapi-3.0.4.tar.gz", hash = "sha256:38421df53c3fe1c0f35371476b5a8a7269cd17db2d6173e3cc8534cdddc26873"},
+    {file = "annoworkapi-3.0.1-py3-none-any.whl", hash = "sha256:65155aa3763274cde3c9c9c3ea9adb2ce0b9d6264d33874f3acd393a4887d541"},
+    {file = "annoworkapi-3.0.1.tar.gz", hash = "sha256:bd22d8dabc5b62403e9c4b72a091d0a92c3c6d5b037192586b0e2fea13da481e"},
 ]
 
 [package.dependencies]
@@ -2166,5 +2166,5 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.8.1"
-content-hash = "c92047446b12e3d1f7c3c4d9f63e79e878ad87e2da760943263d79658448e8f8"
+python-versions = "^3.8"
+content-hash = "8aa9a4d395e9718d17b15d5a084c60a9edc678f78d5753d20b3c9e2a4fd5a444"
