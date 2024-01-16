@@ -17,15 +17,14 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-# 3.8.1まで指定している理由: flake8 v6.0.0を利用するため、Python3.8.0のサポートを落とした
-python = "^3.8.1"
+python = "^3.8"
 pyyaml = "*"
 annoworkapi = ">=3.0.1"
-annofabapi = ">=0.52.4"
+annofabapi = ">=0.72.0"
 more-itertools = "*"
 pandas = "*"
 isodate = "*"
-annofabcli = ">=1.61.2"
+annofabcli = ">=1.78.1"
 
 [tool.poetry.scripts]
 annoworkcli = "annoworkcli.__main__:main"
@@ -42,9 +41,10 @@ isort = "*"
 black = "^23"
 
 [tool.poetry.group.linter.dependencies]
-mypy = "^1"
-pylint = "^2.16"
-flake8 = "^6"
+# pythonバージョンを指定している理由：lintは開発環境と同じPythonバージョンで実行するため。また古いPythonバージョンにサポートしていないライブラリのバージョンがあるため
+mypy = {version="^1", python = ">=3.11"}
+flake8 = {version="^7", python = ">=3.11"}
+pylint = {version="^3", python = ">=3.11"}
 
 # typeshed
 types-requests = "*"
