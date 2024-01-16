@@ -1,12 +1,6 @@
 language: python
 dist: focal
 
-python:
-  - "3.8"
-  - "3.9"
-  - "3.10"
-  - "3.11"
-
 install:
   - pip install pip --upgrade
   - pip install "poetry<1.8"
@@ -18,16 +12,28 @@ before_script:
   - echo "Asia/Tokyo" > sudo tee /etc/timezone  > /dev/null
 
 script:
-   - make lint
   # webapiにアクセスするテストは実行しないようにする
    - poetry run pytest -n auto -m "not access_webapi"
+
+
+jobs:
+  include:
+    - python: 3.8
+    - python: 3.9
+    - python: 3.10
+    - python: 3.11
+      script:
+        # 開発環境と同じPythonバージョンのみlintを実行する
+        - make lint
+    - python: 3.12
+
 
 branches:
   only:
       - main
 
+cache: pip
 env:
   # `poetry install`時に`Max retries exceeded with`が発生しないようにするため、タイムアウト時間を指定する
   - PIP_DEFAULT_TIMEOUT=300
 
-cache: pip
