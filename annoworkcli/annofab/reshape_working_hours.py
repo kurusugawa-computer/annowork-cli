@@ -854,7 +854,7 @@ class ReshapeWorkingHours:
             result.extend(tmp_list)
 
         df = pandas.DataFrame(result)[["user_id", "username", "company"]]
-        df_duplicated = df[df.duplicated(subset=["user_id"])]
+        df_duplicated = df[df.duplicated(["user_id"])]
         if len(df_duplicated) > 0:
             logger.warning(
                 f"{len(df_duplicated)} 件のユーザに複数の会社情報がワークスペースタグとして設定されています。" f":: {list(df_duplicated['user_id'])}"
