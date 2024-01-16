@@ -439,7 +439,11 @@ def main(args):
     main_obj = ListWorkingHoursWithAnnofab(
         annowork_service=build_annoworkapi(args),
         workspace_id=args.workspace_id,
-        annofab_service=build_annofabapi_resource_and_login(mfa_code=args.annofab_mfa_code),
+        annofab_service=build_annofabapi_resource_and_login(
+            annofab_login_user_id=args.annofab_user_id,
+            annofab_login_password=args.annofab_password,
+            mfa_code=args.annofab_mfa_code,
+        ),
         parallelism=args.parallelism,
     )
 
@@ -516,6 +520,9 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
     parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
+    parser.add_argument("--annofab_user_id", type=str, help="Annofabにログインする際のユーザID")
+    parser.add_argument("--annofab_password", type=str, help="Annofabにログインする際のパスワード")
+
     parser.set_defaults(subcommand_func=main)
 
 

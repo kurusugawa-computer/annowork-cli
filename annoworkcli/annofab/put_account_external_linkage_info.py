@@ -80,7 +80,13 @@ class PutAnnofabAccountId:
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    annofab_service = build_annofabapi_resource_and_login(mfa_code=args.annofab_mfa_code)
+    annofab_service = (
+        build_annofabapi_resource_and_login(
+            annofab_login_user_id=args.annofab_user_id,
+            annofab_login_password=args.annofab_password,
+            mfa_code=args.annofab_mfa_code,
+        )
+    )
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
     PutAnnofabAccountId(
@@ -113,6 +119,9 @@ def parse_args(parser: argparse.ArgumentParser):
         help="上書きする",
     )
     parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
+    parser.add_argument("--annofab_user_id", type=str, help="Annofabにログインする際のユーザID")
+    parser.add_argument("--annofab_password", type=str, help="Annofabにログインする際のパスワード")
+
     parser.set_defaults(subcommand_func=main)
 
 
