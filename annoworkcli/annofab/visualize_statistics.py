@@ -200,7 +200,7 @@ def visualize_statistics(temp_dir: Path, args):
     elif job_id_list is not None:
         job_id_annofab_project_id_dict = main_obj.get_job_id_annofab_project_id_dict_from_job_id(job_id_list)
         if len(job_id_annofab_project_id_dict) == 0:
-            logger.error(f"Annofabプロジェクトに紐づくジョブが0件なので、終了します。")
+            logger.error("Annofabプロジェクトに紐づくジョブが0件なので、終了します。")
             return
         command.extend(["--project_id"] + list(job_id_annofab_project_id_dict.values()))
 
@@ -215,6 +215,12 @@ def visualize_statistics(temp_dir: Path, args):
 
     if args.annofab_mfa_code is not None:
         command.extend(["--mfa_code", str(args.annofab_mfa_code)])
+
+    if args.annofab_user_id is not None:
+        command.extend(["--annofab_user_id", str(args.annofab_user_id)])
+
+    if args.annofab_password is not None:
+        command.extend(["--annofab_password", str(args.annofab_password)])
 
     if args.annofabcli_options is not None:
         command.extend(args.annofabcli_options)
