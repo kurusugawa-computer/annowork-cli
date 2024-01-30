@@ -1,8 +1,9 @@
 import argparse
+import copy
 import logging
 import sys
 from typing import Optional, Sequence
-import copy
+
 import annoworkcli
 import annoworkcli.account.subcommand
 import annoworkcli.actual_working_time.subcommand
