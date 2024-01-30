@@ -779,19 +779,12 @@ class ReshapeWorkingHours:
         *,
         annowork_service: AnnoworkResource,
         workspace_id: str,
-        annofab_service: AnnofabResource,
         parallelism: Optional[int] = None,
     ):
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
+        self.parallelism = parallelism
         self.all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
-        self.list_actual_obj = ListWorkingHoursWithAnnofab(
-            annowork_service=annowork_service,
-            workspace_id=workspace_id,
-            annofab_service=annofab_service,
-            parallelism=parallelism,
-        )
-        self.list_assigned_obj = ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=workspace_id)
 
     def get_job_id_list_from_af_project_id(self, annofab_project_id_list: list[str]) -> list[str]:
         annofab_project_id_set = set(annofab_project_id_list)
@@ -806,6 +799,7 @@ class ReshapeWorkingHours:
 
     def get_df_actual(
         self,
+        annofab_service: AnnofabResource,
         *,
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
@@ -819,10 +813,17 @@ class ReshapeWorkingHours:
         Returns:
             [type]: [description]
         """
-        if parent_job_ids is not None:
-            job_ids = self.list_actual_obj.get_job_id_list_from_parent_job_id_list(parent_job_ids)
+        list_actual_obj = ListWorkingHoursWithAnnofab(
+            annowork_service=self.annowork_service,
+            workspace_id=self.workspace_id,
+            annofab_service=annofab_service,
+            parallelism=self.parallelism,
+        )
 
-        df = self.list_actual_obj.get_df_working_hours(
+        if parent_job_ids is not None:
+            job_ids = list_actual_obj.get_job_id_list_from_parent_job_id_list(parent_job_ids)
+
+        df = list_actual_obj.get_df_working_hours(
             start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids
         )
         return df
@@ -835,7 +836,10 @@ class ReshapeWorkingHours:
         parent_job_ids: Optional[Collection[str]] = None,
         user_ids: Optional[Collection[str]] = None,
     ):
-        result = self.list_assigned_obj.get_assigned_hours_daily_list(
+        list_assigned_obj = ListAssignedHoursDaily(
+            annowork_service=self.annowork_service, workspace_id=self.workspace_id
+        )
+        result = list_assigned_obj.get_assigned_hours_daily_list(
             start_date=start_date,
             end_date=end_date,
             job_ids=parent_job_ids,
@@ -1067,11 +1071,6 @@ def main(args):
     main_obj = ReshapeWorkingHours(
         annowork_service=build_annoworkapi(args),
         workspace_id=args.workspace_id,
-        annofab_service=build_annofabapi_resource_and_login(
-            annofab_login_user_id=args.annofab_user_id,
-            annofab_login_password=args.annofab_password,
-            mfa_code=args.annofab_mfa_code,
-        ),
         parallelism=args.parallelism,
     )
 
@@ -1097,7 +1096,14 @@ def main(args):
     if args.actual_file is not None:
         df_actual = get_dataframe_from_input_file(args.actual_file)
     else:
+        annofab_service = build_annofabapi_resource_and_login(
+            annofab_login_user_id=args.annofab_user_id,
+            annofab_login_password=args.annofab_password,
+            mfa_code=args.annofab_mfa_code,
+        )
+
         df_actual = main_obj.get_df_actual(
+            annofab_service=annofab_service,
             start_date=start_date,
             end_date=end_date,
             parent_job_ids=parent_job_id_list,
