@@ -11,9 +11,10 @@ from typing import Any, List, Optional, Tuple
 
 import annoworkapi
 from annoworkapi.api import DEFAULT_ENDPOINT_URL
-from annoworkapi.exceptions import AnnoworkApiException
+from annoworkapi.exceptions import CredentialsNotFoundError
 from more_itertools import first_true
 
+from annoworkcli.common.exeptions import CommandLineArgumentError
 from annoworkcli.common.utils import get_file_scheme_path, read_lines_except_blank_line
 
 logger = logging.getLogger(__name__)
@@ -53,7 +54,7 @@ class PrettyHelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaul
             if action.default is not argparse.SUPPRESS:
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if action.option_strings or action.nargs in defaulting_nargs:
-                    # 以下の条件だけ、annofabcli独自の設定
+                    # 以下の条件だけ、annoworkcli独自の設定
                     if action.default is not None and not action.const:
                         help += " (default: %(default)s)"
         return help
@@ -91,6 +92,18 @@ def add_parser(
         parent_parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
         group = parent_parser.add_argument_group(GLOBAL_OPTIONAL_ARGUMENTS_TITLE)
         group.add_argument("--debug", action="store_true", help="HTTPリクエストの内容やレスポンスのステータスコードなど、デバッグ用のログが出力されます。")
+
+        group.add_argument(
+            "--annowork_user_id",
+            type=str,
+            help="Annoworkにログインする際のユーザーIDを指定します。",
+        )
+        group.add_argument(
+            "--annowork_password",
+            type=str,
+            help="Annoworkにログインする際のパスワードを指定します。",
+        )
+
         group.add_argument(
             "--endpoint_url",
             type=str,
@@ -212,6 +225,41 @@ def prompt_yesnoall(msg: str) -> Tuple[bool, bool]:
             return True, True
 
 
+def _get_annowork_user_id_from_stdin() -> str:
+    """標準入力からAnnoworkにログインする際のユーザーIDを取得します。"""
+    login_user_id = ""
+    while login_user_id == "":
+        login_user_id = input("Enter Annowork User ID: ")
+    return login_user_id
+
+
+def _get_annowork_password_from_stdin() -> str:
+    """標準入力からAnnoworkにログインする際のパスワードを取得します。"""
+    login_password = ""
+    while login_password == "":
+        login_password = getpass.getpass("Enter Annowork Password: ")
+    return login_password
+
+
+def _get_endpoint_url_from_args_or_envvar(args: argparse.Namespace) -> str:
+    """
+    コマンドライン引数`--endpoint_url`または環境変数`ANNOWORK_ENDPOINT_URL`から、AnnoworkのエンドポイントURLを取得します。
+
+    優先順位は次の通りです。
+    1. コマンドライン引数 `--endpoint_url`
+    2. 環境変数 `ANNOWORK_ENDPOINT_URL`
+    """
+    endpoint_url = annoworkapi.api.DEFAULT_ENDPOINT_URL
+
+    if "ANNOWORK_ENDPOINT_URL" in os.environ:
+        endpoint_url = os.environ["ANNOWORK_ENDPOINT_URL"]
+
+    if args.endpoint_url is not None:
+        endpoint_url = args.endpoint_url
+
+    return endpoint_url
+
+
 def build_annoworkapi(args: argparse.Namespace) -> annoworkapi.resource.Resource:
     """annoworkapiのインスタンスを生成します。
 
@@ -225,29 +273,33 @@ def build_annoworkapi(args: argparse.Namespace) -> annoworkapi.resource.Resource
     Returns:
         annoworkapi.resource.Resource: annoworkapiのインスタンス
     """
-    endpoint_url = annoworkapi.api.DEFAULT_ENDPOINT_URL
+    endpoint_url = _get_endpoint_url_from_args_or_envvar(args)
 
-    if "ANNOWORK_ENDPOINT_URL" in os.environ:
-        endpoint_url = os.environ["ANNOWORK_ENDPOINT_URL"]
-
-    if args.endpoint_url is not None:
-        endpoint_url = args.endpoint_url
-
+    # エンドポイントURLがデフォルトでない場合は、気付けるようにするためログに出力する
     if endpoint_url != annoworkapi.api.DEFAULT_ENDPOINT_URL:
         logger.info(f"endpoint_url='{endpoint_url}'")
 
+    if args.annowork_user_id is not None and args.annowork_password is not None:
+        return annoworkapi.build(
+            login_user_id=args.annowork_user_id, login_password=args.annowork_password, endpoint_url=endpoint_url
+        )
+
+    elif args.annowork_user_id is not None and args.annowork_password is None:
+        # コマンドライン引数でユーザーIDのみ指定された場合は、パスワードを標準入力から取得する
+        login_password = _get_annowork_password_from_stdin()
+        return annoworkapi.build(
+            login_user_id=args.annowork_user_id, login_password=login_password, endpoint_url=endpoint_url
+        )
+
+    elif args.annowork_user_id is None and args.annowork_password is not None:
+        # コマンドライン引数でパスワードのみ指定された場合は、エラーにする
+        raise CommandLineArgumentError("`--annowork_password`を指定する際は、`--annowork_user_id`も指定してください。")
+
+    # コマンドライン引数でユーザーID、パスワードが指定されていない場合
     try:
         return annoworkapi.build(endpoint_url=endpoint_url)
-    except AnnoworkApiException:
+    except CredentialsNotFoundError:
         # 環境変数, netrcフィアルに認証情報が設定されていなかったので、標準入力から認証情報を入力させる。
-        login_user_id = ""
-        while login_user_id == "":
-            login_user_id = input("Enter Annowork User ID: ")
-
-        login_password = ""
-        while login_password == "":
-            login_password = getpass.getpass("Enter Annowork Password: ")
-
-        return annoworkapi.resource.Resource(
-            endpoint_url=endpoint_url, login_user_id=login_user_id, login_password=login_password
-        )
+        login_user_id = _get_annowork_user_id_from_stdin()
+        login_password = _get_annowork_password_from_stdin()
+        return annoworkapi.build(endpoint_url=endpoint_url, login_user_id=login_user_id, login_password=login_password)

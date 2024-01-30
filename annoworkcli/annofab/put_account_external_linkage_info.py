@@ -80,12 +80,10 @@ class PutAnnofabAccountId:
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    annofab_service = (
-        build_annofabapi_resource_and_login(
-            annofab_login_user_id=args.annofab_user_id,
-            annofab_login_password=args.annofab_password,
-            mfa_code=args.annofab_mfa_code,
-        )
+    annofab_service = build_annofabapi_resource_and_login(
+        annofab_login_user_id=args.annofab_user_id,
+        annofab_login_password=args.annofab_password,
+        mfa_code=args.annofab_mfa_code,
     )
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
