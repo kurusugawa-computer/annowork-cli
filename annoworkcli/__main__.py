@@ -2,7 +2,7 @@ import argparse
 import logging
 import sys
 from typing import Optional, Sequence
-
+import copy
 import annoworkcli
 import annoworkcli.account.subcommand
 import annoworkcli.actual_working_time.subcommand
@@ -43,6 +43,20 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def mask_argv(argv: list[str]) -> list[str]:
+    """
+    `argv`にセンシティブな情報が含まれている場合は、`***`に置き換える。
+    """
+    tmp_argv = copy.deepcopy(argv)
+    for masked_option in ["--annowork_user_id", "--annowork_password", "--annofab_user_id", "--annofab_password"]:
+        try:
+            index = tmp_argv.index(masked_option)
+            tmp_argv[index + 1] = "***"
+        except ValueError:
+            continue
+    return tmp_argv
+
+
 def main(arguments: Optional[Sequence[str]] = None):
     """
     annoworkcli コマンドのメイン処理
@@ -60,7 +74,10 @@ def main(arguments: Optional[Sequence[str]] = None):
     if hasattr(args, "subcommand_func"):
         try:
             set_default_logger(is_debug_mode=args.debug)
-            logger.info(f"{sys.argv=}")
+            argv = sys.argv
+            if arguments is not None:
+                argv = ["annoworkcli", *list(arguments)]
+            logger.info(f"args={mask_argv(argv)}")
             args.subcommand_func(args)
         except Exception as e:
             logger.exception(e)

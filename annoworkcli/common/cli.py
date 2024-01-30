@@ -54,7 +54,7 @@ class PrettyHelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaul
             if action.default is not argparse.SUPPRESS:
                 defaulting_nargs = [argparse.OPTIONAL, argparse.ZERO_OR_MORE]
                 if action.option_strings or action.nargs in defaulting_nargs:
-                    # 以下の条件だけ、annofabcli独自の設定
+                    # 以下の条件だけ、annoworkcli独自の設定
                     if action.default is not None and not action.const:
                         help += " (default: %(default)s)"
         return help
@@ -281,14 +281,14 @@ def build_annoworkapi(args: argparse.Namespace) -> annoworkapi.resource.Resource
 
     if args.annowork_user_id is not None and args.annowork_password is not None:
         return annoworkapi.build(
-            login_user_id=args.login_user_id, login_password=args.annofab_password, endpoint_url=endpoint_url
+            login_user_id=args.annowork_user_id, login_password=args.annowork_password, endpoint_url=endpoint_url
         )
 
     elif args.annowork_user_id is not None and args.annowork_password is None:
         # コマンドライン引数でユーザーIDのみ指定された場合は、パスワードを標準入力から取得する
         login_password = _get_annowork_password_from_stdin()
         return annoworkapi.build(
-            login_user_id=args.login_user_id, login_password=login_password, endpoint_url=endpoint_url
+            login_user_id=args.annowork_user_id, login_password=login_password, endpoint_url=endpoint_url
         )
 
     elif args.annowork_user_id is None and args.annowork_password is not None:
