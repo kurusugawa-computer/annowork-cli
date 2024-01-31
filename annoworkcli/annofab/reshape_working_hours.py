@@ -306,7 +306,7 @@ class ReshapeDataFrame:
 
         df = df_sum_actual.merge(df_sum_assigned, how="outer", left_on="parent_job_id", right_on="job_id")
         # outer joinしているので、parent_job_idに欠損値が出る。それをjob_idで埋める。
-        df["parent_job_id"].fillna(df["job_id"], inplace=True)
+        df["parent_job_id"] = df["parent_job_id"].fillna(df["job_id"])
 
         df = df.merge(df_parent_job, how="left", on="parent_job_id")
         df.fillna(
