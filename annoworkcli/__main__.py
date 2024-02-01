@@ -6,6 +6,8 @@ import logging
 import sys
 from typing import Optional, Sequence
 
+import pandas
+
 import annoworkcli
 import annoworkcli.account.subcommand
 import annoworkcli.actual_working_time.subcommand
@@ -21,6 +23,17 @@ from annoworkcli.common.cli import PrettyHelpFormatter
 from annoworkcli.common.utils import set_default_logger
 
 logger = logging.getLogger(__name__)
+
+
+def warn_pandas_copy_on_write() -> None:
+    """
+    pandas2.2以上ならば、Copy-on-Writeの警告を出す。
+    pandas 3.0で予期しない挙動になるのを防ぐため。
+    https://pandas.pydata.org/docs/user_guide/copy_on_write.html
+    """
+    major, minor, _ = pandas.__version__.split(".")
+    if int(major) >= 2 and int(minor) >= 2:
+        pandas.options.mode.copy_on_write = "warn"
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -92,4 +105,5 @@ def main(arguments: Optional[Sequence[str]] = None):
 
 
 if __name__ == "__main__":
+    warn_pandas_copy_on_write()
     main()
