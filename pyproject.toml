@@ -17,7 +17,7 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 pyyaml = "*"
 annoworkapi = ">=3.1"
 annofabapi = ">=0.72.0"
