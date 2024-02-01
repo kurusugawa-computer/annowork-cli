@@ -66,7 +66,7 @@ def _get_df_working_hours_from_df(
         df_user_and_af_account, how="left", on="annofab_account_id", suffixes=(None, TMP_SUFFIX)
     )
     for user_column in USER_COLUMNS:
-        df_merged[user_column].fillna(df_merged[f"{user_column}{TMP_SUFFIX}"], inplace=True)
+        df_merged[user_column] = df_merged[user_column].fillna(df_merged[f"{user_column}{TMP_SUFFIX}"])
 
     # job_id, job_nameの欠損値を、df_job_and_af_project を使って埋める
     # af_projectに紐付いているジョブとaf_projectのDataFrameを生成して、それを使って欠損値を埋める
@@ -80,8 +80,8 @@ def _get_df_working_hours_from_df(
         on=["annofab_project_id"],
         suffixes=(None, TMP_SUFFIX),
     )
-    df_merged["job_id"].fillna(df_merged[f"job_id{TMP_SUFFIX}"], inplace=True)
-    df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"], inplace=True)
+    df_merged["job_id"] = df_merged["job_id"].fillna(df_merged[f"job_id{TMP_SUFFIX}"])
+    df_merged["job_name"] = df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"])
 
     # annofab_project_titleを結合するために、annofab_projectだけのDataFrameを生成する
     df_af_project = df_job_and_af_project.drop_duplicates(subset=["annofab_project_id"])[
