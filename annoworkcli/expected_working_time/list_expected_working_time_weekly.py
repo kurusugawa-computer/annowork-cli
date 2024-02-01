@@ -32,8 +32,15 @@ def get_weekly_expected_working_hours_df(
     df = pandas.DataFrame(expected_working_times)
     # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
     df["date"] = pandas.to_datetime(df["date"])
+
     df_weekly = (
-        df.groupby("workspace_member_id").resample("W", on="date", label="left", closed="left").sum(numeric_only=True)
+        # `include_groups=False`を指定する理由：pandas2.2.0で以下の警告が出ないようにするため
+        # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
+        # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.  # noqa: E501
+        # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
+        df.groupby("workspace_member_id")
+        .resample("W", on="date", label="left", closed="left", include_groups=False)
+        .sum(numeric_only=True)
     )
     df_weekly.reset_index(inplace=True)
 
