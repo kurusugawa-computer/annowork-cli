@@ -86,6 +86,7 @@ def _get_df_working_hours_from_df(
         ["annofab_project_id", "annofab_project_title"]
     ]
     df_merged = df_merged.merge(df_af_project, on="annofab_project_id", how="left")
+
     df_merged.fillna(
         {
             "actual_working_hours": 0,
@@ -277,7 +278,12 @@ class ListWorkingHoursWithAnnofab:
 
         if len(result) > 0:
             return pandas.DataFrame(result)
-        return pandas.DataFrame(columns=["date", "annofab_project_id", "annofab_account_id", "annofab_working_hours"])
+
+        df = pandas.DataFrame(columns=["date", "annofab_project_id", "annofab_account_id", "annofab_working_hours"])
+        # `astype()`を使用する理由：後続の処理で`fillna()`を実行した際に、「Downcasting object dtype arrays ～」というFutureWarningを発生させないようにするため
+        # https://qiita.com/yuji38kwmt/items/ba07a25924cfda363e42
+        df = df.astype({"annofab_working_hours": "float64"})
+        return df
 
     def _get_df_job_parent_job(self) -> pandas.DataFrame:
         """job_id, parent_job_id, parent_job_nameが格納されたpandas.DataFrameを返します。"""
@@ -330,6 +336,26 @@ class ListWorkingHoursWithAnnofab:
         user_ids: Optional[Collection[str]] = None,
         is_show_parent_job: bool = False,
     ) -> pandas.DataFrame:
+        def _get_af_project_ids(df: pandas.DataFrame) -> list[str]:
+            """
+            annoworkジョブとannofabプロジェクの情報が格納されたDataFrameから、アクセスできるAnnofabプロジェクトのIDのリストを返す。
+            Annofabプロジェクトにアクセスできるかは、`annofab_project_title`が空かどうかで判定します。
+
+            Args:
+                df: annoworkジョブとannofabプロジェクの情報が格納されたDataFrame。以下の列を参照します。
+                    * annofab_project_id
+                    * annofab_project_title
+
+
+            """
+            df = df.drop_duplicates(subset=["annofab_project_id", "annofab_project_title"])
+            # 補足：
+            #  * annofab_project_idがnaのとき：Annofabプロジェクトに紐付いていないジョブ
+            #  * annofab_project_titleがnaのとき：アクセスできないAnnofabプロジェクトに紐付いているジョブ
+            df = df[df["annofab_project_id"].notna() & df["annofab_project_title"].notna()]
+            # `unique()`を実行する理由：前述の`drop_duplicates`でannofab_project_idはユニークなはずだが、念の為`unique()`を実行した。
+            return list(e for e in df["annofab_project_id"].unique())
+
         def _get_start_date(df: pandas.DataFrame) -> Optional[str]:
             min_date = df["date"].min() if len(df) > 0 else None
             if start_date is None:
@@ -374,7 +400,7 @@ class ListWorkingHoursWithAnnofab:
             set(df_actual_working_hours["job_id"].unique()) | (set(job_ids) if job_ids is not None else set())
         )
 
-        af_project_ids = [e for e in df_job_and_af_project["annofab_project_id"].unique() if not pandas.isna(e)]
+        af_project_ids = _get_af_project_ids(df_job_and_af_project)
 
         df_af_working_hours = self._get_af_working_hours(
             af_project_ids=af_project_ids,
