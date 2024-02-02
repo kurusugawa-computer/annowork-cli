@@ -24,6 +24,7 @@
         "bokeh",
         "dataframe",
         "dateutil",
+        "Downcasting",
         "dropna",
         "dtype",
         "dtypes",
