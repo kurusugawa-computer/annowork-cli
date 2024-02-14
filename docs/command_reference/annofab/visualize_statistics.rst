@@ -73,7 +73,7 @@ AnnofabプロジェクトのIDは、``--annofab_project_id`` で指定できま�
 .. code-block:: 
 
    $ annoworkcli annofab visualize_statistics --workspace_id org --job_id job \
-    --output_dir out --annofabcli_options --task_query '{"status":"complete}' --minimal
+    --output_dir out --annofabcli_options --task_query '{"status":"complete"}' --minimal
 
 
 コマンドの使い方は、`annofabcli statistics visualize <https://annofab-cli.readthedocs.io/ja/latest/command_reference/statistics/visualize.html>`_ のドキュメントを参照してください。
