@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as devcontainer
+FROM ubuntu:22.04
 
 # Install prerequisites
 RUN set -x \
@@ -22,10 +22,6 @@ RUN update-locale LANG=ja_JP.UTF-8 LANGUAGE=ja_JP:ja \
 ENV LANG ja_JP.UTF-8
 ENV LC_ALL ja_JP.UTF-8
 ENV LC_CTYPE ja_JP.UTF-8
-
-# ミラーは遅いのが混じっているので好きなリポジトリに変更すべき
-RUN set -x \
-    && sed -i.bak -r 's!(deb|deb-src) \S+!\1 mirror://mirrors.ubuntu.com/mirrors.txt!' /etc/apt/sources.list
 
 # Install Ubuntu packages
 RUN set -x \
@@ -86,8 +82,6 @@ RUN useradd -m -s /bin/bash -u 5000 -U vscode \
     && groupadd --gid 999 docker \
     && usermod -aG docker vscode
 
-ADD entrypoint.sh /entrypoint.sh
-
 USER vscode
 
 RUN poetry config virtualenvs.in-project true
@@ -98,4 +92,3 @@ RUN set -x \
     && mkdir -p /home/vscode/.vscode-server/extensions /home/vscode/.vscode-server-insiders \
     && ln -s /home/vscode/.vscode-server/extensions /home/vscode/.vscode-server-insiders/extensions
 
-ENTRYPOINT [ "bash", "/entrypoint.sh" ]
