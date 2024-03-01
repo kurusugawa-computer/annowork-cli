@@ -31,7 +31,7 @@ annoworkcli = "annoworkcli.__main__:main"
 
 
 [tool.poetry.group.test.dependencies]
-pytest = "^7"
+pytest = ">=7,<9"
 pytest-xdist = "*"
 pytest-cov = "*"
 
