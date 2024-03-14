@@ -5,7 +5,7 @@ import logging.config
 import pkgutil
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar  # noqa: UP035
 
 import isodate
 import pandas

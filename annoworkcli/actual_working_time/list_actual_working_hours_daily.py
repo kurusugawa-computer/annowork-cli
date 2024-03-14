@@ -7,7 +7,7 @@ from collections import defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple  # noqa: UP035
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree

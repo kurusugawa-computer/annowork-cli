@@ -2,7 +2,7 @@ import argparse
 import logging
 from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple  # noqa: UP035
 
 import pandas
 from annoworkapi.enums import ScheduleType

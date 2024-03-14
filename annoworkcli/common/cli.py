@@ -7,7 +7,7 @@ import json
 import logging
 import os
 from enum import Enum
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple  # noqa: UP035
 
 import annoworkapi
 from annoworkapi.api import DEFAULT_ENDPOINT_URL

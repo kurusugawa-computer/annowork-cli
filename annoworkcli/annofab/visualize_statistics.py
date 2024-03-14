@@ -6,7 +6,7 @@ import tempfile
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple  # noqa: UP035
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
