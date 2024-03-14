@@ -46,9 +46,9 @@ class PrettyHelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaul
         # https://qiita.com/yuji38kwmt/items/c7c4d487e3188afd781e 参照
 
         # 必須な引数には、引数の説明の後ろに"(required)"を付ける
-        help = action.help  # pylint: disable=redefined-builtin
+        help = action.help  # pylint: disable=redefined-builtin  # noqa: A001
         if action.required:
-            help += " (required)"
+            help += " (required)"  # noqa: A001
 
         if "%(default)" not in action.help:
             if action.default is not argparse.SUPPRESS:
@@ -56,7 +56,7 @@ class PrettyHelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaul
                 if action.option_strings or action.nargs in defaulting_nargs:
                     # 以下の条件だけ、annoworkcli独自の設定
                     if action.default is not None and not action.const:
-                        help += " (default: %(default)s)"
+                        help += " (default: %(default)s)"  # noqa: A001
         return help
 
 
