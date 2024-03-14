@@ -53,15 +53,15 @@ class DeleteActualWorkingTime:
                     if all_yes:
                         self.all_yes = all_yes
 
-                actual = self.annowork_service.api.delete_actual_working_time_by_workspace_member(
+                actual2 = self.annowork_service.api.delete_actual_working_time_by_workspace_member(
                     self.workspace_id,
                     workspace_member_id=actual["workspace_member_id"],
                     actual_working_time_id=actual["actual_working_time_id"],
                 )
-                logger.debug(f"{index+1} 件目: 実績作業時間を削除しました。:: {actual}")
+                logger.debug(f"{index+1} 件目: 実績作業時間を削除しました。:: {actual2}")
                 success_count += 1
-            except Exception as e:
-                logger.warning(f"{index+1} 件目: 実績作業時間の削除に失敗しました。{e}")
+            except Exception:
+                logger.warning(f"{index+1} 件目: 実績作業時間の削除に失敗しました。", exc_info=True)
                 continue
             finally:
                 if (index + 1) % 100 == 0:
