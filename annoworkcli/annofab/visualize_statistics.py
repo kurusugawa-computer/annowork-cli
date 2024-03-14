@@ -160,7 +160,7 @@ class ListLabor:
         return result
 
 
-def visualize_statistics(temp_dir: Path, args):
+def visualize_statistics(temp_dir: Path, args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
@@ -222,7 +222,7 @@ def visualize_statistics(temp_dir: Path, args):
     subprocess.run(command, check=True)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     if args.temp_dir is not None:
         visualize_statistics(args.temp_dir, args)
     else:
@@ -230,7 +230,7 @@ def main(args):
             visualize_statistics(Path(str_temp_dir), args)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

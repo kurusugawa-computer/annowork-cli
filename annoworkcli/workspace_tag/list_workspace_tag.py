@@ -18,7 +18,7 @@ class ListWorkspaceTag:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def main(self, output: Path, output_format: OutputFormat):
+    def main(self, output: Path, output_format: OutputFormat):  # noqa: ANN201
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
         if len(workspace_tags) == 0:
@@ -41,14 +41,14 @@ class ListWorkspaceTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     ListWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         output=args.output, output_format=OutputFormat(args.format)
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

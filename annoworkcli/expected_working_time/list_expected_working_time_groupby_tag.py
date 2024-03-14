@@ -84,7 +84,7 @@ class ListExpectedWorkingTimeGroupbyTag:
         results.sort(key=lambda e: (e["date"]))
         return results
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -130,7 +130,7 @@ class ListExpectedWorkingTimeGroupbyTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     start_date: Optional[str] = args.start_date
@@ -155,7 +155,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

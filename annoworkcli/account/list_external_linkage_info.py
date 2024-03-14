@@ -17,7 +17,7 @@ class ListExternalLinkageInfo:
     def __init__(self, annowork_service: AnnoworkResource):
         self.annowork_service = annowork_service
 
-    def main(self, user_id_list: list[str], output: Optional[Path], output_format: OutputFormat):
+    def main(self, user_id_list: list[str], output: Optional[Path], output_format: OutputFormat):  # noqa: ANN201
         logger.info(f"{len(user_id_list)} 件のアカウント外部連携情報を取得します。")
 
         results = []
@@ -41,7 +41,7 @@ class ListExternalLinkageInfo:
             print_csv(df, output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
@@ -50,7 +50,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-u",
         "--user_id",

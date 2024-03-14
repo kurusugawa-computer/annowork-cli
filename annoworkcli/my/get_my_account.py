@@ -19,12 +19,12 @@ class GetMyAccount:
     ):
         self.annowork_service = annowork_service
 
-    def main(self, output: Optional[Path]):
+    def main(self, output: Optional[Path]):  # noqa: ANN201
         my_account = self.annowork_service.api.get_my_account()
         print_json(my_account, output=output, is_pretty=True)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
 
     GetMyAccount(
@@ -32,7 +32,7 @@ def main(args):
     ).main(output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument("-o", "--output", type=Path, required=False, help="出力先")
 
     parser.set_defaults(subcommand_func=main)

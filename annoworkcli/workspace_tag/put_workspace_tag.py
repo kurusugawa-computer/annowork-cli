@@ -17,7 +17,7 @@ class PutWorkspaceTag:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def main(self, workspace_tag_name: str, workspace_tag_id: Optional[str]):
+    def main(self, workspace_tag_name: str, workspace_tag_id: Optional[str]):  # noqa: ANN201
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
         if workspace_tag_id is None:
@@ -32,14 +32,14 @@ class PutWorkspaceTag:
         logger.debug(f"{workspace_tag_name=} を登録しました。{content=}")
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     PutWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         workspace_tag_name=args.workspace_tag_name, workspace_tag_id=args.workspace_tag_id
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

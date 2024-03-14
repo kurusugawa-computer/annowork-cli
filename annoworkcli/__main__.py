@@ -70,7 +70,7 @@ def mask_argv(argv: list[str]) -> list[str]:
     return tmp_argv
 
 
-def main(arguments: Optional[Sequence[str]] = None):
+def main(arguments: Optional[Sequence[str]] = None):  # noqa: ANN201
     """
     annoworkcli コマンドのメイン処理
 

@@ -22,7 +22,7 @@ class PutWorkspaceMember:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def put_workspace_member(
+    def put_workspace_member(  # noqa: ANN201
         self,
         user_id: str,
         role: str,
@@ -58,7 +58,7 @@ class PutWorkspaceMember:
         logger.debug(f"{user_id=} :: ワークスペースメンバを追加しました。 :: username='{new_member['username']}', {workspace_member_id=}")
         return True
 
-    def main(self, user_id_list: list[str], role: str, workspace_tag_id_list: Optional[Collection[str]]):
+    def main(self, user_id_list: list[str], role: str, workspace_tag_id_list: Optional[Collection[str]]):  # noqa: ANN201
         workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
         member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
@@ -79,7 +79,7 @@ class PutWorkspaceMember:
         logger.info(f"{success_count}/{len(user_id_list)} 件のユーザをワークスペースメンバに登録しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
@@ -90,7 +90,7 @@ def main(args):
     ).main(user_id_list=user_id_list, role=args.role, workspace_tag_id_list=workspace_tag_id_list)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

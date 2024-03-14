@@ -60,7 +60,7 @@ class ListExpectedWorkingTime:
         logger.debug(f"予定稼働時間情報を取得します。{query_params=}")
         return self.annowork_service.api.get_expected_working_times(self.workspace_id, query_params=query_params)
 
-    def set_member_info_to_working_times(self, working_times: list[dict[str, Any]]):
+    def set_member_info_to_working_times(self, working_times: list[dict[str, Any]]):  # noqa: ANN201
         workspace_member_dict = {e["workspace_member_id"]: e for e in self.workspace_members}
         for elm in working_times:
             workspace_member_id = elm["workspace_member_id"]
@@ -76,7 +76,7 @@ class ListExpectedWorkingTime:
                 }
             )
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -116,7 +116,7 @@ class ListExpectedWorkingTime:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     start_date: Optional[str] = args.start_date
@@ -136,7 +136,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

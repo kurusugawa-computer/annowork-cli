@@ -413,7 +413,7 @@ class ListWorkingHoursWithAnnofab:
         return [e["job_id"] for e in self.all_jobs if _match_job(e)]
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
@@ -464,7 +464,7 @@ def main(args):
         print_csv(df, output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

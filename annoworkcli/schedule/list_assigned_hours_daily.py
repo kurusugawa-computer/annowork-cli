@@ -128,7 +128,7 @@ class ListAssignedHoursDaily:
 
         return result_list
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -163,7 +163,7 @@ class ListAssignedHoursDaily:
             print_csv(df, output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -190,7 +190,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

@@ -87,7 +87,7 @@ class ListActualWorkingTime:
         delta = str_to_datetime(actual_working_time["end_datetime"]) - str_to_datetime(actual_working_time["start_datetime"])
         return delta.total_seconds() / 3600
 
-    def set_additional_info_to_actual_working_time(self, actual_working_time_list: list[dict[str, Any]], is_add_parent_job_info: bool = False):
+    def set_additional_info_to_actual_working_time(self, actual_working_time_list: list[dict[str, Any]], is_add_parent_job_info: bool = False):  # noqa: ANN201
         """workspace_member_id, job_idに紐づく情報を付与する。
 
         Args:
@@ -198,7 +198,7 @@ class ListActualWorkingTime:
             self.set_additional_info_to_actual_working_time(result, is_add_parent_job_info=is_add_parent_job_info)
         return result
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -264,7 +264,7 @@ class ListActualWorkingTime:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -294,7 +294,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

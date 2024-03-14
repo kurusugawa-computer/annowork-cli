@@ -6,7 +6,7 @@ import annoworkcli.my.get_my_account
 import annoworkcli.my.list_my_workspace_member
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

@@ -37,7 +37,7 @@ class DeleteJob:
         logger.debug(f"ジョブを削除しました。 :: {job}")
         return True
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         job_id_list: list[str],
     ):
@@ -53,7 +53,7 @@ class DeleteJob:
         logger.info(f"{success_count} / {len(job_id_list)} 件のジョブを削除しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = [args.job_id]
 
@@ -62,7 +62,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

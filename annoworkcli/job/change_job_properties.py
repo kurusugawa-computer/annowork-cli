@@ -41,7 +41,7 @@ class ChangeJobProperties:
         logger.debug(f"ジョブのステータスを変更しました。 :: {new_job}")
         return True
 
-    def main(self, *, job_id_list: list[str], status: str):
+    def main(self, *, job_id_list: list[str], status: str):  # noqa: ANN201
         logger.info(f"{len(job_id_list)} 件のジョブのステータスを変更します。")
         success_count = 0
         for job_id in job_id_list:
@@ -55,7 +55,7 @@ class ChangeJobProperties:
         logger.info(f"{success_count} / {len(job_id_list)} 件のジョブのステータスを変更しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     assert job_id_list is not None
@@ -65,7 +65,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

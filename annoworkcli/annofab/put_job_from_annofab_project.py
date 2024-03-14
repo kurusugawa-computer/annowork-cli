@@ -50,7 +50,7 @@ class PutJobFromAnnofabProject:
         return True
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     main_obj = PutJobFromAnnofabProject(
         annowork_service=annowork_service,
@@ -64,7 +64,7 @@ def main(args):
     main_obj.put_job_from_annofab_project(parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

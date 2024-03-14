@@ -37,7 +37,7 @@ class DeleteActualWorkingTime:
 
         self.all_yes = all_yes
 
-    def delete_actual_working_times(self, actual_working_times: list[dict[str, Any]]):
+    def delete_actual_working_times(self, actual_working_times: list[dict[str, Any]]):  # noqa: ANN201
         success_count = 0
         for index, actual in enumerate(actual_working_times):
             try:
@@ -69,7 +69,7 @@ class DeleteActualWorkingTime:
 
         logger.info(f"{success_count} / {len(actual_working_times)} 件の実績作業時間を削除しました。")
 
-    def get_actual_working_times(
+    def get_actual_working_times(  # noqa: ANN201
         self,
         *,
         start_date: str,
@@ -91,7 +91,7 @@ class DeleteActualWorkingTime:
 
         return get_actual_working_times
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         job_id: Optional[str],
@@ -131,7 +131,7 @@ class DeleteActualWorkingTime:
         self.delete_actual_working_times(actual_working_times)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
 
     if args.job_id is None and args.user_id is None:
@@ -153,7 +153,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

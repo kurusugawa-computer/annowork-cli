@@ -6,7 +6,7 @@ import annoworkcli.account.list_external_linkage_info
 import annoworkcli.account.put_external_linkage_info
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

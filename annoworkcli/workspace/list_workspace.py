@@ -36,7 +36,7 @@ class ListWorkspace:
             workspace_list.append(org)
         return workspace_list
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         output: Path,
         output_format: OutputFormat,
@@ -57,7 +57,7 @@ class ListWorkspace:
             print_csv(df, output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     workspace_id_list = get_list_from_args(args.workspace_id)
     ListWorkspace(
@@ -65,7 +65,7 @@ def main(args):
     ).main(output=args.output, output_format=OutputFormat(args.format), workspace_id_list=workspace_id_list)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

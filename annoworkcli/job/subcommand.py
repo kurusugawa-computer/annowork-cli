@@ -7,7 +7,7 @@ import annoworkcli.job.delete_job
 import annoworkcli.job.list_job
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

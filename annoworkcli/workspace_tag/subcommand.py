@@ -6,7 +6,7 @@ import annoworkcli.workspace_tag.list_workspace_tag
 import annoworkcli.workspace_tag.put_workspace_tag
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

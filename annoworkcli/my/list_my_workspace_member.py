@@ -17,7 +17,7 @@ class ListWorkspaceMember:
     def __init__(self, annowork_service: AnnoworkResource):
         self.annowork_service = annowork_service
 
-    def main(self, output: Optional[Path], output_format: OutputFormat, workspace_id: Optional[str] = None):
+    def main(self, output: Optional[Path], output_format: OutputFormat, workspace_id: Optional[str] = None):  # noqa: ANN201
         query_params = {}
         if workspace_id is not None:
             query_params[workspace_id] = workspace_id
@@ -37,12 +37,12 @@ class ListWorkspaceMember:
             print_csv(df, output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     ListWorkspaceMember(annowork_service=annowork_service).main(output=args.output, output_format=OutputFormat(args.format))
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument("-o", "--output", type=Path, help="出力先")
     parser.add_argument(
         "-f",

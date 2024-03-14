@@ -63,7 +63,7 @@ class ListSchedule:
             assigned_hours_dict = create_assigned_hours_dict(schedule, expected_working_hours_dict)
             schedule["assigned_working_hours"] = sum(assigned_hours_dict.values())
 
-    def set_additional_info_to_schedule(self, schedule_list: list[dict[str, Any]]):
+    def set_additional_info_to_schedule(self, schedule_list: list[dict[str, Any]]):  # noqa: ANN201
         """workspace_member_id, job_idに紐づく情報, アサインされた時間を付与する。
 
         Args:
@@ -156,7 +156,7 @@ class ListSchedule:
             self.set_additional_info_to_schedule(schedule_list)
         return schedule_list
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -203,7 +203,7 @@ class ListSchedule:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -230,7 +230,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

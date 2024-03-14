@@ -28,7 +28,7 @@ class ListActualWorkingTimeGroupbyTag:
         self.workspace_id = workspace_id
         self.timezone_offset_hours = timezone_offset_hours
 
-    def add_parent_job_info(self, daily_list: list[dict[str, Any]]):
+    def add_parent_job_info(self, daily_list: list[dict[str, Any]]):  # noqa: ANN201
         """引数daily_listに、parent_job情報を追加する。"""
         all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_job_list}
@@ -138,7 +138,7 @@ class ListActualWorkingTimeGroupbyTag:
         actual_working_hours_daily_list = filter_actual_daily_list(actual_working_hours_daily_list, start_date=start_date, end_date=end_date)
         return actual_working_hours_daily_list
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -196,7 +196,7 @@ class ListActualWorkingTimeGroupbyTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -230,7 +230,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     required_group = parser.add_mutually_exclusive_group(required=True)
 
     required_group.add_argument(

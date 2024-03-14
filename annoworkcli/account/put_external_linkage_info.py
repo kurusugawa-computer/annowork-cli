@@ -15,7 +15,7 @@ class PutExternalLinkageInfo:
     def __init__(self, annowork_service: AnnoworkResource):
         self.annowork_service = annowork_service
 
-    def main(self, user_id: str, external_linkage_info: dict[str, Any]):
+    def main(self, user_id: str, external_linkage_info: dict[str, Any]):  # noqa: ANN201
         old_info = self.annowork_service.wrapper.get_account_external_linkage_info_or_none(user_id)
         if old_info is None:
             logger.warning(f"user_id={user_id} のアカウント外部連携情報は存在しません。")
@@ -30,13 +30,13 @@ class PutExternalLinkageInfo:
         logger.info(f"{user_id=} のユーザの外部連携情報を設定しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     external_linkage_info = get_json_from_args(args.external_linkage_info)
     PutExternalLinkageInfo(annowork_service=annowork_service).main(user_id=args.user_id, external_linkage_info=external_linkage_info)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-u",
         "--user_id",

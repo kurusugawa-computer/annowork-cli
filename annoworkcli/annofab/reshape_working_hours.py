@@ -56,7 +56,7 @@ class ShapeType(Enum):
     """作業時間の一覧を、日付, ユーザ, ジョブ単位で出力する。アサイン対象のジョブと比較できないので、アサイン時間は含まない。"""
 
 
-def filter_df(
+def filter_df(  # noqa: ANN201
     df: pandas.DataFrame,
     *,
     job_ids: Optional[Collection[str]] = None,
@@ -772,7 +772,7 @@ class ReshapeWorkingHours:
 
         return [e["job_id"] for e in self.all_jobs if _match_job(e)]
 
-    def get_df_actual(
+    def get_df_actual(  # noqa: ANN201
         self,
         annofab_service: AnnofabResource,
         *,
@@ -801,7 +801,7 @@ class ReshapeWorkingHours:
         df = list_actual_obj.get_df_working_hours(start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids)
         return df
 
-    def get_df_assigned(
+    def get_df_assigned(  # noqa: ANN201
         self,
         *,
         start_date: Optional[str] = None,
@@ -1024,7 +1024,7 @@ def get_empty_df_assigned() -> pandas.DataFrame:
     )
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     main_obj = ReshapeWorkingHours(
         annowork_service=build_annoworkapi(args),
         workspace_id=args.workspace_id,
@@ -1111,7 +1111,7 @@ def main(args):
     print_csv(df_output, output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

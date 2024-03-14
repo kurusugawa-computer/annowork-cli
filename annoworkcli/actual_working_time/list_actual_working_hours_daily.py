@@ -256,7 +256,7 @@ def get_required_columns(show_parent_job: bool) -> list[str]:
     return required_columns
 
 
-def main(args):
+def main(args):  # noqa: ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -316,7 +316,7 @@ def main(args):
         print_csv(df[required_columns], output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     required_group = parser.add_mutually_exclusive_group(required=True)
 
     required_group.add_argument(
