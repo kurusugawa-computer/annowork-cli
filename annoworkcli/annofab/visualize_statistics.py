@@ -22,7 +22,7 @@ from annoworkcli.common.utils import print_csv
 logger = logging.getLogger(__name__)
 
 
-ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]
+ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]  # noqa: UP006
 """実績作業時間の日ごとの情報を格納する辞書
 key: (date, workspace_member_id, job_id), value: 実績作業時間
 """
@@ -38,7 +38,7 @@ class AnnofabLabor(DataClassJsonMixin):
     actual_worktime_hour: float
 
 
-JobIdAnnofabProjectIdDict = Dict[str, str]
+JobIdAnnofabProjectIdDict = Dict[str, str]  # noqa: UP006
 """key:job_id, value:annofab_project_idのdict
 """
 

@@ -142,7 +142,7 @@ def add_parser(
     return parser
 
 
-def get_list_from_args(str_list: Optional[List[str]] = None) -> Optional[List[str]]:
+def get_list_from_args(str_list: Optional[List[str]] = None) -> Optional[List[str]]:  # noqa: UP006
     """
     文字列のListのサイズが1で、プレフィックスが`file://`ならば、ファイルパスとしてファイルを読み込み、行をListとして返す。
     そうでなければ、引数の値をそのまま返す。
@@ -203,7 +203,7 @@ def prompt_yesno(msg: str) -> bool:
             return False
 
 
-def prompt_yesnoall(msg: str) -> Tuple[bool, bool]:
+def prompt_yesnoall(msg: str) -> Tuple[bool, bool]:  # noqa: UP006
     """
     標準入力で yes, no, all(すべてyes)を選択できるようにする。
     Args:

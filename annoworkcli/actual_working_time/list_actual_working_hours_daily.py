@@ -22,12 +22,12 @@ from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
 
-ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]
+ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]  # noqa: UP006
 """実績作業時間の日ごとの情報を格納する辞書
 key: (date, workspace_member_id, job_id), value: 実績作業時間
 """
 
-ActualWorkingTimeNoteDict = Dict[Tuple[datetime.date, str, str], List[str]]
+ActualWorkingTimeNoteDict = Dict[Tuple[datetime.date, str, str], List[str]]  # noqa: UP006
 """実績作業の備考を格納する辞書
 key: (date, workspace_member_id, job_id), value: 備考のlist
 dateは実績のstart_datetimeから算出する
@@ -45,7 +45,7 @@ class ActualWorkingHoursDaily(DataClassJsonMixin):
     actual_working_hours: float
     # listでなくtyping.Listを使っている理由：`list`だとPython3.8でデコード時にエラーが発生するため
     # https://qiita.com/yuji38kwmt/items/ce49efc91bb9b6430437
-    notes: Optional[typing.List[str]]
+    notes: Optional[typing.List[str]]  # noqa: UP006
 
 
 @dataclass

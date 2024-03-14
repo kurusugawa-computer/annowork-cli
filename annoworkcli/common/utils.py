@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")  # Can be anything
 
 
-def read_lines(filepath: str) -> List[str]:
+def read_lines(filepath: str) -> List[str]:  # noqa: UP006
     """ファイルを行単位で読み込む。改行コードを除く"""
 
     # BOM付きUTF-8のファイルも読み込めるようにする
@@ -29,7 +29,7 @@ def read_lines(filepath: str) -> List[str]:
     return [e.rstrip("\r\n") for e in lines]
 
 
-def read_lines_except_blank_line(filepath: str) -> List[str]:
+def read_lines_except_blank_line(filepath: str) -> List[str]:  # noqa: UP006
     """ファイルを行単位で読み込む。ただし、改行コード、空行を除く"""
     lines = read_lines(filepath)
     return [line for line in lines if line != ""]
@@ -71,7 +71,7 @@ def print_json(target: Any, is_pretty: bool = False, output: Optional[Path] = No
 def print_csv(  # noqa: ANN201
     df: pandas.DataFrame,
     output: Optional[Path] = None,
-    to_csv_kwargs: Optional[Dict[str, Any]] = None,
+    to_csv_kwargs: Optional[Dict[str, Any]] = None,  # noqa: UP006
 ):
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)

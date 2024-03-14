@@ -38,7 +38,7 @@ class AssignedHoursDaily(DataClassJsonMixin):
     assigned_working_hours: float
 
 
-AssignedHoursDict = Dict[Tuple[str, str, str], float]
+AssignedHoursDict = Dict[Tuple[str, str, str], float]  # noqa: UP006
 """アサイン時間の日ごとの情報を格納する辞書
 key: (date, workspace_member_id, job_id), value: アサイン時間
 """

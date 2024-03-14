@@ -14,7 +14,7 @@ from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
 
-ExpectedWorkingHoursDict = Dict[Tuple[str, str], float]
+ExpectedWorkingHoursDict = Dict[Tuple[str, str], float]  # noqa: UP006
 """keyがtuple(date, workspace_member_id), valueが予定稼働時間のdict
 """
 
