@@ -259,7 +259,7 @@ class ListWorkingHoursWithAnnofab:
             return pandas.DataFrame(result)
 
         df = pandas.DataFrame(columns=["date", "annofab_project_id", "annofab_account_id", "annofab_working_hours"])
-        # `astype()`を使用する理由：後続の処理で`fillna()`を実行した際に、「Downcasting object dtype arrays ～」というFutureWarningを発生させないようにするため
+        # `astype()`を使用する理由：後続の処理で`fillna()`を実行した際に、「Downcasting object dtype arrays ～」というFutureWarningを発生させないようにするため  # noqa: E501
         # https://qiita.com/yuji38kwmt/items/ba07a25924cfda363e42
         df = df.astype({"annofab_working_hours": "float64"})
         return df
@@ -278,7 +278,7 @@ class ListWorkingHoursWithAnnofab:
         return df[["job_id", "parent_job_id", "parent_job_name"]]
 
     @staticmethod
-    def _get_required_columns(is_show_parent_job: bool):
+    def _get_required_columns(is_show_parent_job: bool) -> list[str]:
         job_columns = [
             "job_id",
             "job_name",
@@ -329,7 +329,7 @@ class ListWorkingHoursWithAnnofab:
             #  * annofab_project_titleがnaのとき：アクセスできないAnnofabプロジェクトに紐付いているジョブ
             df = df[df["annofab_project_id"].notna() & df["annofab_project_title"].notna()]
             # `unique()`を実行する理由：前述の`drop_duplicates`でannofab_project_idはユニークなはずだが、念の為`unique()`を実行した。
-            return list(e for e in df["annofab_project_id"].unique())
+            return list(df["annofab_project_id"].unique())
 
         def _get_start_date(df: pandas.DataFrame) -> Optional[str]:
             min_date = df["date"].min() if len(df) > 0 else None

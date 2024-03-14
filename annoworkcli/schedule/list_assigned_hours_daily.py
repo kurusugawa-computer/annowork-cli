@@ -156,7 +156,7 @@ class ListAssignedHoursDaily:
             # https://qiita.com/yuji38kwmt/items/a3625b2011aff1d9901b
             dict_result = []
             for elm in result:
-                dict_result.append(elm.to_dict())
+                dict_result.append(elm.to_dict())  # noqa: PERF401
             print_json(dict_result, is_pretty=True, output=output)
         else:
             df = pandas.DataFrame(result)

@@ -138,7 +138,7 @@ class ListActualWorkingTimeGroupbyTag:
         actual_working_hours_daily_list = filter_actual_daily_list(actual_working_hours_daily_list, start_date=start_date, end_date=end_date)
         return actual_working_hours_daily_list
 
-    def main(  # noqa: ANN201
+    def main(  # noqa: ANN201, PLR0913
         self,
         *,
         output: Path,

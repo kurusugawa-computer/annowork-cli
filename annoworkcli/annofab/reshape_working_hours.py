@@ -654,7 +654,7 @@ class ReshapeDataFrame:
             df = pandas.concat([df, df_sum_by_date])
 
         # ヘッダが [user_id, value] になるように設定する
-        df2 = df.stack().unstack([1, 2])
+        df2 = df.stack().unstack([1, 2])  # noqa: PD010, PD013
 
         # DataFrameのindexの日付が連続になるようにする
         not_exists_date_set = {str(e.date()) for e in pandas.date_range(start=min(df2.index), end=max(df2.index))} - set(df2.index)
@@ -856,7 +856,7 @@ class ReshapeWorkingHours:
         df.rename(columns={"job_name": "parent_job_name", "job_id": "parent_job_id"}, inplace=True)
         return df
 
-    def get_df_output(
+    def get_df_output(  # noqa: PLR0912
         self,
         df_actual: pandas.DataFrame,
         df_assigned: pandas.DataFrame,
