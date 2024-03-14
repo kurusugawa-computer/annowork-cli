@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class ListExpectedWorkingTime:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})

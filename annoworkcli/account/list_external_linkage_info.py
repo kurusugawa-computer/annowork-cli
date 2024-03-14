@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class ListExternalLinkageInfo:
-    def __init__(self, annowork_service: AnnoworkResource):
+    def __init__(self, annowork_service: AnnoworkResource):  # noqa: ANN204
         self.annowork_service = annowork_service
 
     def main(self, user_id_list: list[str], output: Optional[Path], output_format: OutputFormat):  # noqa: ANN201

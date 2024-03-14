@@ -30,7 +30,7 @@ def filter_job_list_with_external_linkage_info_url(job_list: list[dict[str, Any]
 
 
 class ListJob:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         annowork_service: AnnoworkResource,
         workspace_id: str,

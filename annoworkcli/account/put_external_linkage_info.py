@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class PutExternalLinkageInfo:
-    def __init__(self, annowork_service: AnnoworkResource):
+    def __init__(self, annowork_service: AnnoworkResource):  # noqa: ANN204
         self.annowork_service = annowork_service
 
     def main(self, user_id: str, external_linkage_info: dict[str, Any]):  # noqa: ANN201

@@ -22,7 +22,7 @@ def get_annofab_account_id(external_linkage_info: dict[str, Any]) -> Optional[st
 
 
 class PutAnnofabAccountId:
-    def __init__(self, *, annowork_service: AnnoworkResource, annofab_service: AnnofabResource, overwrite: bool):
+    def __init__(self, *, annowork_service: AnnoworkResource, annofab_service: AnnofabResource, overwrite: bool):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.annofab_service = annofab_service
         self.overwrite = overwrite

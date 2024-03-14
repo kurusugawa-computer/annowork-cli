@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class GetMyAccount:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         annowork_service: AnnoworkResource,
     ):

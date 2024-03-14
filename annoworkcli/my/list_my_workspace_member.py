@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class ListWorkspaceMember:
-    def __init__(self, annowork_service: AnnoworkResource):
+    def __init__(self, annowork_service: AnnoworkResource):  # noqa: ANN204
         self.annowork_service = annowork_service
 
     def main(self, output: Optional[Path], output_format: OutputFormat, workspace_id: Optional[str] = None):  # noqa: ANN201

@@ -103,7 +103,7 @@ def _get_df_working_hours_from_df(
 
 
 class ListWorkingHoursWithAnnofab:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         *,
         annowork_service: AnnoworkResource,

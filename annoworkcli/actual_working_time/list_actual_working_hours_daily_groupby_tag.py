@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class ListActualWorkingTimeGroupbyTag:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, timezone_offset_hours: int):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, timezone_offset_hours: int):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.timezone_offset_hours = timezone_offset_hours

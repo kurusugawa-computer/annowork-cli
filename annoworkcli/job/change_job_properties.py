@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class ChangeJobProperties:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.all_yes = all_yes

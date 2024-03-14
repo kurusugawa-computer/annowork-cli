@@ -36,7 +36,7 @@ def get_annofab_project_ids(job_list: list[dict[str, Any]]) -> set[str]:
 
 
 class ListJobWithAnnofabProject:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         *,
         annowork_service: AnnoworkResource,

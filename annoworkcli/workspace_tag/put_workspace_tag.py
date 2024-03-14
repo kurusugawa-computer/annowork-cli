@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class PutWorkspaceTag:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 

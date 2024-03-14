@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class PutWorkspaceMember:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         annowork_service: AnnoworkResource,
         workspace_id: str,

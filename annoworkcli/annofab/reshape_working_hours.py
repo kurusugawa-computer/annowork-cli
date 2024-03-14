@@ -749,7 +749,7 @@ def get_dataframe_from_input_file(input_file: Path) -> pandas.DataFrame:
 
 
 class ReshapeWorkingHours:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         *,
         annowork_service: AnnoworkResource,
