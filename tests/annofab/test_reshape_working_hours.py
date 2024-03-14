@@ -30,9 +30,7 @@ class TestReshapeDataFrame:
         df_assigned = pandas.read_csv(str(data_dir / "assigned.csv"))
         df_user_company = pandas.read_csv(str(data_dir / "user_company.csv"))
 
-        df = self.main_obj.get_df_total_by_user(
-            df_actual=df_actual, df_assigned=df_assigned, df_user_company=df_user_company
-        )
+        df = self.main_obj.get_df_total_by_user(df_actual=df_actual, df_assigned=df_assigned, df_user_company=df_user_company)
         df.to_csv(out_dir / "out-total_by_user.csv", index=False)
 
     def test_get_df_total_by_job(self):
@@ -87,9 +85,7 @@ class TestReshapeDataFrame:
         df_job_parent_job = pandas.read_csv(str(data_dir / "job_parent_job.csv"))
         df_parent_job = pandas.read_csv(str(data_dir / "parent_job.csv"))
 
-        df = self.main_obj.get_df_list_by_date_user_parent_job(
-            df_actual=df_actual, df_job_parent_job=df_job_parent_job, df_parent_job=df_parent_job
-        )
+        df = self.main_obj.get_df_list_by_date_user_parent_job(df_actual=df_actual, df_job_parent_job=df_job_parent_job, df_parent_job=df_parent_job)
         df.to_csv(out_dir / "list_by_date_user_parent_job.csv")
 
     def test_get_df_list_by_date_user_job(self):

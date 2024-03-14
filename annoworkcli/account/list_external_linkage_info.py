@@ -29,7 +29,7 @@ class ListExternalLinkageInfo:
             results.append(info)
 
         if len(results) == 0:
-            logger.warning(f"アカウント外部連携情報は0件なので、出力しません。")
+            logger.warning("アカウント外部連携情報は0件なので、出力しません。")
             return
 
         logger.info(f"{len(results)} 件のアカウント外部連携情報を出力します。")
@@ -77,8 +77,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_external_linkage_info"
     subcommand_help = "アカウント外部連携情報取得の一覧を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

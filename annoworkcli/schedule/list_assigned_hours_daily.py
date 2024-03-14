@@ -1,9 +1,10 @@
 import argparse
 import logging
 from collections import defaultdict
+from collections.abc import Collection
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Collection, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -62,9 +63,7 @@ class ListAssignedHoursDaily:
         min_date, max_date = _get_min_max_date_from_schedule_list(schedule_list)
         query_params = {"term_start": min_date, "term_end": max_date}
         logger.debug(f"予定稼働時間を取得します。 :: {query_params=}")
-        expected_working_times = self.annowork_service.api.get_expected_working_times(
-            self.workspace_id, query_params=query_params
-        )
+        expected_working_times = self.annowork_service.api.get_expected_working_times(self.workspace_id, query_params=query_params)
         return {(e["date"], e["workspace_member_id"]): e["expected_working_hours"] for e in expected_working_times}
 
     def get_assigned_hours_daily_list(
@@ -75,9 +74,7 @@ class ListAssignedHoursDaily:
         job_ids: Optional[Collection[str]] = None,
         user_ids: Optional[Collection[str]] = None,
     ) -> list[AssignedHoursDaily]:
-        schedule_list = self.list_schedule_obj.get_schedules(
-            start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids
-        )
+        schedule_list = self.list_schedule_obj.get_schedules(start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids)
 
         if len(schedule_list) == 0:
             return []
@@ -111,9 +108,7 @@ class ListAssignedHoursDaily:
 
             job = all_jobs_dict.get(job_id)
             if job is None:
-                logger.warning(
-                    f"{job_id=} であるジョブは存在しません。 " f":: date='{date}', workspace_member_id='{workspace_member_id}'"
-                )
+                logger.warning(f"{job_id=} であるジョブは存在しません。 " f":: date='{date}', workspace_member_id='{workspace_member_id}'")
 
             member = all_members_dict.get(workspace_member_id)
             if member is None:
@@ -150,7 +145,7 @@ class ListAssignedHoursDaily:
             user_ids=user_id_list,
         )
         if len(result) == 0:
-            logger.warning(f"アサイン時間情報は0件なので、出力しません。")
+            logger.warning("アサイン時間情報は0件なので、出力しません。")
             return
 
         result.sort(key=lambda e: e.date)
@@ -178,7 +173,8 @@ def main(args):
 
     if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
     ListAssignedHoursDaily(
@@ -228,8 +224,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_daily"
     subcommand_help = "作業計画から求めたアサイン時間を日ごとに出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

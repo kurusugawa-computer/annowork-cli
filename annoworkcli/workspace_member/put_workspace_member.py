@@ -1,7 +1,8 @@
 import argparse
 import logging
 import uuid
-from typing import Any, Collection, Optional
+from collections.abc import Collection
+from typing import Any, Optional
 
 from annoworkapi.enums import Role
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -53,16 +54,12 @@ class PutWorkspaceMember:
         if last_updated_datetime is not None:
             request_body["last_updated_datetime"] = last_updated_datetime
 
-        new_member = self.annowork_service.api.put_workspace_member(
-            self.workspace_id, workspace_member_id, request_body=request_body
-        )
+        new_member = self.annowork_service.api.put_workspace_member(self.workspace_id, workspace_member_id, request_body=request_body)
         logger.debug(f"{user_id=} :: ワークスペースメンバを追加しました。 :: username='{new_member['username']}', {workspace_member_id=}")
         return True
 
     def main(self, user_id_list: list[str], role: str, workspace_tag_id_list: Optional[Collection[str]]):
-        workspace_members = self.annowork_service.api.get_workspace_members(
-            self.workspace_id, query_params={"includes_inactive_members": True}
-        )
+        workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
         member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
         for user_id in user_id_list:
@@ -135,8 +132,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "put"
     subcommand_help = "ワークスペースメンバを登録します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

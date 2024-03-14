@@ -57,9 +57,7 @@ class ListLabor:
             timezone_offset_hours=TIMEZONE_OFFSET_HOURS,
         )
 
-    def get_job_id_annofab_project_id_dict_from_annofab_project_id(
-        self, annofab_project_id_list: list[str]
-    ) -> JobIdAnnofabProjectIdDict:
+    def get_job_id_annofab_project_id_dict_from_annofab_project_id(self, annofab_project_id_list: list[str]) -> JobIdAnnofabProjectIdDict:
         # オーダを減らすため、事前にdictを作成する
         annofab_project_id_dict: dict[str, list[str]] = defaultdict(list)
         for job in self.all_job_list:
@@ -71,7 +69,9 @@ class ListLabor:
         for annofab_project_id in annofab_project_id_list:
             job_id_list = annofab_project_id_dict.get(annofab_project_id)
             if job_id_list is None:
-                logger.warning(f"ジョブの外部連携情報に、AnnofabのプロジェクトID '{annofab_project_id}' を表すURLが設定されたジョブは見つかりませんでした。")
+                logger.warning(
+                    f"ジョブの外部連携情報に、AnnofabのプロジェクトID '{annofab_project_id}' を表すURLが設定されたジョブは見つかりませんでした。"
+                )
                 continue
 
             for job_id in job_id_list:
@@ -81,9 +81,7 @@ class ListLabor:
 
     def get_job_id_annofab_project_id_dict_from_job_id(self, job_id_list: list[str]) -> JobIdAnnofabProjectIdDict:
         job_id_dict = {
-            job["job_id"]: get_annofab_project_id_from_job(job)
-            for job in self.all_job_list
-            if get_annofab_project_id_from_job(job) is not None
+            job["job_id"]: get_annofab_project_id_from_job(job) for job in self.all_job_list if get_annofab_project_id_from_job(job) is not None
         }
 
         result = {}
@@ -124,9 +122,7 @@ class ListLabor:
             )
 
         elif annofab_project_id_list is not None:
-            job_id_annofab_project_id_dict = self.get_job_id_annofab_project_id_dict_from_annofab_project_id(
-                annofab_project_id_list
-            )
+            job_id_annofab_project_id_dict = self.get_job_id_annofab_project_id_dict_from_annofab_project_id(annofab_project_id_list)
             actual_working_time_list = self.list_actual_working_time_obj.get_actual_working_times(
                 job_ids=job_id_annofab_project_id_dict.keys(),
                 start_date=start_date,
@@ -138,14 +134,12 @@ class ListLabor:
             return []
 
         # annofabのデータは日本時間に固定されているので、日本時間を指定する
-        daily_list = create_actual_working_hours_daily_list(
-            actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS
-        )
+        daily_list = create_actual_working_hours_daily_list(actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS)
 
         user_id_set = {elm.user_id for elm in daily_list}
         user_id_annofab_account_id_dict = self.get_user_id_annofab_account_id_dict(user_id_set)
         if len(user_id_set) != len(user_id_annofab_account_id_dict):
-            raise RuntimeError(f"アカウント外部連携情報にAnnofabのaccount_idが設定されていないユーザがいます。")
+            raise RuntimeError("アカウント外部連携情報にAnnofabのaccount_idが設定されていないユーザがいます。")
 
         result = []
         for elm in daily_list:

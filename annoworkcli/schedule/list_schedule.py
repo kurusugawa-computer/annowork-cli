@@ -1,7 +1,8 @@
 import argparse
 import logging
+from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Collection, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import pandas
 from annoworkapi.enums import ScheduleType
@@ -18,9 +19,7 @@ ExpectedWorkingHoursDict = Dict[Tuple[str, str], float]
 """
 
 
-def create_assigned_hours_dict(
-    schedule: dict[str, Any], expected_working_hours_dict: ExpectedWorkingHoursDict
-) -> dict[str, float]:
+def create_assigned_hours_dict(schedule: dict[str, Any], expected_working_hours_dict: ExpectedWorkingHoursDict) -> dict[str, float]:
     """作業計画情報からアサインされた時間の辞書（key:日付, value:アサイン時間）を返す。
 
     Args:
@@ -53,19 +52,13 @@ class ListSchedule:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-        self.workspace_members = self.annowork_service.api.get_workspace_members(
-            self.workspace_id, query_params={"includes_inactive_members": True}
-        )
+        self.workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
 
     def _set_assigned_hours(self, schedule_list: list[dict[str, Any]], min_date: str, max_date: str):
         query_params = {"term_start": min_date, "term_end": max_date}
         logger.debug(f"予定稼働時間を取得します。 :: {query_params=}")
-        expected_working_times = self.annowork_service.api.get_expected_working_times(
-            self.workspace_id, query_params=query_params
-        )
-        expected_working_hours_dict = {
-            (e["date"], e["workspace_member_id"]): e["expected_working_hours"] for e in expected_working_times
-        }
+        expected_working_times = self.annowork_service.api.get_expected_working_times(self.workspace_id, query_params=query_params)
+        expected_working_hours_dict = {(e["date"], e["workspace_member_id"]): e["expected_working_hours"] for e in expected_working_times}
         for schedule in schedule_list:
             assigned_hours_dict = create_assigned_hours_dict(schedule, expected_working_hours_dict)
             schedule["assigned_working_hours"] = sum(assigned_hours_dict.values())
@@ -94,9 +87,7 @@ class ListSchedule:
             workspace_member_id = schedule["workspace_member_id"]
             member = workspace_member_dict.get(schedule["workspace_member_id"])
             if member is None:
-                logger.warning(
-                    f"{workspace_member_id=} であるワークスペースメンバは存在しません。 " f":: schedule_id= '{schedule['schedule_id']}' "
-                )
+                logger.warning(f"{workspace_member_id=} であるワークスペースメンバは存在しません。 " f":: schedule_id= '{schedule['schedule_id']}' ")
                 continue
 
             schedule["user_id"] = member["user_id"]
@@ -152,9 +143,7 @@ class ListSchedule:
             for job_id in job_ids:
                 query_params["job_id"] = job_id
                 logger.debug(f"作業計画を取得します。 :: {query_params=}")
-                schedule_list.extend(
-                    self.annowork_service.api.get_schedules(self.workspace_id, query_params=query_params)
-                )
+                schedule_list.extend(self.annowork_service.api.get_schedules(self.workspace_id, query_params=query_params))
         else:
             logger.debug(f"作業計画を取得します。 :: {query_params=}")
             schedule_list.extend(self.annowork_service.api.get_schedules(self.workspace_id, query_params=query_params))
@@ -185,7 +174,7 @@ class ListSchedule:
             is_set_additional_info=True,
         )
         if len(result) == 0:
-            logger.warning(f"作業計画情報は0件なので、出力しません。")
+            logger.warning("作業計画情報は0件なので、出力しません。")
             return
 
         logger.info(f"{len(result)} 件の作業計画情報を出力します。")
@@ -224,7 +213,8 @@ def main(args):
 
     if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
     ListSchedule(
@@ -274,8 +264,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list"
     subcommand_help = "作業計画の一覧を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

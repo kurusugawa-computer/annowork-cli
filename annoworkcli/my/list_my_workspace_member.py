@@ -25,7 +25,7 @@ class ListWorkspaceMember:
         my_workspace_members = self.annowork_service.api.get_my_workspace_members(query_params=query_params)
 
         if len(my_workspace_members) == 0:
-            logger.warning(f"ワークスペースメンバ情報は0件なので、出力しません。")
+            logger.warning("ワークスペースメンバ情報は0件なので、出力しません。")
             return
 
         logger.debug(f"{len(my_workspace_members)} 件のワークスペースメンバ一覧を出力します。")
@@ -39,9 +39,7 @@ class ListWorkspaceMember:
 
 def main(args):
     annowork_service = build_annoworkapi(args)
-    ListWorkspaceMember(annowork_service=annowork_service).main(
-        output=args.output, output_format=OutputFormat(args.format)
-    )
+    ListWorkspaceMember(annowork_service=annowork_service).main(output=args.output, output_format=OutputFormat(args.format))
 
 
 def parse_args(parser: argparse.ArgumentParser):
@@ -62,8 +60,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_workspace_member"
     subcommand_help = "自身のワークスペースメンバの一覧を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

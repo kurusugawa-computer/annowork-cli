@@ -23,9 +23,7 @@ class ChangeJobProperties:
             return False
 
         if not self.all_yes:
-            is_yes, all_yes = prompt_yesnoall(
-                f"job_id={job_id}, job_name={job['job_name']}" f" のジョブのステータスを '{status}' に変更しますか？"
-            )
+            is_yes, all_yes = prompt_yesnoall(f"job_id={job_id}, job_name={job['job_name']}" f" のジョブのステータスを '{status}' に変更しますか？")
             if not is_yes:
                 return False
             if all_yes:
@@ -102,8 +100,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "change"
     subcommand_help = "ジョブの情報（ステータスなど）を変更します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

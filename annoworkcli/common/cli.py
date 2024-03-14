@@ -91,7 +91,9 @@ def add_parser(
         """
         parent_parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
         group = parent_parser.add_argument_group(GLOBAL_OPTIONAL_ARGUMENTS_TITLE)
-        group.add_argument("--debug", action="store_true", help="HTTPリクエストの内容やレスポンスのステータスコードなど、デバッグ用のログが出力されます。")
+        group.add_argument(
+            "--debug", action="store_true", help="HTTPリクエストの内容やレスポンスのステータスコードなど、デバッグ用のログが出力されます。"
+        )
 
         group.add_argument(
             "--annowork_user_id",
@@ -129,9 +131,7 @@ def add_parser(
 
     # 引数グループに"global optional group"がある場合は、"--help"オプションをデフォルトの"optional"グループから、"global optional arguments"グループに移動する
     # https://ja.stackoverflow.com/a/57313/19524
-    global_optional_argument_group = first_true(
-        parser._action_groups, pred=lambda e: e.title == GLOBAL_OPTIONAL_ARGUMENTS_TITLE
-    )
+    global_optional_argument_group = first_true(parser._action_groups, pred=lambda e: e.title == GLOBAL_OPTIONAL_ARGUMENTS_TITLE)
     if global_optional_argument_group is not None:
         # optional グループの 0番目が help なので取り出す
         help_action = parser._optionals._group_actions.pop(0)
@@ -280,16 +280,12 @@ def build_annoworkapi(args: argparse.Namespace) -> annoworkapi.resource.Resource
         logger.info(f"endpoint_url='{endpoint_url}'")
 
     if args.annowork_user_id is not None and args.annowork_password is not None:
-        return annoworkapi.build(
-            login_user_id=args.annowork_user_id, login_password=args.annowork_password, endpoint_url=endpoint_url
-        )
+        return annoworkapi.build(login_user_id=args.annowork_user_id, login_password=args.annowork_password, endpoint_url=endpoint_url)
 
     elif args.annowork_user_id is not None and args.annowork_password is None:
         # コマンドライン引数でユーザーIDのみ指定された場合は、パスワードを標準入力から取得する
         login_password = _get_annowork_password_from_stdin()
-        return annoworkapi.build(
-            login_user_id=args.annowork_user_id, login_password=login_password, endpoint_url=endpoint_url
-        )
+        return annoworkapi.build(login_user_id=args.annowork_user_id, login_password=login_password, endpoint_url=endpoint_url)
 
     elif args.annowork_user_id is None and args.annowork_password is not None:
         # コマンドライン引数でパスワードのみ指定された場合は、エラーにする

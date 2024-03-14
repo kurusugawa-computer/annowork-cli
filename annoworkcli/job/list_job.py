@@ -14,9 +14,7 @@ from annoworkcli.common.utils import print_csv, print_json
 logger = logging.getLogger(__name__)
 
 
-def filter_job_list_with_external_linkage_info_url(
-    job_list: list[dict[str, Any]], external_linkage_info_url_list: list[str]
-) -> list[dict[str, Any]]:
+def filter_job_list_with_external_linkage_info_url(job_list: list[dict[str, Any]], external_linkage_info_url_list: list[str]) -> list[dict[str, Any]]:
     result = []
     for job in job_list:
         url = job["external_linkage_info"].get("url")
@@ -54,9 +52,7 @@ class ListJob:
             job_list = [job for job in job_list if job["job_id"] in set(job_id_list)]
 
         if parent_job_id_list is not None:
-            job_list = [
-                job for job in job_list if get_parent_job_id_from_job_tree(job["job_tree"]) in set(parent_job_id_list)
-            ]
+            job_list = [job for job in job_list if get_parent_job_id_from_job_tree(job["job_tree"]) in set(parent_job_id_list)]
 
         if external_linkage_info_url_list is not None:
             job_list = filter_job_list_with_external_linkage_info_url(job_list, external_linkage_info_url_list)
@@ -93,7 +89,7 @@ class ListJob:
             is_add_parent_job_info=is_add_parent_job_info,
         )
         if len(job_list) == 0:
-            logger.warning(f"ジョブ情報は0件なので、出力しません。")
+            logger.warning("ジョブ情報は0件なので、出力しません。")
             return
 
         logger.debug(f"{len(job_list)} 件のジョブ一覧を出力します。")

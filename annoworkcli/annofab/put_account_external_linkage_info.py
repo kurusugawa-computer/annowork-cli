@@ -55,9 +55,7 @@ class PutAnnofabAccountId:
 
     def main(self, af_workspace_name: str, user_id_list: list[str]):
         af_workspace_member_list = self.annofab_service.wrapper.get_all_organization_members(af_workspace_name)
-        af_user_id_account_id_dict: dict[str, str] = {
-            member["user_id"]: member["account_id"] for member in af_workspace_member_list
-        }
+        af_user_id_account_id_dict: dict[str, str] = {member["user_id"]: member["account_id"] for member in af_workspace_member_list}
 
         success_count = 0
         for user_id in user_id_list:
@@ -85,9 +83,9 @@ def main(args):
     )
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
-    PutAnnofabAccountId(
-        annowork_service=annowork_service, annofab_service=annofab_service, overwrite=args.overwrite
-    ).main(af_workspace_name=args.annofab_workspace_name, user_id_list=user_id_list)
+    PutAnnofabAccountId(annowork_service=annowork_service, annofab_service=annofab_service, overwrite=args.overwrite).main(
+        af_workspace_name=args.annofab_workspace_name, user_id_list=user_id_list
+    )
 
 
 def parse_args(parser: argparse.ArgumentParser):
@@ -123,10 +121,11 @@ def parse_args(parser: argparse.ArgumentParser):
 
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "put_account_external_linkage_info"
-    subcommand_help = "アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。\n" "Annofabのuser_idはAnnoworkのuser_idと一致している必要があります。"
-
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
+    subcommand_help = (
+        "アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。\n"
+        "Annofabのuser_idはAnnoworkのuser_idと一致している必要があります。"
     )
+
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

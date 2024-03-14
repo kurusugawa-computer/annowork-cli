@@ -33,9 +33,7 @@ class PutExternalLinkageInfo:
 def main(args):
     annowork_service = build_annoworkapi(args)
     external_linkage_info = get_json_from_args(args.external_linkage_info)
-    PutExternalLinkageInfo(annowork_service=annowork_service).main(
-        user_id=args.user_id, external_linkage_info=external_linkage_info
-    )
+    PutExternalLinkageInfo(annowork_service=annowork_service).main(user_id=args.user_id, external_linkage_info=external_linkage_info)
 
 
 def parse_args(parser: argparse.ArgumentParser):
@@ -63,8 +61,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "put_external_linkage_info"
     subcommand_help = "アカウント外部連携情報取得を更新します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

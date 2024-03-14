@@ -22,7 +22,7 @@ class ListWorkspaceTag:
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
         if len(workspace_tags) == 0:
-            logger.warning(f"ワークスペースタグ情報は0件なので、出力しません。")
+            logger.warning("ワークスペースタグ情報は0件なので、出力しません。")
             return
 
         logger.debug(f"{len(workspace_tags)} 件のタグ一覧を出力します。")
@@ -75,8 +75,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list"
     subcommand_help = "ワークスペースタグの一覧を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

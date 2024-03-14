@@ -28,9 +28,7 @@ class PutWorkspaceTag:
         if old_workspace_tag is not None:
             request_body["last_updated_datetime"] = old_workspace_tag["updated_datetime"]
 
-        content = self.annowork_service.api.put_workspace_tag(
-            self.workspace_id, workspace_tag_id, request_body=request_body
-        )
+        content = self.annowork_service.api.put_workspace_tag(self.workspace_id, workspace_tag_id, request_body=request_body)
         logger.debug(f"{workspace_tag_name=} を登録しました。{content=}")
 
 
@@ -72,8 +70,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "put"
     subcommand_help = "ワークスペースタグを作成または更新します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

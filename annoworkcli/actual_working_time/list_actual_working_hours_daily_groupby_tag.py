@@ -1,8 +1,9 @@
 import argparse
 import logging
 from collections import defaultdict
+from collections.abc import Collection, Sequence
 from pathlib import Path
-from typing import Any, Collection, Optional, Sequence
+from typing import Any, Optional
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree
@@ -76,9 +77,7 @@ class ListActualWorkingTimeGroupbyTag:
         # ワークスペースタグごと日毎の時間を集計する
         for workspace_tag in workspace_tags:
             workspace_tag_name = workspace_tag["workspace_tag_name"]
-            members = self.annowork_service.api.get_workspace_tag_members(
-                self.workspace_id, workspace_tag["workspace_tag_id"]
-            )
+            members = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, workspace_tag["workspace_tag_id"])
             member_ids = {e["workspace_member_id"] for e in members}
             for elm in actual_working_hours_daily:
                 if elm.workspace_member_id in member_ids:
@@ -136,9 +135,7 @@ class ListActualWorkingTimeGroupbyTag:
             actual_working_time_list, timezone_offset_hours=self.timezone_offset_hours, show_notes=False
         )
 
-        actual_working_hours_daily_list = filter_actual_daily_list(
-            actual_working_hours_daily_list, start_date=start_date, end_date=end_date
-        )
+        actual_working_hours_daily_list = filter_actual_daily_list(actual_working_hours_daily_list, start_date=start_date, end_date=end_date)
         return actual_working_hours_daily_list
 
     def main(
@@ -159,7 +156,7 @@ class ListActualWorkingTimeGroupbyTag:
             job_ids=job_ids, parent_job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
         )
         if len(actual_working_hours_daily_list) == 0:
-            logger.warning(f"日ごとの実績作業時間情報は0件なので、出力しません。")
+            logger.warning("日ごとの実績作業時間情報は0件なので、出力しません。")
             return
 
         results = self.get_actual_working_times_groupby_tag(
@@ -209,7 +206,7 @@ def main(args):
 
     if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            f"'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
@@ -270,7 +267,9 @@ def parse_args(parser: argparse.ArgumentParser):
     )
 
     parser.add_argument(
-        "--timezone_offset", type=float, help="日付に対するタイムゾーンのオフセット時間。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。"
+        "--timezone_offset",
+        type=float,
+        help="日付に対するタイムゾーンのオフセット時間。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。",
     )
 
     parser.add_argument(
@@ -297,8 +296,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_daily_groupby_tag"
     subcommand_help = "日ごとの実績作業時間を、ワークスペースタグで集計した値を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

@@ -33,9 +33,7 @@ class DeleteWorkspaceMember:
 
             try:
                 workspace_member_id = member["workspace_member_id"]
-                self.annowork_service.api.delete_workspace_member(
-                    self.workspace_id, workspace_member_id=workspace_member_id
-                )
+                self.annowork_service.api.delete_workspace_member(self.workspace_id, workspace_member_id=workspace_member_id)
                 success_count += 1
             except Exception as e:
                 logger.warning(f"{user_id=}: ワークスペースメンバの削除に失敗しました。{e}")
@@ -80,8 +78,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "delete"
     subcommand_help = "ワークスペースメンバを削除します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

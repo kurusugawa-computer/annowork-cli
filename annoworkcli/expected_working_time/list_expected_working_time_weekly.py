@@ -14,9 +14,7 @@ from annoworkcli.expected_working_time.list_expected_working_time import ListExp
 logger = logging.getLogger(__name__)
 
 
-def get_weekly_expected_working_hours_df(
-    expected_working_times: list[dict[str, Any]], workspace_members: list[dict[str, Any]]
-) -> pandas.DataFrame:
+def get_weekly_expected_working_hours_df(expected_working_times: list[dict[str, Any]], workspace_members: list[dict[str, Any]]) -> pandas.DataFrame:
     """週単位の予定稼働時間が格納されたDataFrameを生成します。
 
     Args:
@@ -34,11 +32,9 @@ def get_weekly_expected_working_hours_df(
     df_weekly = (
         # `include_groups=False`を指定する理由：pandas2.2.0で以下の警告が出ないようにするため
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
-        # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.  # noqa: E501
+        # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
-        df.groupby("workspace_member_id")
-        .resample("W", on="date", label="left", closed="left", include_groups=False)
-        .sum(numeric_only=True)
+        df.groupby("workspace_member_id").resample("W", on="date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
     )
     df_weekly.reset_index(inplace=True)
 
@@ -74,14 +70,12 @@ def main(args):
     main_obj = ListExpectedWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id)
 
     if user_id_list is not None:
-        expected_working_times = main_obj.get_expected_working_times_by_user_id(
-            user_id_list=user_id_list, start_date=start_date, end_date=end_date
-        )
+        expected_working_times = main_obj.get_expected_working_times_by_user_id(user_id_list=user_id_list, start_date=start_date, end_date=end_date)
     else:
         expected_working_times = main_obj.get_expected_working_times(start_date=start_date, end_date=end_date)
 
     if len(expected_working_times) == 0:
-        logger.warning(f"予定稼働時間情報0件なので、出力しません。")
+        logger.warning("予定稼働時間情報0件なので、出力しません。")
         return
 
     df = get_weekly_expected_working_hours_df(expected_working_times, main_obj.workspace_members)
@@ -128,8 +122,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_weekly"
     subcommand_help = "予定稼働時間の一覧を週ごと（日曜日始まり）に出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

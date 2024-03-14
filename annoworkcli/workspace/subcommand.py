@@ -17,8 +17,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "workspace"
     subcommand_help = "ワークスペース関係のサブコマンド"
 
-    parser = add_root_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help, is_subcommand=False
-    )
+    parser = add_root_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help, is_subcommand=False)
     parse_args(parser)
     return parser

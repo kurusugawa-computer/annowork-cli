@@ -27,8 +27,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_help = "Annofabにアクセスするサブコマンド"
     description = "Annofabにアクセスするサブコマンド\n" "Annofabの認証情報を事前に設定しておく必要があります。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=description, is_subcommand=False
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=description, is_subcommand=False)
     parse_args(parser)
     return parser

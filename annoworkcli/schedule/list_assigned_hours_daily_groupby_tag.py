@@ -1,8 +1,9 @@
 import argparse
 import logging
 from collections import defaultdict
+from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Collection, Optional
+from typing import Any, Optional
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -55,9 +56,7 @@ class ListAssignedHoursDailyGroupbyTag:
         # ワークスペースタグごと日毎の時間を集計する
         for workspace_tag in workspace_tags:
             workspace_tag_name = workspace_tag["workspace_tag_name"]
-            members = self.annowork_service.api.get_workspace_tag_members(
-                self.workspace_id, workspace_tag["workspace_tag_id"]
-            )
+            members = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, workspace_tag["workspace_tag_id"])
             member_ids = {e["workspace_member_id"] for e in members}
             for elm in assigned_hours_list:
                 if elm.workspace_member_id in member_ids:
@@ -104,7 +103,7 @@ class ListAssignedHoursDailyGroupbyTag:
             user_ids=user_id_list,
         )
         if len(assigned_hours_list) == 0:
-            logger.warning(f"アサイン時間情報は0件なので、出力しません。")
+            logger.warning("アサイン時間情報は0件なので、出力しません。")
             return
 
         results = self.get_assigned_hours_groupby_tag(
@@ -141,7 +140,8 @@ def main(args):
 
     if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
@@ -212,8 +212,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_daily_groupby_tag"
     subcommand_help = "日ごとのアサイン時間を、ワークスペースタグで集計した値を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

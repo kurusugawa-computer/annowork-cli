@@ -87,9 +87,7 @@ class DeleteActualWorkingTime:
         )
 
         if actual_working_time_id_list is not None:
-            get_actual_working_times = [
-                e for e in get_actual_working_times if e["actual_working_time_id"] in set(actual_working_time_id_list)
-            ]
+            get_actual_working_times = [e for e in get_actual_working_times if e["actual_working_time_id"] in set(actual_working_time_id_list)]
 
         return get_actual_working_times
 
@@ -111,12 +109,11 @@ class DeleteActualWorkingTime:
         )
 
         if len(actual_working_times) == 0:
-            logger.info(f"削除する実績作業時間情報はありませんでした。")
+            logger.info("削除する実績作業時間情報はありませんでした。")
             return
 
         message = (
-            f"実績作業時間情報 {len(actual_working_times)} 件を削除します。よろしいですか？ :: "
-            f"start_date={start_date}, end_date={end_date}, "
+            f"実績作業時間情報 {len(actual_working_times)} 件を削除します。よろしいですか？ :: " f"start_date={start_date}, end_date={end_date}, "
         )
         if job_id is not None:
             job = self.annowork_service.api.get_job(self.workspace_id, job_id)
@@ -172,7 +169,9 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument("-u", "--user_id", type=str, required=False, help="削除したい実績作業時間情報に紐づくuser_idを指定してください。")
 
     parser.add_argument(
-        "--timezone_offset", type=float, help="日付に対するタイムゾーンのオフセット時間を指定します。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。"
+        "--timezone_offset",
+        type=float,
+        help="日付に対するタイムゾーンのオフセット時間を指定します。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。",
     )
 
     parser.add_argument(
@@ -192,8 +191,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "delete"
     subcommand_help = "実績作業時間を削除します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

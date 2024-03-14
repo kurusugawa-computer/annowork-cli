@@ -24,10 +24,7 @@ def _get_annofab_password_from_stdin() -> str:
 
 
 def build_annofabapi_resource_and_login(
-    *,
-    annofab_login_user_id: Optional[str] = None,
-    annofab_login_password: Optional[str] = None,
-    mfa_code: Optional[str] = None
+    *, annofab_login_user_id: Optional[str] = None, annofab_login_password: Optional[str] = None, mfa_code: Optional[str] = None
 ) -> annofabapi.Resource:
     """
     annofabapi.Resourceインスタンスを生成したあと、ログインする。

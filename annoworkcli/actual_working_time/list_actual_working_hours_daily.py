@@ -4,9 +4,10 @@ import json
 import logging
 import typing
 from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree
@@ -84,9 +85,7 @@ def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.t
         # 実績作業時間が24時間を超えることはないが、24時間を超えても計算できるような処理にする
         while dt_tmp_local_start_datetime.date() < dt_local_end_datetime.date():
             dt_next_date = dt_tmp_local_start_datetime.date() + datetime.timedelta(days=1)
-            dt_tmp_local_end_datetime = datetime.datetime(
-                year=dt_next_date.year, month=dt_next_date.month, day=dt_next_date.day, tzinfo=tzinfo
-            )
+            dt_tmp_local_end_datetime = datetime.datetime(year=dt_next_date.year, month=dt_next_date.month, day=dt_next_date.day, tzinfo=tzinfo)
             actual_working_hours = (dt_tmp_local_end_datetime - dt_tmp_local_start_datetime).total_seconds() / 3600
             results_dict[(dt_tmp_local_start_datetime.date(), workspace_member_id, job_id)] = actual_working_hours
             dt_tmp_local_start_datetime = dt_tmp_local_end_datetime
@@ -208,9 +207,7 @@ class ListActualWorkingHoursDaily:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def add_parent_job_info(
-        self, daily_list: Sequence[ActualWorkingHoursDaily]
-    ) -> list[ActualWorkingHoursDailyWithParentJob]:
+    def add_parent_job_info(self, daily_list: Sequence[ActualWorkingHoursDaily]) -> list[ActualWorkingHoursDailyWithParentJob]:
         all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_job_list}
         parent_job_id_set = {get_parent_job_id_from_job_tree(e["job_tree"]) for e in all_job_list}
@@ -269,7 +266,8 @@ def main(args):
 
     if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
     main_obj = ListActualWorkingHoursDaily(annowork_service, args.workspace_id)
@@ -297,7 +295,7 @@ def main(args):
     result = filter_actual_daily_list(result, start_date=start_date, end_date=end_date)
 
     if len(result) == 0:
-        logger.warning(f"日ごとの実績作業時間情報は0件なので、出力しません。")
+        logger.warning("日ごとの実績作業時間情報は0件なので、出力しません。")
         return
 
     show_parent_job: bool = args.show_parent_job
@@ -338,7 +336,9 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
 
     parser.add_argument(
-        "--timezone_offset", type=float, help="日付に対するタイムゾーンのオフセット時間。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。"
+        "--timezone_offset",
+        type=float,
+        help="日付に対するタイムゾーンのオフセット時間。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。",
     )
 
     parser.add_argument(
@@ -365,8 +365,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_daily"
     subcommand_help = "実績作業時間を日ごとに集約した情報を一覧として出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

@@ -24,9 +24,7 @@ class PutJobFromAnnofabProject:
         self.workspace_id = workspace_id
         self.annofab_service = annofab_service
 
-    def put_job_from_annofab_project(
-        self, parent_job_id: str, annofab_project_id: str, job_id: Optional[str] = None
-    ) -> bool:
+    def put_job_from_annofab_project(self, parent_job_id: str, annofab_project_id: str, job_id: Optional[str] = None) -> bool:
         af_project = self.annofab_service.wrapper.get_project_or_none(annofab_project_id)
         if af_project is None:
             logger.warning(f"{annofab_project_id=} にアクセスできません。ジョブの登録処理をスキップします。")
@@ -63,9 +61,7 @@ def main(args):
             mfa_code=args.annofab_mfa_code,
         ),
     )
-    main_obj.put_job_from_annofab_project(
-        parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id
-    )
+    main_obj.put_job_from_annofab_project(parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id)
 
 
 def parse_args(parser: argparse.ArgumentParser):

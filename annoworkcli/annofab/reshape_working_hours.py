@@ -4,9 +4,10 @@
 import argparse
 import json
 import logging
+from collections.abc import Collection
 from enum import Enum
 from pathlib import Path
-from typing import Any, Collection, Optional
+from typing import Any, Optional
 
 import numpy
 import pandas
@@ -219,9 +220,7 @@ class ReshapeDataFrame:
             アサイン時間はparent_jobに対して指定するので、アサイン時間情報は参照しない。
         """
         # dropna=Falseを指定する理由: 複数のジョブが同じAnnofabプロジェクトを参照している場合、ジョブを特定できないためjob_idが空になるときがあるため
-        df_sum_actual = df_actual.groupby("job_id", dropna=False)[
-            ["actual_working_hours", "annofab_working_hours"]
-        ].sum()
+        df_sum_actual = df_actual.groupby("job_id", dropna=False)[["actual_working_hours", "annofab_working_hours"]].sum()
         # df_sum_actual が0件のときは、列がないので追加する
         if "actual_working_hours" not in df_sum_actual.columns:
             df_sum_actual["actual_working_hours"] = 0
@@ -229,9 +228,9 @@ class ReshapeDataFrame:
             df_sum_actual["annofab_working_hours"] = 0
 
         # job_id, job_name, parent_job_id, parent_job_name, annofab_project_id 列を持つ列
-        df_job = df_actual.drop_duplicates(subset=["job_id"])[
-            ["job_id", "job_name", "annofab_project_id", "annofab_project_title"]
-        ].set_index("job_id")
+        df_job = df_actual.drop_duplicates(subset=["job_id"])[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]].set_index(
+            "job_id"
+        )
         if df_job_parent_job is not None:
             df_job = df_job.join(df_job_parent_job.set_index("job_id"), how="left")
 
@@ -288,9 +287,7 @@ class ReshapeDataFrame:
 
         df_tmp_actual = df_actual.merge(df_job_parent_job, how="left", on="job_id", suffixes=("_tmp", None))
         # dropna=Falseを指定する理由: 複数のジョブが同じAnnofabプロジェクトを参照している場合、ジョブを特定できないためjob_idが空になるときがあるため
-        df_sum_actual = df_tmp_actual.groupby("parent_job_id", dropna=False)[
-            ["actual_working_hours", "annofab_working_hours"]
-        ].sum()
+        df_sum_actual = df_tmp_actual.groupby("parent_job_id", dropna=False)[["actual_working_hours", "annofab_working_hours"]].sum()
         df_sum_actual.reset_index(inplace=True)
         # df_sum_actual が0件のときは、列がないので追加する
         if "actual_working_hours" not in df_sum_actual.columns:
@@ -358,17 +355,9 @@ class ReshapeDataFrame:
 
         """
         # groupbyをjob_id, parent_job_idの2回に分けている理由：join/mergeするときの行数を減らすため
-        df_sum_actual_groupby_job_id = df_actual.groupby(["user_id", "job_id"])[
-            ["actual_working_hours", "annofab_working_hours"]
-        ].sum()
-        df_sum_actual_groupby_job_id = df_sum_actual_groupby_job_id.join(
-            df_job_parent_job.set_index("job_id"), how="left"
-        )
-        df_sum_actual = (
-            df_sum_actual_groupby_job_id.reset_index(level="user_id")
-            .groupby(by=["user_id", "parent_job_id"])
-            .sum(numeric_only=True)
-        )
+        df_sum_actual_groupby_job_id = df_actual.groupby(["user_id", "job_id"])[["actual_working_hours", "annofab_working_hours"]].sum()
+        df_sum_actual_groupby_job_id = df_sum_actual_groupby_job_id.join(df_job_parent_job.set_index("job_id"), how="left")
+        df_sum_actual = df_sum_actual_groupby_job_id.reset_index(level="user_id").groupby(by=["user_id", "parent_job_id"]).sum(numeric_only=True)
 
         # df_sum_actual が0件のときは、列がないので追加する
         # TODO 必要か？
@@ -444,9 +433,7 @@ class ReshapeDataFrame:
 
         """
         # groupbyをjob_id, parent_job_idの2回に分けている理由：join/mergeするときの行数を減らすため
-        df_sum_actual = df_actual.groupby(["user_id", "job_id"])[
-            ["actual_working_hours", "annofab_working_hours"]
-        ].sum()
+        df_sum_actual = df_actual.groupby(["user_id", "job_id"])[["actual_working_hours", "annofab_working_hours"]].sum()
 
         # df_sum_actual が0件のときは、列がないので追加する
         if "actual_working_hours" not in df_sum_actual.columns:
@@ -556,9 +543,7 @@ class ReshapeDataFrame:
             ]
         )
 
-    def get_df_list_by_date_user_job(
-        self, df_actual: pandas.DataFrame, df_job_parent_job: Optional[pandas.DataFrame] = None
-    ) -> pandas.DataFrame:
+    def get_df_list_by_date_user_job(self, df_actual: pandas.DataFrame, df_job_parent_job: Optional[pandas.DataFrame] = None) -> pandas.DataFrame:
         """
         `--shape_type list_by_date_user_job`に対応するDataFrameを生成する。
 
@@ -662,9 +647,7 @@ class ReshapeDataFrame:
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
 
         if insert_sum_column:
-            df_sum_by_date = df.groupby(["date"])[
-                ["actual_working_hours", "monitored_working_hours", "assigned_working_hours"]
-            ].sum()
+            df_sum_by_date = df.groupby(["date"])[["actual_working_hours", "monitored_working_hours", "assigned_working_hours"]].sum()
             # 列名が"総合計"になるように、indexを変更する
             df_sum_by_date.index = [(date, SUM_COLUMN_NAME) for date in df_sum_by_date.index]
 
@@ -674,22 +657,14 @@ class ReshapeDataFrame:
         df2 = df.stack().unstack([1, 2])
 
         # DataFrameのindexの日付が連続になるようにする
-        not_exists_date_set = {
-            str(e.date()) for e in pandas.date_range(start=min(df2.index), end=max(df2.index))
-        } - set(df2.index)
+        not_exists_date_set = {str(e.date()) for e in pandas.date_range(start=min(df2.index), end=max(df2.index))} - set(df2.index)
 
-        df_not_exists_date = pandas.DataFrame(
-            [pandas.Series(name=date, dtype="float64") for date in not_exists_date_set]
-        )
+        df_not_exists_date = pandas.DataFrame([pandas.Series(name=date, dtype="float64") for date in not_exists_date_set])
         df2 = pandas.concat([df2, df_not_exists_date])
         df2.sort_index(inplace=True)
         # 作業時間がNaNの場合は0に置換する
         df2.replace(
-            {
-                col: {numpy.nan: 0}
-                for col in df2.columns
-                if col[1] in ["actual_working_hours", "monitored_working_hours", "assigned_working_hours"]
-            },
+            {col: {numpy.nan: 0} for col in df2.columns if col[1] in ["actual_working_hours", "monitored_working_hours", "assigned_working_hours"]},
             inplace=True,
         )
 
@@ -823,9 +798,7 @@ class ReshapeWorkingHours:
         if parent_job_ids is not None:
             job_ids = list_actual_obj.get_job_id_list_from_parent_job_id_list(parent_job_ids)
 
-        df = list_actual_obj.get_df_working_hours(
-            start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids
-        )
+        df = list_actual_obj.get_df_working_hours(start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids)
         return df
 
     def get_df_assigned(
@@ -836,9 +809,7 @@ class ReshapeWorkingHours:
         parent_job_ids: Optional[Collection[str]] = None,
         user_ids: Optional[Collection[str]] = None,
     ):
-        list_assigned_obj = ListAssignedHoursDaily(
-            annowork_service=self.annowork_service, workspace_id=self.workspace_id
-        )
+        list_assigned_obj = ListAssignedHoursDaily(annowork_service=self.annowork_service, workspace_id=self.workspace_id)
         result = list_assigned_obj.get_assigned_hours_daily_list(
             start_date=start_date,
             end_date=end_date,
@@ -912,9 +883,7 @@ class ReshapeWorkingHours:
 
         elif shape_type == ShapeType.TOTAL_BY_USER:
             df_user_company = self.get_df_user_company()
-            df_output = reshape_obj.get_df_total_by_user(
-                df_actual=df_actual, df_assigned=df_assigned, df_user_company=df_user_company
-            )
+            df_output = reshape_obj.get_df_total_by_user(df_actual=df_actual, df_assigned=df_assigned, df_user_company=df_user_company)
 
         elif shape_type == ShapeType.TOTAL_BY_JOB:
             if show_parent_job:
@@ -973,9 +942,7 @@ class ReshapeWorkingHours:
             else:
                 df_job_parent_job = None
 
-            df_output = reshape_obj.get_df_list_by_date_user_job(
-                df_actual=df_actual, df_job_parent_job=df_job_parent_job
-            )
+            df_output = reshape_obj.get_df_list_by_date_user_job(df_actual=df_actual, df_job_parent_job=df_job_parent_job)
 
         elif shape_type == ShapeType.LIST_BY_DATE_USER_PARENT_JOB:
             df_job_parent_job = self.get_df_job_parent_job()
@@ -1012,27 +979,17 @@ class ReshapeWorkingHours:
         child_job_ids: Optional[Collection] = None
 
         if parent_job_ids is not None:
-            child_job_ids = {
-                e["job_id"]
-                for e in self.all_jobs
-                if get_parent_job_id_from_job_tree(e["job_tree"]) in set(parent_job_ids)
-            }
-            df_actual = filter_df(
-                df_actual, job_ids=child_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
-            )
+            child_job_ids = {e["job_id"] for e in self.all_jobs if get_parent_job_id_from_job_tree(e["job_tree"]) in set(parent_job_ids)}
+            df_actual = filter_df(df_actual, job_ids=child_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
         else:
-            df_actual = filter_df(
-                df_actual, job_ids=job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
-            )
+            df_actual = filter_df(df_actual, job_ids=job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
 
         if job_ids is not None:
             # アサインは親ジョブに紐付けているため、job_idに対応するアサインはない。したがって、0件にする。
             df_assigned = pandas.DataFrame(columns=df_assigned.columns)
         else:
             # df_assignedのjob_idがparent_job_idになるので、job_ids にはparent_job_idsを渡している
-            df_assigned = filter_df(
-                df_assigned, job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
-            )
+            df_assigned = filter_df(df_assigned, job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
         return (df_actual, df_assigned)
 
 
@@ -1084,7 +1041,8 @@ def main(args):
     if args.actual_file is None or args.assigned_file is None:
         if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
             logger.warning(
-                "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+                "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+                "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
             )
 
     # "--job_id"と"--annofab_project_id"は排他的なので、job_id_listは上書きする
@@ -1115,25 +1073,22 @@ def main(args):
 
     if args.assigned_file is not None:
         df_assigned = get_dataframe_from_input_file(args.assigned_file)
+    elif (
+        shape_type
+        in {
+            ShapeType.TOTAL_BY_JOB,
+            ShapeType.LIST_BY_DATE_USER_JOB,
+            ShapeType.LIST_BY_DATE_USER_PARENT_JOB,
+        }
+        or job_id_list is not None
+    ):
+        # このshape_typeのときは、df_assignedが不要なので、空のDataFrameを生成する
+        # job_idが指定されたときも、アサインを取得できないので、空のDataFrameを生成する
+        df_assigned = get_empty_df_assigned()
     else:
-        if (
-            shape_type
-            in {
-                ShapeType.TOTAL_BY_JOB,
-                ShapeType.LIST_BY_DATE_USER_JOB,
-                ShapeType.LIST_BY_DATE_USER_PARENT_JOB,
-            }
-            or job_id_list is not None
-        ):
-            # このshape_typeのときは、df_assignedが不要なので、空のDataFrameを生成する
-            # job_idが指定されたときも、アサインを取得できないので、空のDataFrameを生成する
+        df_assigned = main_obj.get_df_assigned(start_date=start_date, end_date=end_date, parent_job_ids=parent_job_id_list, user_ids=user_id_list)
+        if len(df_assigned) == 0:
             df_assigned = get_empty_df_assigned()
-        else:
-            df_assigned = main_obj.get_df_assigned(
-                start_date=start_date, end_date=end_date, parent_job_ids=parent_job_id_list, user_ids=user_id_list
-            )
-            if len(df_assigned) == 0:
-                df_assigned = get_empty_df_assigned()
 
     df_actual, df_assigned = main_obj.filter_df(
         df_actual=df_actual,
@@ -1145,9 +1100,7 @@ def main(args):
         job_ids=job_id_list,
     )
 
-    df_output = main_obj.get_df_output(
-        df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type, show_parent_job=args.show_parent_job
-    )
+    df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type, show_parent_job=args.show_parent_job)
 
     output_path: Optional[Path] = args.output
 
@@ -1236,7 +1189,9 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--show_parent_job",
         action="store_true",
-        help="親のジョブ情報も出力します。``--shape_type`` に以下の値を渡したときに有効なオプションです。\n" "* total_by_job" "* list_by_date_user_job",
+        help="親のジョブ情報も出力します。``--shape_type`` に以下の値を渡したときに有効なオプションです。\n"
+        "* total_by_job"
+        "* list_by_date_user_job",
     )
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")

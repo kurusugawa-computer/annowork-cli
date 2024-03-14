@@ -3,8 +3,9 @@ import functools
 import itertools
 import logging
 import multiprocessing
+from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Collection, Optional
+from typing import Any, Optional
 
 import pandas
 import requests
@@ -44,25 +45,19 @@ def _get_df_working_hours_from_df(
         df_af_working_hours: Annofabの作業時間情報
     """
     # annowork側の作業時間情報
-    df_aw_working_hours = df_actual_working_hours.merge(
-        df_user_and_af_account[["user_id", "annofab_account_id"]], how="left", on="user_id"
-    ).merge(
+    df_aw_working_hours = df_actual_working_hours.merge(df_user_and_af_account[["user_id", "annofab_account_id"]], how="left", on="user_id").merge(
         df_job_and_af_project[["job_id", "annofab_project_id"]],
         how="left",
         on="job_id",
     )
 
-    df_merged = df_aw_working_hours.merge(
-        df_af_working_hours, how="outer", on=["date", "annofab_project_id", "annofab_account_id"]
-    )
+    df_merged = df_aw_working_hours.merge(df_af_working_hours, how="outer", on=["date", "annofab_project_id", "annofab_account_id"])
 
     TMP_SUFFIX = "_tmp"
     # df_merged は outer joinしているため、左側にも欠損値ができる。
     # それを埋めるために、以前に user情報, job情報の一意な dataframe を生成して、欠損値を埋める
     USER_COLUMNS = ["workspace_member_id", "user_id", "username"]
-    df_merged = df_merged.merge(
-        df_user_and_af_account, how="left", on="annofab_account_id", suffixes=(None, TMP_SUFFIX)
-    )
+    df_merged = df_merged.merge(df_user_and_af_account, how="left", on="annofab_account_id", suffixes=(None, TMP_SUFFIX))
     for user_column in USER_COLUMNS:
         df_merged[user_column] = df_merged[user_column].fillna(df_merged[f"{user_column}{TMP_SUFFIX}"])
 
@@ -82,9 +77,7 @@ def _get_df_working_hours_from_df(
     df_merged["job_name"] = df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"])
 
     # annofab_project_titleを結合するために、annofab_projectだけのDataFrameを生成する
-    df_af_project = df_job_and_af_project.drop_duplicates(subset=["annofab_project_id"])[
-        ["annofab_project_id", "annofab_project_title"]
-    ]
+    df_af_project = df_job_and_af_project.drop_duplicates(subset=["annofab_project_id"])[["annofab_project_id", "annofab_project_title"]]
     df_merged = df_merged.merge(df_af_project, on="annofab_project_id", how="left")
 
     df_merged.fillna(
@@ -128,9 +121,7 @@ class ListWorkingHoursWithAnnofab:
             self.workspace_id, query_params={"includes_inactive_members": True}
         )
 
-        self.list_actual_working_time_obj = ListActualWorkingTime(
-            annowork_service, workspace_id, timezone_offset_hours=TIMEZONE_OFFSET_HOURS
-        )
+        self.list_actual_working_time_obj = ListActualWorkingTime(annowork_service, workspace_id, timezone_offset_hours=TIMEZONE_OFFSET_HOURS)
 
     def get_actual_working_hours_daily(
         self,
@@ -151,9 +142,7 @@ class ListWorkingHoursWithAnnofab:
         )
         self.list_actual_working_time_obj.set_additional_info_to_actual_working_time(actual_working_time_list)
 
-        result = create_actual_working_hours_daily_list(
-            actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS
-        )
+        result = create_actual_working_hours_daily_list(actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS)
         result = filter_actual_daily_list(result, start_date=start_date, end_date=end_date)
         return result
 
@@ -203,24 +192,16 @@ class ListWorkingHoursWithAnnofab:
         df_job = pandas.DataFrame(self.all_jobs)
 
         df_af_project = pandas.DataFrame({"job_id": list(job_ids)})
-        df_af_project["annofab_project_id"] = df_af_project["job_id"].apply(
-            lambda e: get_annofab_project_id_from_job(all_job_dict[e])
-        )
+        df_af_project["annofab_project_id"] = df_af_project["job_id"].apply(lambda e: get_annofab_project_id_from_job(all_job_dict[e]))
         df_af_project["annofab_project_title"] = df_af_project["annofab_project_id"].apply(get_project_title)
 
         df = df_job.merge(df_af_project, how="inner", on="job_id")
         return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
 
-    def _get_af_working_hours_from_af_project(
-        self, af_project_id: str, start_date: Optional[str], end_date: Optional[str]
-    ) -> list[dict[str, Any]]:
+    def _get_af_working_hours_from_af_project(self, af_project_id: str, start_date: Optional[str], end_date: Optional[str]) -> list[dict[str, Any]]:
         try:
-            logger.debug(
-                f"annofab_project_id= '{af_project_id}' のAnnofabプロジェクトの作業時間を取得します。:: {start_date=}, {end_date=}"
-            )
-            account_statistics = self.annofab_service.wrapper.get_account_daily_statistics(
-                af_project_id, from_date=start_date, to_date=end_date
-            )
+            logger.debug(f"annofab_project_id= '{af_project_id}' のAnnofabプロジェクトの作業時間を取得します。:: {start_date=}, {end_date=}")
+            account_statistics = self.annofab_service.wrapper.get_account_daily_statistics(af_project_id, from_date=start_date, to_date=end_date)
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == requests.codes.not_found:
                 logger.warning(f"annofab_project_id= '{af_project_id}' は存在しません。")
@@ -245,9 +226,7 @@ class ListWorkingHoursWithAnnofab:
                     )
         return result
 
-    def _get_af_working_hours(
-        self, af_project_ids: Collection[str], start_date: Optional[str], end_date: Optional[str]
-    ) -> pandas.DataFrame:
+    def _get_af_working_hours(self, af_project_ids: Collection[str], start_date: Optional[str], end_date: Optional[str]) -> pandas.DataFrame:
         """Annofabの作業時間情報が格納されたDataFrameを返す。
 
         返すDataFrameには以下の列が存在します。
@@ -272,9 +251,7 @@ class ListWorkingHoursWithAnnofab:
 
         else:
             for af_project_id in af_project_ids:
-                result.extend(
-                    self._get_af_working_hours_from_af_project(af_project_id, start_date=start_date, end_date=end_date)
-                )
+                result.extend(self._get_af_working_hours_from_af_project(af_project_id, start_date=start_date, end_date=end_date))
 
         if len(result) > 0:
             return pandas.DataFrame(result)
@@ -293,9 +270,7 @@ class ListWorkingHoursWithAnnofab:
         df_job["parent_job_id"] = df_job["job_tree"].apply(get_parent_job_id_from_job_tree)
 
         df_parent_job = pandas.DataFrame({"parent_job_id": df_job["parent_job_id"].unique()})
-        df_parent_job["parent_job_name"] = df_parent_job["parent_job_id"].apply(
-            lambda e: all_job_dict[e]["job_name"] if e is not None else None
-        )
+        df_parent_job["parent_job_name"] = df_parent_job["parent_job_id"].apply(lambda e: all_job_dict[e]["job_name"] if e is not None else None)
 
         df = df_job.merge(df_parent_job, how="left", on="parent_job_id")
         return df[["job_id", "parent_job_id", "parent_job_name"]]
@@ -318,9 +293,7 @@ class ListWorkingHoursWithAnnofab:
                 "parent_job_id",
                 "parent_job_name",
             ]
-            required_columns = (
-                ["date"] + job_columns + parent_job_columns + user_columns + ["actual_working_hours"] + annofab_columns
-            )
+            required_columns = ["date"] + job_columns + parent_job_columns + user_columns + ["actual_working_hours"] + annofab_columns
         else:
             required_columns = ["date"] + job_columns + user_columns + ["actual_working_hours"] + annofab_columns
 
@@ -426,11 +399,7 @@ class ListWorkingHoursWithAnnofab:
         return df[required_columns]
 
     def get_job_id_list_from_parent_job_id_list(self, parent_job_id_list: Collection[str]) -> list[str]:
-        return [
-            e["job_id"]
-            for e in self.all_jobs
-            if get_parent_job_id_from_job_tree(e["job_tree"]) in set(parent_job_id_list)
-        ]
+        return [e["job_id"] for e in self.all_jobs if get_parent_job_id_from_job_tree(e["job_tree"]) in set(parent_job_id_list)]
 
     def get_job_id_list_from_annofab_project_id_list(self, annofab_project_id_list: list[str]) -> list[str]:
         annofab_project_id_set = set(annofab_project_id_list)
@@ -452,12 +421,10 @@ def main(args):
     start_date: Optional[str] = args.start_date
     end_date: Optional[str] = args.end_date
 
-    if all(
-        v is None
-        for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]
-    ):
+    if all(v is None for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
     main_obj = ListWorkingHoursWithAnnofab(
@@ -486,7 +453,7 @@ def main(args):
     )
 
     if len(df) == 0:
-        logger.warning(f"作業時間情報は0件なので、出力しません。")
+        logger.warning("作業時間情報は0件なので、出力しません。")
         return
 
     logger.info(f"{len(df)} 件の作業時間情報を出力します。")
@@ -554,8 +521,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_working_hours"
     subcommand_help = "日ごとの実績作業時間と、ジョブに紐づくAnnofabプロジェクトの作業時間を一緒に出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser
