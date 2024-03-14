@@ -57,7 +57,7 @@ class ListWorkspace:
             print_csv(df, output=output)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     workspace_id_list = get_list_from_args(args.workspace_id)
     ListWorkspace(

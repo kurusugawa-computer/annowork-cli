@@ -55,7 +55,7 @@ class ChangeJobProperties:
         logger.info(f"{success_count} / {len(job_id_list)} 件のジョブのステータスを変更しました。")
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     assert job_id_list is not None

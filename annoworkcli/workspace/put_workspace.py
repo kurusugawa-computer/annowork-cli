@@ -32,7 +32,7 @@ class PutWorkspace:
         logger.info(f"ワークスペース {workspace_id} を作成/更新しました。")
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
 
     PutWorkspace(

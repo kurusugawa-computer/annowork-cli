@@ -37,7 +37,7 @@ class ListWorkspaceMember:
             print_csv(df, output=output)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     ListWorkspaceMember(annowork_service=annowork_service).main(output=args.output, output_format=OutputFormat(args.format))
 

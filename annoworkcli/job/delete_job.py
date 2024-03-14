@@ -53,7 +53,7 @@ class DeleteJob:
         logger.info(f"{success_count} / {len(job_id_list)} 件のジョブを削除しました。")
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = [args.job_id]
 

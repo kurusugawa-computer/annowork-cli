@@ -50,7 +50,7 @@ class PutJobFromAnnofabProject:
         return True
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     main_obj = PutJobFromAnnofabProject(
         annowork_service=annowork_service,

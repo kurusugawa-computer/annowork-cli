@@ -95,7 +95,7 @@ class ListLabor:
 
         return result
 
-    def get_user_id_annofab_account_id_dict(self, user_id_set) -> dict[str, str]:
+    def get_user_id_annofab_account_id_dict(self, user_id_set) -> dict[str, str]:  # noqa: ANN001
         result = {}
         for user_id in user_id_set:
             annofab_account_id = self.annowork_service.wrapper.get_annofab_account_id_from_user_id(user_id)
@@ -160,7 +160,7 @@ class ListLabor:
         return result
 
 
-def visualize_statistics(temp_dir: Path, args):  # noqa: ANN201
+def visualize_statistics(temp_dir: Path, args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
@@ -222,7 +222,7 @@ def visualize_statistics(temp_dir: Path, args):  # noqa: ANN201
     subprocess.run(command, check=True)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     if args.temp_dir is not None:
         visualize_statistics(args.temp_dir, args)
     else:

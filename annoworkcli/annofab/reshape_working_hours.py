@@ -1024,7 +1024,7 @@ def get_empty_df_assigned() -> pandas.DataFrame:
     )
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     main_obj = ReshapeWorkingHours(
         annowork_service=build_annoworkapi(args),
         workspace_id=args.workspace_id,

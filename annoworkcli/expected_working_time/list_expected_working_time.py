@@ -116,7 +116,7 @@ class ListExpectedWorkingTime:
             print_csv(df[columns], output=output)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     start_date: Optional[str] = args.start_date

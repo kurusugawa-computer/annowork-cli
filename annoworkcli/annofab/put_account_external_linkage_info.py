@@ -74,7 +74,7 @@ class PutAnnofabAccountId:
         logger.info(f"{success_count} / {len(user_id_list)} 件、アカウントの外部連携情報の設定しました。")
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     annofab_service = build_annofabapi_resource_and_login(
         annofab_login_user_id=args.annofab_user_id,

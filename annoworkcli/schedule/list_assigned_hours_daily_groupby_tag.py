@@ -130,7 +130,7 @@ class ListAssignedHoursDailyGroupbyTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)

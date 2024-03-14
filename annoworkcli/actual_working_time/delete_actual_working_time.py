@@ -131,7 +131,7 @@ class DeleteActualWorkingTime:
         self.delete_actual_working_times(actual_working_times)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
 
     if args.job_id is None and args.user_id is None:

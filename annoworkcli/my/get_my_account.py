@@ -24,7 +24,7 @@ class GetMyAccount:
         print_json(my_account, output=output, is_pretty=True)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
 
     GetMyAccount(

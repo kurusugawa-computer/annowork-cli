@@ -41,7 +41,7 @@ class ListWorkspaceTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     ListWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         output=args.output, output_format=OutputFormat(args.format)

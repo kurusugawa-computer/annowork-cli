@@ -55,7 +55,7 @@ class DeleteExpectedWorkingTime:
             self.delete_expected_working_times(expected_working_times)
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     DeleteExpectedWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         user_id=args.user_id,

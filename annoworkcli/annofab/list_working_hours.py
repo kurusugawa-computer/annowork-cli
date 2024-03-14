@@ -413,7 +413,7 @@ class ListWorkingHoursWithAnnofab:
         return [e["job_id"] for e in self.all_jobs if _match_job(e)]
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)

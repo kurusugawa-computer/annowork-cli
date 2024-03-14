@@ -30,7 +30,7 @@ class PutExternalLinkageInfo:
         logger.info(f"{user_id=} のユーザの外部連携情報を設定しました。")
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     external_linkage_info = get_json_from_args(args.external_linkage_info)
     PutExternalLinkageInfo(annowork_service=annowork_service).main(user_id=args.user_id, external_linkage_info=external_linkage_info)

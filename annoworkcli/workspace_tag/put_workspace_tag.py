@@ -32,7 +32,7 @@ class PutWorkspaceTag:
         logger.debug(f"{workspace_tag_name=} を登録しました。{content=}")
 
 
-def main(args):  # noqa: ANN201
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     PutWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         workspace_tag_name=args.workspace_tag_name, workspace_tag_id=args.workspace_tag_id

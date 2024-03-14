@@ -108,7 +108,7 @@ def get_file_scheme_path(str_value: str) -> Optional[str]:
         return None
 
 
-def isoduration_to_hour(duration) -> float:
+def isoduration_to_hour(duration) -> float:  # noqa: ANN001
     """
     ISO 8601 duration を 時間に変換する
     Args:
