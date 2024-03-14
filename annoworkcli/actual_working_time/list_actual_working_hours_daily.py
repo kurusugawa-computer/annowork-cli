@@ -111,7 +111,7 @@ def create_actual_working_hours_daily_list(
     if timezone_offset_hours is not None:
         tzinfo = datetime.timezone(datetime.timedelta(hours=timezone_offset_hours))
     else:
-        tzinfo = datetime.datetime.now().astimezone().tzinfo  # type: ignore
+        tzinfo = datetime.datetime.now().astimezone().tzinfo  # type: ignore[assignment]
 
     for actual in actual_working_time_list:
         tmp_results = _create_actual_working_hours_dict(actual, tzinfo=tzinfo)

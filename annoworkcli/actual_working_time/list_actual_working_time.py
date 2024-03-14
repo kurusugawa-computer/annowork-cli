@@ -29,7 +29,7 @@ class ListActualWorkingTime:
         if timezone_offset_hours is not None:
             tzinfo = datetime.timezone(datetime.timedelta(hours=timezone_offset_hours))
         else:
-            tzinfo = datetime.datetime.now().astimezone().tzinfo  # type: ignore
+            tzinfo = datetime.datetime.now().astimezone().tzinfo  # type: ignore[assignment]
         self.tzinfo = tzinfo
         """日付に対するタイムゾーン"""
 
