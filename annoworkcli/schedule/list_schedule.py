@@ -54,7 +54,7 @@ class ListSchedule:
 
         self.workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
 
-    def _set_assigned_hours(self, schedule_list: list[dict[str, Any]], min_date: str, max_date: str):
+    def _set_assigned_hours(self, schedule_list: list[dict[str, Any]], min_date: str, max_date: str):  # noqa: ANN202
         query_params = {"term_start": min_date, "term_end": max_date}
         logger.debug(f"予定稼働時間を取得します。 :: {query_params=}")
         expected_working_times = self.annowork_service.api.get_expected_working_times(self.workspace_id, query_params=query_params)

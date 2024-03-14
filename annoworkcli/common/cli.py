@@ -167,7 +167,7 @@ def get_list_from_args(str_list: Optional[List[str]] = None) -> Optional[List[st
         return str_list
 
 
-def get_json_from_args(target: Optional[str] = None) -> Any:
+def get_json_from_args(target: Optional[str] = None) -> Any:  # noqa: ANN401
     """
     JSON形式をPythonオブジェクトに変換する。
     プレフィックスが`file://`ならば、ファイルパスとしてファイルを読み込み、Pythonオブジェクトを返す。
