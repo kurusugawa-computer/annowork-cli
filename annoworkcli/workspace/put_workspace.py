@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class PutWorkspace:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         annowork_service: AnnoworkResource,
     ):
         self.annowork_service = annowork_service
 
-    def main(self, workspace_id: str, workspace_name: str, email: str):
+    def main(self, workspace_id: str, workspace_name: str, email: str):  # noqa: ANN201
         org = self.annowork_service.wrapper.get_workspace_or_none(workspace_id)
 
         request_body = {
@@ -32,7 +32,7 @@ class PutWorkspace:
         logger.info(f"ワークスペース {workspace_id} を作成/更新しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
 
     PutWorkspace(
@@ -40,7 +40,7 @@ def main(args):
     ).main(workspace_id=args.workspace_id, workspace_name=args.workspace_name, email=args.email)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -70,8 +70,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "put"
     subcommand_help = "ワークスペースを登録/更新します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

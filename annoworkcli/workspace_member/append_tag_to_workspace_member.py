@@ -1,6 +1,7 @@
 import argparse
 import logging
-from typing import Any, Collection, Optional
+from collections.abc import Collection
+from typing import Any, Optional
 
 from annoworkapi.resource import Resource as AnnoworkResource
 
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class AppendTagToWorkspaceMember:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         *,
         annowork_service: AnnoworkResource,
@@ -38,16 +39,12 @@ class AppendTagToWorkspaceMember:
             "last_updated_datetime": old_member["updated_datetime"],
         }
 
-        new_member = self.annowork_service.api.put_workspace_member(
-            self.workspace_id, workspace_member_id, request_body=request_body
-        )
+        new_member = self.annowork_service.api.put_workspace_member(self.workspace_id, workspace_member_id, request_body=request_body)
         logger.debug(f"{user_id=} :: ワークスペースメンバにワークスペースタグを追加しました。 :: username='{new_member['username']}'")
         return True
 
-    def main(self, user_id_list: list[str], workspace_tag_ids: Collection[str]):
-        workspace_members = self.annowork_service.api.get_workspace_members(
-            self.workspace_id, query_params={"includes_inactive_members": True}
-        )
+    def main(self, user_id_list: list[str], workspace_tag_ids: Collection[str]):  # noqa: ANN201
+        workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
         member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
         for user_id in user_id_list:
@@ -57,9 +54,7 @@ class AppendTagToWorkspaceMember:
                     logger.warning(f"{user_id=} のユーザはワークスペースメンバに存在しないので、スキップします。")
                     continue
 
-                old_tags = self.annowork_service.api.get_workspace_member_tags(
-                    self.workspace_id, old_member["workspace_member_id"]
-                )
+                old_tags = self.annowork_service.api.get_workspace_member_tags(self.workspace_id, old_member["workspace_member_id"])
                 old_workspace_tag_ids = {e["workspace_tag_id"] for e in old_tags}
                 diff_tags = set(workspace_tag_ids) - old_workspace_tag_ids
                 if len(diff_tags) == 0:
@@ -81,7 +76,7 @@ class AppendTagToWorkspaceMember:
         logger.info(f"{success_count}/{len(user_id_list)} 件のユーザにワークスペースタグを付与しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
@@ -93,7 +88,7 @@ def main(args):
     ).main(user_id_list=user_id_list, workspace_tag_ids=workspace_tag_id_list)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -127,8 +122,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "append_tag"
     subcommand_help = "ワークスペースメンバにワークスペースタグを追加します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 class PutWorkspaceTag:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def main(self, workspace_tag_name: str, workspace_tag_id: Optional[str]):
+    def main(self, workspace_tag_name: str, workspace_tag_id: Optional[str]):  # noqa: ANN201
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
         if workspace_tag_id is None:
@@ -28,20 +28,18 @@ class PutWorkspaceTag:
         if old_workspace_tag is not None:
             request_body["last_updated_datetime"] = old_workspace_tag["updated_datetime"]
 
-        content = self.annowork_service.api.put_workspace_tag(
-            self.workspace_id, workspace_tag_id, request_body=request_body
-        )
+        content = self.annowork_service.api.put_workspace_tag(self.workspace_id, workspace_tag_id, request_body=request_body)
         logger.debug(f"{workspace_tag_name=} を登録しました。{content=}")
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     PutWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         workspace_tag_name=args.workspace_tag_name, workspace_tag_id=args.workspace_tag_id
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -72,8 +70,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "put"
     subcommand_help = "ワークスペースタグを作成または更新します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

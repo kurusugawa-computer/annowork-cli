@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 class ListExternalLinkageInfo:
-    def __init__(self, annowork_service: AnnoworkResource):
+    def __init__(self, annowork_service: AnnoworkResource):  # noqa: ANN204
         self.annowork_service = annowork_service
 
-    def main(self, user_id_list: list[str], output: Optional[Path], output_format: OutputFormat):
+    def main(self, user_id_list: list[str], output: Optional[Path], output_format: OutputFormat):  # noqa: ANN201
         logger.info(f"{len(user_id_list)} 件のアカウント外部連携情報を取得します。")
 
         results = []
@@ -29,7 +29,7 @@ class ListExternalLinkageInfo:
             results.append(info)
 
         if len(results) == 0:
-            logger.warning(f"アカウント外部連携情報は0件なので、出力しません。")
+            logger.warning("アカウント外部連携情報は0件なので、出力しません。")
             return
 
         logger.info(f"{len(results)} 件のアカウント外部連携情報を出力します。")
@@ -41,7 +41,7 @@ class ListExternalLinkageInfo:
             print_csv(df, output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
@@ -50,7 +50,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-u",
         "--user_id",
@@ -77,8 +77,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_external_linkage_info"
     subcommand_help = "アカウント外部連携情報取得の一覧を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

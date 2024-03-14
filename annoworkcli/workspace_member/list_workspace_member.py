@@ -1,7 +1,8 @@
 import argparse
 import logging
+from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Collection, Optional
+from typing import Any, Optional
 
 import more_itertools
 import pandas
@@ -15,16 +16,14 @@ logger = logging.getLogger(__name__)
 
 
 class ListWorkspace:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def set_additional_info(self, workspace_members: list[dict[str, Any]]):
+    def set_additional_info(self, workspace_members: list[dict[str, Any]]):  # noqa: ANN201
         logger.debug(f"{len(workspace_members)} 件のメンバのワークスペースタグ情報を取得します。")
         for member in workspace_members:
-            workspace_tags = self.annowork_service.api.get_workspace_member_tags(
-                self.workspace_id, member["workspace_member_id"]
-            )
+            workspace_tags = self.annowork_service.api.get_workspace_member_tags(self.workspace_id, member["workspace_member_id"])
             member["workspace_tag_ids"] = [e["workspace_tag_id"] for e in workspace_tags]
             member["workspace_tag_names"] = [e["workspace_tag_name"] for e in workspace_tags]
 
@@ -39,9 +38,7 @@ class ListWorkspace:
         return pandas.DataFrame(result).drop_duplicates().to_dict("records")
 
     @classmethod
-    def filter_member_with_user_id(
-        cls, members: list[dict[str, Any]], user_ids: Collection[str]
-    ) -> list[dict[str, Any]]:
+    def filter_member_with_user_id(cls, members: list[dict[str, Any]], user_ids: Collection[str]) -> list[dict[str, Any]]:
         """
         メンバ一覧を、指定したuser_idで絞り込みます。
 
@@ -55,7 +52,8 @@ class ListWorkspace:
         result = []
         for user_id in user_ids:
             member = more_itertools.first_true(
-                members, pred=lambda e: e["user_id"] == user_id  # pylint: disable=cell-var-from-loop
+                members,
+                pred=lambda e: e["user_id"] == user_id,  # pylint: disable=cell-var-from-loop  # noqa: B023
             )
             if member is not None:
                 result.append(member)
@@ -64,7 +62,7 @@ class ListWorkspace:
                 continue
         return result
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         output: Path,
         output_format: OutputFormat,
@@ -77,14 +75,12 @@ class ListWorkspace:
         if workspace_tag_ids is not None:
             workspace_members = self.get_workspace_members_from_tags(workspace_tag_ids)
         else:
-            workspace_members = self.annowork_service.api.get_workspace_members(
-                self.workspace_id, query_params={"includes_inactive_members": True}
-            )
+            workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
             if user_ids is not None:
                 workspace_members = self.filter_member_with_user_id(workspace_members, user_ids)
 
         if len(workspace_members) == 0:
-            logger.warning(f"ワークスペースメンバ情報は0件なので、出力しません。")
+            logger.warning("ワークスペースメンバ情報は0件なので、出力しません。")
             return
 
         if show_workspace_tag:
@@ -101,7 +97,7 @@ class ListWorkspace:
             print_csv(df, output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -114,7 +110,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -163,8 +159,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list"
     subcommand_help = "ワークスペースメンバの一覧を出力します。無効化されたメンバも出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

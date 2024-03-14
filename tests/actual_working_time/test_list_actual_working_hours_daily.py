@@ -80,21 +80,6 @@ class Test_create_actual_working_hours_daily_list:
     def test_xxx(self):
         actual = create_actual_working_hours_daily_list(ACTUAL_WORKING_TIME_LIST)
         assert len(actual) == 3
-        assert (
-            more_itertools.first_true(
-                actual, pred=lambda e: e.date == "2021-11-01" and e.job_name == "task1"
-            ).actual_working_hours
-            == 1.5
-        )
-        assert (
-            more_itertools.first_true(
-                actual, pred=lambda e: e.date == "2021-11-01" and e.job_name == "task2"
-            ).actual_working_hours
-            == 2.0
-        )
-        assert (
-            more_itertools.first_true(
-                actual, pred=lambda e: e.date == "2021-11-02" and e.job_name == "task1"
-            ).actual_working_hours
-            == 0.5
-        )
+        assert more_itertools.first_true(actual, pred=lambda e: e.date == "2021-11-01" and e.job_name == "task1").actual_working_hours == 1.5
+        assert more_itertools.first_true(actual, pred=lambda e: e.date == "2021-11-01" and e.job_name == "task2").actual_working_hours == 2.0
+        assert more_itertools.first_true(actual, pred=lambda e: e.date == "2021-11-02" and e.job_name == "task1").actual_working_hours == 0.5

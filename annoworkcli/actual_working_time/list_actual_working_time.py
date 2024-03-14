@@ -1,8 +1,9 @@
 import argparse
 import datetime
 import logging
+from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Collection, Optional
+from typing import Any, Optional
 
 import pandas
 from annoworkapi.actual_working_time import get_term_start_end_from_date_for_actual_working_time
@@ -18,21 +19,17 @@ logger = logging.getLogger(__name__)
 
 
 class ListActualWorkingTime:
-    def __init__(
-        self, annowork_service: AnnoworkResource, workspace_id: str, *, timezone_offset_hours: Optional[float]
-    ):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, timezone_offset_hours: Optional[float]):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-        self.workspace_members = self.annowork_service.api.get_workspace_members(
-            self.workspace_id, query_params={"includes_inactive_members": True}
-        )
+        self.workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
 
         # none 判定
         if timezone_offset_hours is not None:
             tzinfo = datetime.timezone(datetime.timedelta(hours=timezone_offset_hours))
         else:
-            tzinfo = datetime.datetime.now().astimezone().tzinfo  # type: ignore
+            tzinfo = datetime.datetime.now().astimezone().tzinfo  # type: ignore[assignment]
         self.tzinfo = tzinfo
         """日付に対するタイムゾーン"""
 
@@ -44,9 +41,7 @@ class ListActualWorkingTime:
         end_date: Optional[str] = None,
     ) -> list[dict[str, Any]]:
         query_params = {}
-        term_start, term_end = get_term_start_end_from_date_for_actual_working_time(
-            start_date, end_date, tzinfo=self.tzinfo
-        )
+        term_start, term_end = get_term_start_end_from_date_for_actual_working_time(start_date, end_date, tzinfo=self.tzinfo)
         if term_start is not None:
             query_params["term_start"] = term_start
         if term_end is not None:
@@ -69,9 +64,7 @@ class ListActualWorkingTime:
         end_date: Optional[str] = None,
     ) -> list[dict[str, Any]]:
         query_params = {}
-        term_start, term_end = get_term_start_end_from_date_for_actual_working_time(
-            start_date, end_date, tzinfo=self.tzinfo
-        )
+        term_start, term_end = get_term_start_end_from_date_for_actual_working_time(start_date, end_date, tzinfo=self.tzinfo)
         if term_start is not None:
             query_params["term_start"] = term_start
         if term_end is not None:
@@ -91,14 +84,10 @@ class ListActualWorkingTime:
 
     @staticmethod
     def get_actual_working_hours(actual_working_time: dict[str, Any]) -> float:
-        delta = str_to_datetime(actual_working_time["end_datetime"]) - str_to_datetime(
-            actual_working_time["start_datetime"]
-        )
+        delta = str_to_datetime(actual_working_time["end_datetime"]) - str_to_datetime(actual_working_time["start_datetime"])
         return delta.total_seconds() / 3600
 
-    def set_additional_info_to_actual_working_time(
-        self, actual_working_time_list: list[dict[str, Any]], is_add_parent_job_info: bool = False
-    ):
+    def set_additional_info_to_actual_working_time(self, actual_working_time_list: list[dict[str, Any]], is_add_parent_job_info: bool = False):  # noqa: ANN201
         """workspace_member_id, job_idに紐づく情報を付与する。
 
         Args:
@@ -129,9 +118,7 @@ class ListActualWorkingTime:
             job_id = actual["job_id"]
             job = job_dict.get(job_id)
             if job is None:
-                logger.warning(
-                    f"{job_id=} であるジョブは存在しません。 " f":: actual_working_time_id= '{actual['actual_working_time_id']}' "
-                )
+                logger.warning(f"{job_id=} であるジョブは存在しません。 " f":: actual_working_time_id= '{actual['actual_working_time_id']}' ")
                 continue
             actual["job_name"] = job["job_name"]
             if is_add_parent_job_info:
@@ -211,7 +198,7 @@ class ListActualWorkingTime:
             self.set_additional_info_to_actual_working_time(result, is_add_parent_job_info=is_add_parent_job_info)
         return result
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -233,7 +220,7 @@ class ListActualWorkingTime:
             is_add_parent_job_info=is_add_parent_job_info,
         )
         if len(result) == 0:
-            logger.warning(f"実績作業時間情報は0件なので、出力しません。")
+            logger.warning("実績作業時間情報は0件なので、出力しません。")
             return
 
         logger.info(f"{len(result)} 件の実績作業時間情報を出力します。")
@@ -277,7 +264,7 @@ class ListActualWorkingTime:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -287,7 +274,8 @@ def main(args):
 
     if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
     ListActualWorkingTime(
@@ -306,7 +294,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -332,7 +320,9 @@ def parse_args(parser: argparse.ArgumentParser):
     )
 
     parser.add_argument(
-        "--timezone_offset", type=float, help="日付に対するタイムゾーンのオフセット時間を指定します。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。"
+        "--timezone_offset",
+        type=float,
+        help="日付に対するタイムゾーンのオフセット時間を指定します。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
@@ -353,8 +343,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list"
     subcommand_help = "実績作業時間情報の一覧を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

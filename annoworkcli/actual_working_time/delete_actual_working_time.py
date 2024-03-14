@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class DeleteActualWorkingTime:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         annowork_service: AnnoworkResource,
         workspace_id: str,
@@ -37,7 +37,7 @@ class DeleteActualWorkingTime:
 
         self.all_yes = all_yes
 
-    def delete_actual_working_times(self, actual_working_times: list[dict[str, Any]]):
+    def delete_actual_working_times(self, actual_working_times: list[dict[str, Any]]):  # noqa: ANN201
         success_count = 0
         for index, actual in enumerate(actual_working_times):
             try:
@@ -53,15 +53,15 @@ class DeleteActualWorkingTime:
                     if all_yes:
                         self.all_yes = all_yes
 
-                actual = self.annowork_service.api.delete_actual_working_time_by_workspace_member(
+                actual2 = self.annowork_service.api.delete_actual_working_time_by_workspace_member(
                     self.workspace_id,
                     workspace_member_id=actual["workspace_member_id"],
                     actual_working_time_id=actual["actual_working_time_id"],
                 )
-                logger.debug(f"{index+1} 件目: 実績作業時間を削除しました。:: {actual}")
+                logger.debug(f"{index+1} 件目: 実績作業時間を削除しました。:: {actual2}")
                 success_count += 1
-            except Exception as e:
-                logger.warning(f"{index+1} 件目: 実績作業時間の削除に失敗しました。{e}")
+            except Exception:
+                logger.warning(f"{index+1} 件目: 実績作業時間の削除に失敗しました。", exc_info=True)
                 continue
             finally:
                 if (index + 1) % 100 == 0:
@@ -69,7 +69,7 @@ class DeleteActualWorkingTime:
 
         logger.info(f"{success_count} / {len(actual_working_times)} 件の実績作業時間を削除しました。")
 
-    def get_actual_working_times(
+    def get_actual_working_times(  # noqa: ANN201
         self,
         *,
         start_date: str,
@@ -87,13 +87,11 @@ class DeleteActualWorkingTime:
         )
 
         if actual_working_time_id_list is not None:
-            get_actual_working_times = [
-                e for e in get_actual_working_times if e["actual_working_time_id"] in set(actual_working_time_id_list)
-            ]
+            get_actual_working_times = [e for e in get_actual_working_times if e["actual_working_time_id"] in set(actual_working_time_id_list)]
 
         return get_actual_working_times
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         job_id: Optional[str],
@@ -111,12 +109,11 @@ class DeleteActualWorkingTime:
         )
 
         if len(actual_working_times) == 0:
-            logger.info(f"削除する実績作業時間情報はありませんでした。")
+            logger.info("削除する実績作業時間情報はありませんでした。")
             return
 
         message = (
-            f"実績作業時間情報 {len(actual_working_times)} 件を削除します。よろしいですか？ :: "
-            f"start_date={start_date}, end_date={end_date}, "
+            f"実績作業時間情報 {len(actual_working_times)} 件を削除します。よろしいですか？ :: " f"start_date={start_date}, end_date={end_date}, "
         )
         if job_id is not None:
             job = self.annowork_service.api.get_job(self.workspace_id, job_id)
@@ -134,7 +131,7 @@ class DeleteActualWorkingTime:
         self.delete_actual_working_times(actual_working_times)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
 
     if args.job_id is None and args.user_id is None:
@@ -156,7 +153,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -172,7 +169,9 @@ def parse_args(parser: argparse.ArgumentParser):
     parser.add_argument("-u", "--user_id", type=str, required=False, help="削除したい実績作業時間情報に紐づくuser_idを指定してください。")
 
     parser.add_argument(
-        "--timezone_offset", type=float, help="日付に対するタイムゾーンのオフセット時間を指定します。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。"
+        "--timezone_offset",
+        type=float,
+        help="日付に対するタイムゾーンのオフセット時間を指定します。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。",
     )
 
     parser.add_argument(
@@ -192,8 +191,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "delete"
     subcommand_help = "実績作業時間を削除します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

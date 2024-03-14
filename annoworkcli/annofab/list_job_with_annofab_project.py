@@ -36,7 +36,7 @@ def get_annofab_project_ids(job_list: list[dict[str, Any]]) -> set[str]:
 
 
 class ListJobWithAnnofabProject:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         *,
         annowork_service: AnnoworkResource,
@@ -113,9 +113,7 @@ class ListJobWithAnnofabProject:
 
             af_project = af_project_dict.get(af_project_id)
             if af_project is None:
-                logger.warning(
-                    f"annofab_project_id='{af_project_id}' のAnnofabプロジェクトを取得できませんでした。:: job_id={job['job_id']}"
-                )
+                logger.warning(f"annofab_project_id='{af_project_id}' のAnnofabプロジェクトを取得できませんでした。:: job_id={job['job_id']}")
                 job["annofab"] = None
                 continue
 
@@ -128,7 +126,7 @@ class ListJobWithAnnofabProject:
         return job_list
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -152,7 +150,7 @@ def main(args):
     )
 
     if len(job_list) == 0:
-        logger.warning(f"ジョブの一覧が0件なので、出力しません。")
+        logger.warning("ジョブの一覧が0件なので、出力しません。")
         return
 
     logger.info(f"{len(job_list)} 件のジョブの一覧を出力します。")
@@ -164,7 +162,7 @@ def main(args):
         print_csv(df, output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -207,9 +205,7 @@ def parse_args(parser: argparse.ArgumentParser):
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 
-    parser.add_argument(
-        "-f", "--format", type=str, choices=[e.value for e in OutputFormat], help="出力先", default=OutputFormat.CSV.value
-    )
+    parser.add_argument("-f", "--format", type=str, choices=[e.value for e in OutputFormat], help="出力先", default=OutputFormat.CSV.value)
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
 
@@ -223,8 +219,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_job"
     subcommand_help = "ジョブとジョブに紐づくAnnofabプロジェクトの情報を一緒に出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

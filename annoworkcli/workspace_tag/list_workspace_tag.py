@@ -14,15 +14,15 @@ logger = logging.getLogger(__name__)
 
 
 class ListWorkspaceTag:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def main(self, output: Path, output_format: OutputFormat):
+    def main(self, output: Path, output_format: OutputFormat):  # noqa: ANN201
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
         if len(workspace_tags) == 0:
-            logger.warning(f"ワークスペースタグ情報は0件なので、出力しません。")
+            logger.warning("ワークスペースタグ情報は0件なので、出力しません。")
             return
 
         logger.debug(f"{len(workspace_tags)} 件のタグ一覧を出力します。")
@@ -41,14 +41,14 @@ class ListWorkspaceTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     ListWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
         output=args.output, output_format=OutputFormat(args.format)
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -75,8 +75,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list"
     subcommand_help = "ワークスペースタグの一覧を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

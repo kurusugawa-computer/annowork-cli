@@ -1,9 +1,10 @@
 import argparse
 import logging
 from collections import defaultdict
+from collections.abc import Collection
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Collection, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple  # noqa: UP035
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -37,7 +38,7 @@ class AssignedHoursDaily(DataClassJsonMixin):
     assigned_working_hours: float
 
 
-AssignedHoursDict = Dict[Tuple[str, str, str], float]
+AssignedHoursDict = Dict[Tuple[str, str, str], float]  # noqa: UP006
 """アサイン時間の日ごとの情報を格納する辞書
 key: (date, workspace_member_id, job_id), value: アサイン時間
 """
@@ -53,7 +54,7 @@ def _get_min_max_date_from_schedule_list(schedule_list: list[dict[str, Any]]) ->
 
 
 class ListAssignedHoursDaily:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.list_schedule_obj = ListSchedule(annowork_service, workspace_id)
@@ -62,9 +63,7 @@ class ListAssignedHoursDaily:
         min_date, max_date = _get_min_max_date_from_schedule_list(schedule_list)
         query_params = {"term_start": min_date, "term_end": max_date}
         logger.debug(f"予定稼働時間を取得します。 :: {query_params=}")
-        expected_working_times = self.annowork_service.api.get_expected_working_times(
-            self.workspace_id, query_params=query_params
-        )
+        expected_working_times = self.annowork_service.api.get_expected_working_times(self.workspace_id, query_params=query_params)
         return {(e["date"], e["workspace_member_id"]): e["expected_working_hours"] for e in expected_working_times}
 
     def get_assigned_hours_daily_list(
@@ -75,9 +74,7 @@ class ListAssignedHoursDaily:
         job_ids: Optional[Collection[str]] = None,
         user_ids: Optional[Collection[str]] = None,
     ) -> list[AssignedHoursDaily]:
-        schedule_list = self.list_schedule_obj.get_schedules(
-            start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids
-        )
+        schedule_list = self.list_schedule_obj.get_schedules(start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids)
 
         if len(schedule_list) == 0:
             return []
@@ -111,9 +108,7 @@ class ListAssignedHoursDaily:
 
             job = all_jobs_dict.get(job_id)
             if job is None:
-                logger.warning(
-                    f"{job_id=} であるジョブは存在しません。 " f":: date='{date}', workspace_member_id='{workspace_member_id}'"
-                )
+                logger.warning(f"{job_id=} であるジョブは存在しません。 " f":: date='{date}', workspace_member_id='{workspace_member_id}'")
 
             member = all_members_dict.get(workspace_member_id)
             if member is None:
@@ -133,7 +128,7 @@ class ListAssignedHoursDaily:
 
         return result_list
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -150,7 +145,7 @@ class ListAssignedHoursDaily:
             user_ids=user_id_list,
         )
         if len(result) == 0:
-            logger.warning(f"アサイン時間情報は0件なので、出力しません。")
+            logger.warning("アサイン時間情報は0件なので、出力しません。")
             return
 
         result.sort(key=lambda e: e.date)
@@ -161,14 +156,14 @@ class ListAssignedHoursDaily:
             # https://qiita.com/yuji38kwmt/items/a3625b2011aff1d9901b
             dict_result = []
             for elm in result:
-                dict_result.append(elm.to_dict())
+                dict_result.append(elm.to_dict())  # noqa: PERF401
             print_json(dict_result, is_pretty=True, output=output)
         else:
             df = pandas.DataFrame(result)
             print_csv(df, output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -178,7 +173,8 @@ def main(args):
 
     if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。" "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
+            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
     ListAssignedHoursDaily(
@@ -194,7 +190,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -228,8 +224,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_daily"
     subcommand_help = "作業計画から求めたアサイン時間を日ごとに出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

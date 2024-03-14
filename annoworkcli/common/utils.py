@@ -5,7 +5,7 @@ import logging.config
 import pkgutil
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Dict, List, Optional, TypeVar  # noqa: UP035
 
 import isodate
 import pandas
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")  # Can be anything
 
 
-def read_lines(filepath: str) -> List[str]:
+def read_lines(filepath: str) -> List[str]:  # noqa: UP006
     """ファイルを行単位で読み込む。改行コードを除く"""
 
     # BOM付きUTF-8のファイルも読み込めるようにする
@@ -29,7 +29,7 @@ def read_lines(filepath: str) -> List[str]:
     return [e.rstrip("\r\n") for e in lines]
 
 
-def read_lines_except_blank_line(filepath: str) -> List[str]:
+def read_lines_except_blank_line(filepath: str) -> List[str]:  # noqa: UP006
     """ファイルを行単位で読み込む。ただし、改行コード、空行を除く"""
     lines = read_lines(filepath)
     return [line for line in lines if line != ""]
@@ -52,7 +52,7 @@ def output_string(target: str, output: Optional[Path] = None) -> None:
             logger.info(f"{output} に出力しました。")
 
 
-def print_json(target: Any, is_pretty: bool = False, output: Optional[Path] = None) -> None:
+def print_json(target: Any, is_pretty: bool = False, output: Optional[Path] = None) -> None:  # noqa: ANN401
     """
     JSONを出力する。
 
@@ -68,10 +68,10 @@ def print_json(target: Any, is_pretty: bool = False, output: Optional[Path] = No
         output_string(json.dumps(target, ensure_ascii=False), output)
 
 
-def print_csv(
+def print_csv(  # noqa: ANN201
     df: pandas.DataFrame,
     output: Optional[Path] = None,
-    to_csv_kwargs: Optional[Dict[str, Any]] = None,
+    to_csv_kwargs: Optional[Dict[str, Any]] = None,  # noqa: UP006
 ):
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
@@ -108,7 +108,7 @@ def get_file_scheme_path(str_value: str) -> Optional[str]:
         return None
 
 
-def isoduration_to_hour(duration) -> float:
+def isoduration_to_hour(duration) -> float:  # noqa: ANN001
     """
     ISO 8601 duration を 時間に変換する
     Args:
@@ -125,7 +125,7 @@ def to_iso8601_string(dt: datetime.datetime) -> str:
     return dt.astimezone(datetime.timezone.utc).strftime(DATETIME_FORMAT)
 
 
-def set_default_logger(is_debug_mode: bool = False):
+def set_default_logger(is_debug_mode: bool = False):  # noqa: ANN201
     """
     デフォルトのロガーを設定する。パッケージ内のlogging.yamlを読み込む。
     """

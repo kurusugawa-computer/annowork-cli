@@ -6,7 +6,7 @@ import tempfile
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple  # noqa: UP035
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -22,7 +22,7 @@ from annoworkcli.common.utils import print_csv
 logger = logging.getLogger(__name__)
 
 
-ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]
+ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]  # noqa: UP006
 """実績作業時間の日ごとの情報を格納する辞書
 key: (date, workspace_member_id, job_id), value: 実績作業時間
 """
@@ -38,13 +38,13 @@ class AnnofabLabor(DataClassJsonMixin):
     actual_worktime_hour: float
 
 
-JobIdAnnofabProjectIdDict = Dict[str, str]
+JobIdAnnofabProjectIdDict = Dict[str, str]  # noqa: UP006
 """key:job_id, value:annofab_project_idのdict
 """
 
 
 class ListLabor:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
@@ -57,9 +57,7 @@ class ListLabor:
             timezone_offset_hours=TIMEZONE_OFFSET_HOURS,
         )
 
-    def get_job_id_annofab_project_id_dict_from_annofab_project_id(
-        self, annofab_project_id_list: list[str]
-    ) -> JobIdAnnofabProjectIdDict:
+    def get_job_id_annofab_project_id_dict_from_annofab_project_id(self, annofab_project_id_list: list[str]) -> JobIdAnnofabProjectIdDict:
         # オーダを減らすため、事前にdictを作成する
         annofab_project_id_dict: dict[str, list[str]] = defaultdict(list)
         for job in self.all_job_list:
@@ -71,7 +69,9 @@ class ListLabor:
         for annofab_project_id in annofab_project_id_list:
             job_id_list = annofab_project_id_dict.get(annofab_project_id)
             if job_id_list is None:
-                logger.warning(f"ジョブの外部連携情報に、AnnofabのプロジェクトID '{annofab_project_id}' を表すURLが設定されたジョブは見つかりませんでした。")
+                logger.warning(
+                    f"ジョブの外部連携情報に、AnnofabのプロジェクトID '{annofab_project_id}' を表すURLが設定されたジョブは見つかりませんでした。"
+                )
                 continue
 
             for job_id in job_id_list:
@@ -81,9 +81,7 @@ class ListLabor:
 
     def get_job_id_annofab_project_id_dict_from_job_id(self, job_id_list: list[str]) -> JobIdAnnofabProjectIdDict:
         job_id_dict = {
-            job["job_id"]: get_annofab_project_id_from_job(job)
-            for job in self.all_job_list
-            if get_annofab_project_id_from_job(job) is not None
+            job["job_id"]: get_annofab_project_id_from_job(job) for job in self.all_job_list if get_annofab_project_id_from_job(job) is not None
         }
 
         result = {}
@@ -97,7 +95,7 @@ class ListLabor:
 
         return result
 
-    def get_user_id_annofab_account_id_dict(self, user_id_set) -> dict[str, str]:
+    def get_user_id_annofab_account_id_dict(self, user_id_set) -> dict[str, str]:  # noqa: ANN001
         result = {}
         for user_id in user_id_set:
             annofab_account_id = self.annowork_service.wrapper.get_annofab_account_id_from_user_id(user_id)
@@ -124,9 +122,7 @@ class ListLabor:
             )
 
         elif annofab_project_id_list is not None:
-            job_id_annofab_project_id_dict = self.get_job_id_annofab_project_id_dict_from_annofab_project_id(
-                annofab_project_id_list
-            )
+            job_id_annofab_project_id_dict = self.get_job_id_annofab_project_id_dict_from_annofab_project_id(annofab_project_id_list)
             actual_working_time_list = self.list_actual_working_time_obj.get_actual_working_times(
                 job_ids=job_id_annofab_project_id_dict.keys(),
                 start_date=start_date,
@@ -138,14 +134,12 @@ class ListLabor:
             return []
 
         # annofabのデータは日本時間に固定されているので、日本時間を指定する
-        daily_list = create_actual_working_hours_daily_list(
-            actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS
-        )
+        daily_list = create_actual_working_hours_daily_list(actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS)
 
         user_id_set = {elm.user_id for elm in daily_list}
         user_id_annofab_account_id_dict = self.get_user_id_annofab_account_id_dict(user_id_set)
         if len(user_id_set) != len(user_id_annofab_account_id_dict):
-            raise RuntimeError(f"アカウント外部連携情報にAnnofabのaccount_idが設定されていないユーザがいます。")
+            raise RuntimeError("アカウント外部連携情報にAnnofabのaccount_idが設定されていないユーザがいます。")
 
         result = []
         for elm in daily_list:
@@ -166,7 +160,7 @@ class ListLabor:
         return result
 
 
-def visualize_statistics(temp_dir: Path, args):
+def visualize_statistics(temp_dir: Path, args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
@@ -194,13 +188,13 @@ def visualize_statistics(temp_dir: Path, args):
     ]
 
     if annofab_project_id_list is not None:
-        command.extend(["--project_id"] + annofab_project_id_list)
+        command.extend(["--project_id"] + annofab_project_id_list)  # noqa: RUF005
     elif job_id_list is not None:
         job_id_annofab_project_id_dict = main_obj.get_job_id_annofab_project_id_dict_from_job_id(job_id_list)
         if len(job_id_annofab_project_id_dict) == 0:
             logger.error("Annofabプロジェクトに紐づくジョブが0件なので、終了します。")
             return
-        command.extend(["--project_id"] + list(job_id_annofab_project_id_dict.values()))
+        command.extend(["--project_id"] + list(job_id_annofab_project_id_dict.values()))  # noqa: RUF005
 
     if args.start_date is not None:
         command.extend(["--start_date", args.start_date])
@@ -228,7 +222,7 @@ def visualize_statistics(temp_dir: Path, args):
     subprocess.run(command, check=True)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     if args.temp_dir is not None:
         visualize_statistics(args.temp_dir, args)
     else:
@@ -236,7 +230,7 @@ def main(args):
             visualize_statistics(Path(str_temp_dir), args)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",

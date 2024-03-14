@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class DeleteJob:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.all_yes = all_yes
@@ -37,7 +37,7 @@ class DeleteJob:
         logger.debug(f"ジョブを削除しました。 :: {job}")
         return True
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         job_id_list: list[str],
     ):
@@ -53,7 +53,7 @@ class DeleteJob:
         logger.info(f"{success_count} / {len(job_id_list)} 件のジョブを削除しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = [args.job_id]
 
@@ -62,7 +62,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -89,8 +89,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "delete"
     subcommand_help = "ジョブを削除します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

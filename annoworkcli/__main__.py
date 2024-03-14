@@ -2,7 +2,8 @@ import argparse
 import copy
 import logging
 import sys
-from typing import Optional, Sequence
+from collections.abc import Sequence
+from typing import Optional
 
 import pandas
 
@@ -35,9 +36,7 @@ def warn_pandas_copy_on_write() -> None:
 
 
 def create_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        description="Command Line Interface for Annowork", formatter_class=PrettyHelpFormatter, allow_abbrev=False
-    )
+    parser = argparse.ArgumentParser(description="Command Line Interface for Annowork", formatter_class=PrettyHelpFormatter, allow_abbrev=False)
     parser.add_argument("--version", action="version", version=f"annoworkcli {annoworkcli.__version__}")
     parser.set_defaults(command_help=parser.print_help)
 
@@ -71,7 +70,7 @@ def mask_argv(argv: list[str]) -> list[str]:
     return tmp_argv
 
 
-def main(arguments: Optional[Sequence[str]] = None):
+def main(arguments: Optional[Sequence[str]] = None):  # noqa: ANN201
     """
     annoworkcli コマンドのメイン処理
 

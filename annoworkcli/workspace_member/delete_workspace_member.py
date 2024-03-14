@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class DeleteWorkspaceMember:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         annowork_service: AnnoworkResource,
         workspace_id: str,
@@ -19,7 +19,7 @@ class DeleteWorkspaceMember:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def main(self, user_id_list: list[str]):
+    def main(self, user_id_list: list[str]):  # noqa: ANN201
         workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id)
         member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
@@ -33,9 +33,7 @@ class DeleteWorkspaceMember:
 
             try:
                 workspace_member_id = member["workspace_member_id"]
-                self.annowork_service.api.delete_workspace_member(
-                    self.workspace_id, workspace_member_id=workspace_member_id
-                )
+                self.annowork_service.api.delete_workspace_member(self.workspace_id, workspace_member_id=workspace_member_id)
                 success_count += 1
             except Exception as e:
                 logger.warning(f"{user_id=}: ワークスペースメンバの削除に失敗しました。{e}")
@@ -44,7 +42,7 @@ class DeleteWorkspaceMember:
         logger.info(f"{success_count}/{len(user_id_list)} 件のユーザをワークスペースメンバから削除しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
 
     user_id_list = get_list_from_args(args.user_id)
@@ -55,7 +53,7 @@ def main(args):
     ).main(user_id_list=user_id_list)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -80,8 +78,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "delete"
     subcommand_help = "ワークスペースメンバを削除します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class ListWorkspace:
-    def __init__(
+    def __init__(  # noqa: ANN204
         self,
         annowork_service: AnnoworkResource,
     ):
@@ -36,7 +36,7 @@ class ListWorkspace:
             workspace_list.append(org)
         return workspace_list
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         output: Path,
         output_format: OutputFormat,
@@ -45,7 +45,7 @@ class ListWorkspace:
     ):
         workspace_list = self.get_workspace_list(workspace_id_list)
         if len(workspace_list) == 0:
-            logger.warning(f"ワークスペース情報は0件なので、出力しません。")
+            logger.warning("ワークスペース情報は0件なので、出力しません。")
             return
 
         logger.debug(f"{len(workspace_list)} 件のワークスペース一覧を出力します。")
@@ -57,7 +57,7 @@ class ListWorkspace:
             print_csv(df, output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     workspace_id_list = get_list_from_args(args.workspace_id)
     ListWorkspace(
@@ -65,7 +65,7 @@ def main(args):
     ).main(output=args.output, output_format=OutputFormat(args.format), workspace_id_list=workspace_id_list)
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -93,8 +93,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list"
     subcommand_help = "ワークスペースの一覧を取得します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

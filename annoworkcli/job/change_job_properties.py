@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class ChangeJobProperties:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.all_yes = all_yes
@@ -23,9 +23,7 @@ class ChangeJobProperties:
             return False
 
         if not self.all_yes:
-            is_yes, all_yes = prompt_yesnoall(
-                f"job_id={job_id}, job_name={job['job_name']}" f" のジョブのステータスを '{status}' に変更しますか？"
-            )
+            is_yes, all_yes = prompt_yesnoall(f"job_id={job_id}, job_name={job['job_name']}" f" のジョブのステータスを '{status}' に変更しますか？")
             if not is_yes:
                 return False
             if all_yes:
@@ -43,7 +41,7 @@ class ChangeJobProperties:
         logger.debug(f"ジョブのステータスを変更しました。 :: {new_job}")
         return True
 
-    def main(self, *, job_id_list: list[str], status: str):
+    def main(self, *, job_id_list: list[str], status: str):  # noqa: ANN201
         logger.info(f"{len(job_id_list)} 件のジョブのステータスを変更します。")
         success_count = 0
         for job_id in job_id_list:
@@ -57,7 +55,7 @@ class ChangeJobProperties:
         logger.info(f"{success_count} / {len(job_id_list)} 件のジョブのステータスを変更しました。")
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     assert job_id_list is not None
@@ -67,7 +65,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -102,8 +100,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "change"
     subcommand_help = "ジョブの情報（ステータスなど）を変更します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser

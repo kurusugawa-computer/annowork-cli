@@ -2,8 +2,9 @@ import argparse
 import logging
 import sys
 from collections import defaultdict
+from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Collection, Optional
+from typing import Any, Optional
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class ListExpectedWorkingTimeGroupbyTag:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
@@ -60,9 +61,7 @@ class ListExpectedWorkingTimeGroupbyTag:
         # ワークスペースタグごと日毎の時間を集計する
         for workspace_tag in workspace_tags:
             workspace_tag_name = workspace_tag["workspace_tag_name"]
-            members = self.annowork_service.api.get_workspace_tag_members(
-                self.workspace_id, workspace_tag["workspace_tag_id"]
-            )
+            members = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, workspace_tag["workspace_tag_id"])
             member_ids = {e["workspace_member_id"] for e in members}
             for elm in expected_working_times:
                 if elm["workspace_member_id"] in member_ids:
@@ -85,7 +84,7 @@ class ListExpectedWorkingTimeGroupbyTag:
         results.sort(key=lambda e: (e["date"]))
         return results
 
-    def main(
+    def main(  # noqa: ANN201
         self,
         *,
         output: Path,
@@ -105,7 +104,7 @@ class ListExpectedWorkingTimeGroupbyTag:
             expected_working_times = list_obj.get_expected_working_times(start_date=start_date, end_date=end_date)
 
         if len(expected_working_times) == 0:
-            logger.warning(f"予定稼働時間情報0件なので、出力しません。")
+            logger.warning("予定稼働時間情報0件なので、出力しません。")
             return
 
         results = self.get_expected_working_times_groupby_tag(
@@ -131,7 +130,7 @@ class ListExpectedWorkingTimeGroupbyTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):
+def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     start_date: Optional[str] = args.start_date
@@ -156,7 +155,7 @@ def main(args):
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):
+def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -203,8 +202,6 @@ def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argpa
     subcommand_name = "list_groupby_tag"
     subcommand_help = "ワークスペースタグで集計した予定稼働時間の一覧を出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(
-        subparsers, subcommand_name, subcommand_help, description=subcommand_help
-    )
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
     return parser
