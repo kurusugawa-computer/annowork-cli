@@ -259,7 +259,7 @@ class ReshapeDataFrame:
             ]
 
         columns = (
-            [
+            [  # noqa: RUF005
                 "job_id",
                 "job_name",
             ]
@@ -476,7 +476,7 @@ class ReshapeDataFrame:
             ]
 
         columns = (
-            [
+            [  # noqa: RUF005
                 "user_id",
                 "username",
                 "job_id",
@@ -570,7 +570,7 @@ class ReshapeDataFrame:
             ]
 
         columns = (
-            [
+            [  # noqa: RUF005
                 "date",
                 "user_id",
                 "username",
@@ -682,7 +682,7 @@ class ReshapeDataFrame:
 
         username_list = list(df_user["username"])
         if insert_sum_column:
-            username_list = [SUM_COLUMN_NAME] + username_list
+            username_list = [SUM_COLUMN_NAME] + username_list  # noqa: RUF005
 
         if insert_sum_row:
             # 先頭行に合計を追加する

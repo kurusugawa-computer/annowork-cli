@@ -188,13 +188,13 @@ def visualize_statistics(temp_dir: Path, args):  # noqa: ANN001, ANN201
     ]
 
     if annofab_project_id_list is not None:
-        command.extend(["--project_id"] + annofab_project_id_list)
+        command.extend(["--project_id"] + annofab_project_id_list)  # noqa: RUF005
     elif job_id_list is not None:
         job_id_annofab_project_id_dict = main_obj.get_job_id_annofab_project_id_dict_from_job_id(job_id_list)
         if len(job_id_annofab_project_id_dict) == 0:
             logger.error("Annofabプロジェクトに紐づくジョブが0件なので、終了します。")
             return
-        command.extend(["--project_id"] + list(job_id_annofab_project_id_dict.values()))
+        command.extend(["--project_id"] + list(job_id_annofab_project_id_dict.values()))  # noqa: RUF005
 
     if args.start_date is not None:
         command.extend(["--start_date", args.start_date])

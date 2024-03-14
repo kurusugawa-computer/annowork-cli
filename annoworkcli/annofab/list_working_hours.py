@@ -89,9 +89,11 @@ def _get_df_working_hours_from_df(
     )
 
     return df_merged[
-        ["date", "job_id", "job_name"]
-        + USER_COLUMNS
-        + [
+        [
+            "date",
+            "job_id",
+            "job_name",
+            *USER_COLUMNS,
             "actual_working_hours",
             "annofab_project_id",
             "annofab_project_title",
@@ -293,9 +295,9 @@ class ListWorkingHoursWithAnnofab:
                 "parent_job_id",
                 "parent_job_name",
             ]
-            required_columns = ["date"] + job_columns + parent_job_columns + user_columns + ["actual_working_hours"] + annofab_columns
+            required_columns = ["date"] + job_columns + parent_job_columns + user_columns + ["actual_working_hours"] + annofab_columns  # noqa: RUF005
         else:
-            required_columns = ["date"] + job_columns + user_columns + ["actual_working_hours"] + annofab_columns
+            required_columns = ["date"] + job_columns + user_columns + ["actual_working_hours"] + annofab_columns  # noqa: RUF005
 
         required_columns.append("notes")
         return required_columns
