@@ -31,7 +31,7 @@ annoworkcli = "annoworkcli.__main__:main"
 
 
 [tool.poetry.group.test.dependencies]
-pytest = "^7"
+pytest = "^8"
 pytest-xdist = "*"
 pytest-cov = "*"
 
@@ -48,7 +48,7 @@ types-PyYAML = "*"
 
 
 [tool.poetry.group.documentation.dependencies]
-sphinx = "^6.1"
+sphinx = "^7"
 pydata-sphinx-theme = ">=0.13"
 sphinx-last-updated-by-git = "*"
 sphinx-argparse = "*"
