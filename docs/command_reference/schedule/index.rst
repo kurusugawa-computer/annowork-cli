@@ -14,6 +14,7 @@ Available Commands
    :maxdepth: 1
    :titlesonly:
 
+   delete
    list
    list_daily
    list_daily_groupby_tag

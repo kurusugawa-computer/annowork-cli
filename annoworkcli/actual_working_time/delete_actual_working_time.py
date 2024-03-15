@@ -44,7 +44,7 @@ class DeleteActualWorkingTime:
                 if not self.all_yes:
                     message = (
                         f"job_name={actual['job_name']}, user_id={actual['user_id']}, "
-                        f"start_datetime={actual['start_datetime']}, end_datetime={actual['end_datetime']} のジョブを削除しますか？"
+                        f"start_datetime={actual['start_datetime']}, end_datetime={actual['end_datetime']} の実績作業時間情報を削除しますか？"
                         f" :: actual_working_time_id={actual['actual_working_time_id']}"
                     )
                     is_yes, all_yes = prompt_yesnoall(message)
