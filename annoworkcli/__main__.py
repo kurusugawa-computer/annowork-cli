@@ -78,6 +78,7 @@ def main(arguments: Optional[Sequence[str]] = None):  # noqa: ANN201
         arguments: コマンドライン引数。テストコード用
 
     """
+    warn_pandas_copy_on_write()
     parser = create_parser()
     if arguments is None:
         args = parser.parse_args()
@@ -102,5 +103,4 @@ def main(arguments: Optional[Sequence[str]] = None):  # noqa: ANN201
 
 
 if __name__ == "__main__":
-    warn_pandas_copy_on_write()
     main()
