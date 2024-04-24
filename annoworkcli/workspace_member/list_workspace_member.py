@@ -152,7 +152,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         "--workspace_tag_id",
         nargs="+",
         type=str,
-        help="指定したワークスペースタグが付与されたワークスペースメンバを出力します。",
+        help="指定したワークスペースタグが付与されたワークスペースメンバを出力します。複数指定した場合は、すべてのワークスペースタグが付与されたワークスペースメンバーを出力します。",
     )
 
     filter_group.add_argument(
