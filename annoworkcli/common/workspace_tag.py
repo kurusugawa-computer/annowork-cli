@@ -2,7 +2,6 @@
 workspace_tag に関するutil関係の関数
 """
 
-
 from typing import Optional
 
 workspace_TAG_NAME_COMPANY_PREFIX = "company:"

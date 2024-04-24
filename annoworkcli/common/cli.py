@@ -1,6 +1,7 @@
 """
 Command Line Interfaceの共通部分
 """
+
 import argparse
 import getpass
 import json
