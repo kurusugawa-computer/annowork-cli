@@ -1,6 +1,7 @@
 import argparse
 import logging
 from collections.abc import Collection
+from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 
@@ -11,14 +12,13 @@ from annoworkapi.resource import Resource as AnnoworkResource
 import annoworkcli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
-from enum import Enum
+
 logger = logging.getLogger(__name__)
 
 
 class WorkspaceMemberStatus(Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
-
 
 
 class ListWorkspace:
@@ -34,14 +34,22 @@ class ListWorkspace:
             member["workspace_tag_names"] = [e["workspace_tag_name"] for e in workspace_tags]
 
     def get_workspace_members_from_tags(self, workspace_tag_ids: Collection[str]) -> list[dict[str, Any]]:
-        result = []
-        for tag_id in workspace_tag_ids:
-            tmp = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, tag_id)
-            result.extend(tmp)
+        """
+        指定したタグに所属するメンバーを取得します。
+        複数のタグを指定した場合、指定したすべてのタグに所属するメンバー（AND条件）を返します。
+        """
+        result_workspace_member_ids: Optional[set[str]] = None
 
-        # メンバが重複している可能性があるので取り除く
-        # pandasのメソッドを使うために、一時的にDataFrameにする
-        return pandas.DataFrame(result).drop_duplicates().to_dict("records")
+        for tag_id in workspace_tag_ids:
+            tmp_members = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, tag_id)
+            if result_workspace_member_ids is None:
+                # 初回のみ
+                result_members = tmp_members
+            else:
+                result_members = [e for e in tmp_members if e["workspace_member_id"] in result_workspace_member_ids]
+            result_workspace_member_ids = {e["workspace_member_id"] for e in result_members}
+
+        return result_members
 
     @classmethod
     def filter_member_with_user_id(cls, members: list[dict[str, Any]], user_ids: Collection[str]) -> list[dict[str, Any]]:
@@ -75,11 +83,19 @@ class ListWorkspace:
         workspace_tag_ids: Optional[Collection[str]],
         user_ids: Optional[Collection[str]],
         show_workspace_tag: bool,
-        status: Optional[WorkspaceMemberStatus]=None,
+        status: Optional[WorkspaceMemberStatus] = None,
     ) -> None:
         # workspace_tag_idsとuser_idsは排他的
         assert workspace_tag_ids is None or user_ids is None
         if workspace_tag_ids is not None:
+            # workspace_tag_idの存在確認
+            all_workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
+            all_all_workspace_tag_ids = {e["workspace_tag_id"] for e in all_workspace_tags}
+            for tag_id in workspace_tag_ids:
+                if tag_id not in all_all_workspace_tag_ids:
+                    logger.warning(f"workspace_tag_idが'{tag_id}'であるワークスペースタグは存在しません。")
+
+            # workspace_tag_idに所属するメンバーを取得する
             workspace_members = self.get_workspace_members_from_tags(workspace_tag_ids)
         else:
             workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
@@ -117,7 +133,7 @@ def main(args):  # noqa: ANN001, ANN201
         workspace_tag_ids=workspace_tag_id_list,
         user_ids=user_id_list,
         show_workspace_tag=args.show_workspace_tag,
-        status=WorkspaceMemberStatus(args.status) if args.status is not None else None
+        status=WorkspaceMemberStatus(args.status) if args.status is not None else None,
     )
 
 
