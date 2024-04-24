@@ -1,6 +1,7 @@
 import argparse
 import logging
 from collections.abc import Collection
+from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 
@@ -13,6 +14,11 @@ from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_fro
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
+
+
+class WorkspaceMemberStatus(Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
 
 
 class ListWorkspace:
@@ -28,14 +34,22 @@ class ListWorkspace:
             member["workspace_tag_names"] = [e["workspace_tag_name"] for e in workspace_tags]
 
     def get_workspace_members_from_tags(self, workspace_tag_ids: Collection[str]) -> list[dict[str, Any]]:
-        result = []
-        for tag_id in workspace_tag_ids:
-            tmp = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, tag_id)
-            result.extend(tmp)
+        """
+        指定したタグに所属するメンバーを取得します。
+        複数のタグを指定した場合、指定したすべてのタグに所属するメンバー（AND条件）を返します。
+        """
+        result_workspace_member_ids: Optional[set[str]] = None
 
-        # メンバが重複している可能性があるので取り除く
-        # pandasのメソッドを使うために、一時的にDataFrameにする
-        return pandas.DataFrame(result).drop_duplicates().to_dict("records")
+        for tag_id in workspace_tag_ids:
+            tmp_members = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, tag_id)
+            if result_workspace_member_ids is None:
+                # 初回のみ
+                result_members = tmp_members
+            else:
+                result_members = [e for e in tmp_members if e["workspace_member_id"] in result_workspace_member_ids]
+            result_workspace_member_ids = {e["workspace_member_id"] for e in result_members}
+
+        return result_members
 
     @classmethod
     def filter_member_with_user_id(cls, members: list[dict[str, Any]], user_ids: Collection[str]) -> list[dict[str, Any]]:
@@ -62,22 +76,34 @@ class ListWorkspace:
                 continue
         return result
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         output: Path,
         output_format: OutputFormat,
         workspace_tag_ids: Optional[Collection[str]],
         user_ids: Optional[Collection[str]],
         show_workspace_tag: bool,
-    ):
+        status: Optional[WorkspaceMemberStatus] = None,
+    ) -> None:
         # workspace_tag_idsとuser_idsは排他的
         assert workspace_tag_ids is None or user_ids is None
         if workspace_tag_ids is not None:
+            # workspace_tag_idの存在確認
+            all_workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
+            all_all_workspace_tag_ids = {e["workspace_tag_id"] for e in all_workspace_tags}
+            for tag_id in workspace_tag_ids:
+                if tag_id not in all_all_workspace_tag_ids:
+                    logger.warning(f"workspace_tag_idが'{tag_id}'であるワークスペースタグは存在しません。")
+
+            # workspace_tag_idに所属するメンバーを取得する
             workspace_members = self.get_workspace_members_from_tags(workspace_tag_ids)
         else:
             workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
             if user_ids is not None:
                 workspace_members = self.filter_member_with_user_id(workspace_members, user_ids)
+
+        if status is not None:
+            workspace_members = [e for e in workspace_members if e["status"] == status.value]
 
         if len(workspace_members) == 0:
             logger.warning("ワークスペースメンバ情報は0件なので、出力しません。")
@@ -107,6 +133,7 @@ def main(args):  # noqa: ANN001, ANN201
         workspace_tag_ids=workspace_tag_id_list,
         user_ids=user_id_list,
         show_workspace_tag=args.show_workspace_tag,
+        status=WorkspaceMemberStatus(args.status) if args.status is not None else None,
     )
 
 
@@ -125,7 +152,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         "--workspace_tag_id",
         nargs="+",
         type=str,
-        help="指定したワークスペースタグが付与されたワークスペースメンバを出力します。",
+        help="指定したワークスペースタグが付与されたワークスペースメンバを出力します。複数指定した場合は、すべてのワークスペースタグが付与されたワークスペースメンバーを出力します。",
     )
 
     filter_group.add_argument(
@@ -140,6 +167,13 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         "--show_workspace_tag",
         action="store_true",
         help="ワークスペースタグに関する情報も出力します。",
+    )
+
+    parser.add_argument(
+        "--status",
+        type=str,
+        choices=[e.value for e in WorkspaceMemberStatus],
+        help="ワークスペースメンバーのstatusで絞り込みます。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")

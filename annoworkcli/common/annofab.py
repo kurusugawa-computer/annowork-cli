@@ -2,7 +2,6 @@
 annofabに関するutil関係の関数
 """
 
-
 from typing import Any, Optional
 
 import isodate
