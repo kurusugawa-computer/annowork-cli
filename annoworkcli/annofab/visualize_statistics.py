@@ -130,6 +130,8 @@ class ListLabor:
                 end_date=end_date,
                 is_set_additional_info=True,
             )
+        else:
+            raise RuntimeError("`job_id_list`と`annofab_project_id_list`の両方がNoneです。")
 
         if len(actual_working_time_list) == 0:
             return []
