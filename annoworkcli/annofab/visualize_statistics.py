@@ -1,4 +1,5 @@
 import argparse
+import copy
 import datetime
 import logging
 import subprocess
@@ -129,6 +130,8 @@ class ListLabor:
                 end_date=end_date,
                 is_set_additional_info=True,
             )
+        else:
+            raise RuntimeError("`job_id_list`と`annofab_project_id_list`の両方がNoneです。")
 
         if len(actual_working_time_list) == 0:
             return []
@@ -158,6 +161,23 @@ class ListLabor:
                 )
             )
         return result
+
+
+def mask_credential_in_command(command: list[str]) -> list[str]:
+    """
+    コマンドのリストに含まれている認証情報を、`***`に置き換えてマスクします。
+
+    Args:
+        command: 実行するコマンドのリスト（変更されません）
+    """
+    tmp_command = copy.deepcopy(command)
+    for masked_option in ["--annofab_user_id", "--annofab_password", "--mfa_code"]:
+        try:
+            index = tmp_command.index(masked_option)
+            tmp_command[index + 1] = "***"
+        except ValueError:
+            continue
+    return tmp_command
 
 
 def visualize_statistics(temp_dir: Path, args):  # noqa: ANN001, ANN201
@@ -217,7 +237,7 @@ def visualize_statistics(temp_dir: Path, args):  # noqa: ANN001, ANN201
     if args.annofabcli_options is not None:
         command.extend(args.annofabcli_options)
 
-    str_command = " ".join(command)
+    str_command = " ".join(mask_credential_in_command(command))
     logger.debug(f"run command: {str_command}")
     subprocess.run(command, check=True)
 
