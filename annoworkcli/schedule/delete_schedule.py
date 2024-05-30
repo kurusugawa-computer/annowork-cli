@@ -29,7 +29,7 @@ class DeleteSchedule:
 
         self.all_yes = all_yes
 
-    def delete_schedule(  # noqa: PLR0912
+    def delete_schedule(
         self, schedule_ids: Collection[str], *, target_user_ids: Optional[Collection[str]] = None, target_job_ids: Optional[Collection[str]] = None
     ) -> None:
         all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
