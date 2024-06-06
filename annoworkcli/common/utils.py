@@ -44,7 +44,7 @@ def output_string(target: str, output: Optional[Path] = None) -> None:
         output: 出力先。Noneなら標準出力に出力する。
     """
     if output is None:
-        print(target)
+        print(target)  # noqa: T201
     else:
         output.parent.mkdir(parents=True, exist_ok=True)
         with output.open(mode="w", encoding="utf_8") as f:
@@ -52,7 +52,7 @@ def output_string(target: str, output: Optional[Path] = None) -> None:
             logger.info(f"{output} に出力しました。")
 
 
-def print_json(target: Any, is_pretty: bool = False, output: Optional[Path] = None) -> None:  # noqa: ANN401
+def print_json(target: Any, is_pretty: bool = False, output: Optional[Path] = None) -> None:  # noqa: ANN401, FBT001, FBT002
     """
     JSONを出力する。
 
@@ -125,7 +125,7 @@ def to_iso8601_string(dt: datetime.datetime) -> str:
     return dt.astimezone(datetime.timezone.utc).strftime(DATETIME_FORMAT)
 
 
-def set_default_logger(is_debug_mode: bool = False):  # noqa: ANN201
+def set_default_logger(is_debug_mode: bool = False):  # noqa: ANN201, FBT001, FBT002
     """
     デフォルトのロガーを設定する。パッケージ内のlogging.yamlを読み込む。
     """

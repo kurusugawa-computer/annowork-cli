@@ -1,4 +1,4 @@
-class AnnoworkCliException(Exception):
+class AnnoworkCliException(Exception):  # noqa: N818
     """
     annoworkcliに関するException
     """

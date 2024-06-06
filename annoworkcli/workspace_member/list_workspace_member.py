@@ -82,7 +82,7 @@ class ListWorkspace:
         output_format: OutputFormat,
         workspace_tag_ids: Optional[Collection[str]],
         user_ids: Optional[Collection[str]],
-        show_workspace_tag: bool,
+        show_workspace_tag: bool,  # noqa: FBT001
         status: Optional[WorkspaceMemberStatus] = None,
     ) -> None:
         # workspace_tag_idsとuser_idsは排他的

@@ -99,7 +99,7 @@ def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.t
 def create_actual_working_hours_daily_list(
     actual_working_time_list: list[dict[str, Any]],
     timezone_offset_hours: Optional[float] = None,
-    show_notes: bool = True,
+    show_notes: bool = True,  # noqa: FBT001, FBT002
 ) -> list[ActualWorkingHoursDaily]:
     results_dict: ActualWorkingHoursDict = defaultdict(float)
     notes_dict: ActualWorkingTimeNoteDict = defaultdict(list)
@@ -227,7 +227,7 @@ class ListActualWorkingHoursDaily:
         return result
 
 
-def get_required_columns(show_parent_job: bool) -> list[str]:
+def get_required_columns(show_parent_job: bool) -> list[str]:  # noqa: FBT001
     if show_parent_job:
         required_columns = [
             "date",

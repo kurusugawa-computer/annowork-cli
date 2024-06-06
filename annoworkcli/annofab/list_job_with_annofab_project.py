@@ -80,7 +80,7 @@ class ListJobWithAnnofabProject:
         job_id_list: Optional[list[str]] = None,
         parent_job_id_list: Optional[list[str]] = None,
         annofab_project_id_list: Optional[list[str]] = None,
-        is_show_parent_job: bool = False,
+        is_show_parent_job: bool = False,  # noqa: FBT001, FBT002
     ) -> list[dict[str, Any]]:
         job_list = self.list_job_obj.get_job_list(
             job_id_list=job_id_list,

@@ -87,7 +87,7 @@ class ListActualWorkingTime:
         delta = str_to_datetime(actual_working_time["end_datetime"]) - str_to_datetime(actual_working_time["start_datetime"])
         return delta.total_seconds() / 3600
 
-    def set_additional_info_to_actual_working_time(self, actual_working_time_list: list[dict[str, Any]], is_add_parent_job_info: bool = False):  # noqa: ANN201
+    def set_additional_info_to_actual_working_time(self, actual_working_time_list: list[dict[str, Any]], is_add_parent_job_info: bool = False):  # noqa: ANN201, FBT001, FBT002
         """workspace_member_id, job_idに紐づく情報を付与する。
 
         Args:

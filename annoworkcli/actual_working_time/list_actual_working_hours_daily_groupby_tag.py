@@ -48,7 +48,7 @@ class ListActualWorkingTimeGroupbyTag:
         actual_working_hours_daily: list[ActualWorkingHoursDaily],
         target_workspace_tag_ids: Optional[Collection[str]] = None,
         target_workspace_tag_names: Optional[Collection[str]] = None,
-        show_parent_job: bool = False,
+        show_parent_job: bool = False,  # noqa: FBT001, FBT002
     ) -> list[dict[str, Any]]:
         """実績作業時間のlistから、ワークスペースタグごとに集計したlistを返す。"""
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)

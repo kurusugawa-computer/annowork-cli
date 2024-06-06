@@ -138,7 +138,7 @@ def main(args):  # noqa: ANN001, ANN201
 
     command = " ".join(sys.argv[0:3])
     if all(v is None for v in [user_id_list, start_date, end_date]):
-        print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)
+        print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
