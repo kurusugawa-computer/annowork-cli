@@ -4,7 +4,7 @@ workspace_tag に関するutil関係の関数
 
 from typing import Optional
 
-workspace_TAG_NAME_COMPANY_PREFIX = "company:"
+workspace_TAG_NAME_COMPANY_PREFIX = "company:"  # noqa: N816
 """会社名を表すワークスペースタグ名のプレフィックス"""
 
 

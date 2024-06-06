@@ -611,8 +611,8 @@ class ReshapeDataFrame:
             insert_sum_column: 合計列を追加する
 
         """
-        SUM_COLUMN_NAME = "総合計"
-        SUM_ROW_NAME = "合計"
+        SUM_COLUMN_NAME = "総合計"  # noqa: N806
+        SUM_ROW_NAME = "合計"  # noqa: N806
 
         # usernameでgroupbyすると同性同名の場合に正しく集計できないので、usernameにuser_idを加えて一意になるようにした。
         # usernameとuser_idは`:`で区切って、プログラムで扱いやすくする

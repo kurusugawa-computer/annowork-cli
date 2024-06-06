@@ -45,7 +45,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         help="登録対象ユーザのuser_id",
     )
 
-    SAMPLE_EXTERNAL_LINKAGE_INFO = {"annofab": {"account_id": "xxx"}}
+    SAMPLE_EXTERNAL_LINKAGE_INFO = {"annofab": {"account_id": "xxx"}}  # noqa: N806
 
     parser.add_argument(
         "--external_linkage_info",

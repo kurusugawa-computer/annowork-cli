@@ -53,10 +53,10 @@ def _get_df_working_hours_from_df(
 
     df_merged = df_aw_working_hours.merge(df_af_working_hours, how="outer", on=["date", "annofab_project_id", "annofab_account_id"])
 
-    TMP_SUFFIX = "_tmp"
+    TMP_SUFFIX = "_tmp"  # noqa: N806
     # df_merged は outer joinしているため、左側にも欠損値ができる。
     # それを埋めるために、以前に user情報, job情報の一意な dataframe を生成して、欠損値を埋める
-    USER_COLUMNS = ["workspace_member_id", "user_id", "username"]
+    USER_COLUMNS = ["workspace_member_id", "user_id", "username"]  # noqa: N806
     df_merged = df_merged.merge(df_user_and_af_account, how="left", on="annofab_account_id", suffixes=(None, TMP_SUFFIX))
     for user_column in USER_COLUMNS:
         df_merged[user_column] = df_merged[user_column].fillna(df_merged[f"{user_column}{TMP_SUFFIX}"])
