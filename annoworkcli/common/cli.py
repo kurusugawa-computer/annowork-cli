@@ -66,7 +66,7 @@ def add_parser(
     command_name: str,
     command_help: str,
     description: Optional[str] = None,
-    is_subcommand: bool = True,
+    is_subcommand: bool = True,  # noqa: FBT001, FBT002
     epilog: Optional[str] = None,
 ) -> argparse.ArgumentParser:
     """

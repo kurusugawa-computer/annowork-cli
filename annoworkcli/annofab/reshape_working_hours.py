@@ -861,7 +861,7 @@ class ReshapeWorkingHours:
         df_actual: pandas.DataFrame,
         df_assigned: pandas.DataFrame,
         shape_type: ShapeType,
-        show_parent_job: bool = False,
+        show_parent_job: bool = False,  # noqa: FBT001, FBT002
     ) -> pandas.DataFrame:
         """実績時間DataFrameとアサイン時間のDataFrameから、shape_typeに従ったDataFrameを生成します。
 

@@ -278,7 +278,7 @@ class ListWorkingHoursWithAnnofab:
         return df[["job_id", "parent_job_id", "parent_job_name"]]
 
     @staticmethod
-    def _get_required_columns(is_show_parent_job: bool) -> list[str]:
+    def _get_required_columns(is_show_parent_job: bool) -> list[str]:  # noqa: FBT001
         job_columns = [
             "job_id",
             "job_name",
