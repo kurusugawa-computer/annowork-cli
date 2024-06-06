@@ -56,15 +56,20 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def mask_argv(argv: list[str]) -> list[str]:
+def mask_sensitive_value_in_argv(argv: list[str]) -> list[str]:
     """
     `argv`にセンシティブな情報が含まれている場合は、`***`に置き換える。
     """
     tmp_argv = copy.deepcopy(argv)
     for masked_option in ["--annowork_user_id", "--annowork_password", "--annofab_user_id", "--annofab_password"]:
         try:
-            index = tmp_argv.index(masked_option)
-            tmp_argv[index + 1] = "***"
+            start_index = 0
+            # `--annowork_password a --annowork_password b`のように複数指定された場合でもマスクできるようにする
+            while True:
+                index = tmp_argv.index(masked_option, start_index)
+                tmp_argv[index + 1] = "***"
+                start_index = index + 2
+
         except ValueError:
             continue
     return tmp_argv
@@ -91,7 +96,7 @@ def main(arguments: Optional[Sequence[str]] = None):  # noqa: ANN201
             argv = sys.argv
             if arguments is not None:
                 argv = ["annoworkcli", *list(arguments)]
-            logger.info(f"args={mask_argv(argv)}")
+            logger.info(f"args={mask_sensitive_value_in_argv(argv)}")
             args.subcommand_func(args)
         except Exception as e:
             logger.exception(e)
