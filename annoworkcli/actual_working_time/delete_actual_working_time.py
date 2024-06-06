@@ -135,7 +135,7 @@ def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
 
     if args.job_id is None and args.user_id is None:
-        print("--job_id または --user_id を指定してください。", file=sys.stderr)
+        print("--job_id または --user_id を指定してください。", file=sys.stderr)  # noqa: T201
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
     actual_working_time_id_list = get_list_from_args(args.actual_working_time_id)

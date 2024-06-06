@@ -44,7 +44,7 @@ def output_string(target: str, output: Optional[Path] = None) -> None:
         output: 出力先。Noneなら標準出力に出力する。
     """
     if output is None:
-        print(target)
+        print(target)  # noqa: T201
     else:
         output.parent.mkdir(parents=True, exist_ok=True)
         with output.open(mode="w", encoding="utf_8") as f:
