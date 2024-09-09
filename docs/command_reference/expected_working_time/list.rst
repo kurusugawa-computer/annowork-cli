@@ -15,7 +15,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli actual_working_time list --workspace_id org --start_date 2022-01-01 \
+    $ annoworkcli expected_working_time list --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
 
 
