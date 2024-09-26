@@ -171,7 +171,7 @@ def mask_credential_in_command(command: list[str]) -> list[str]:
         command: 実行するコマンドのリスト（変更されません）
     """
     tmp_command = copy.deepcopy(command)
-    for masked_option in ["--annofab_user_id", "--annofab_password", "--mfa_code"]:
+    for masked_option in ["--annofab_user_id", "--annofab_password"]:
         try:
             index = tmp_command.index(masked_option)
             tmp_command[index + 1] = "***"
@@ -224,9 +224,6 @@ def visualize_statistics(temp_dir: Path, args):  # noqa: ANN001, ANN201
 
     if args.output_dir is not None:
         command.extend(["--output_dir", str(args.output_dir)])
-
-    if args.annofab_mfa_code is not None:
-        command.extend(["--mfa_code", str(args.annofab_mfa_code)])
 
     if args.annofab_user_id is not None:
         command.extend(["--annofab_user_id", str(args.annofab_user_id)])
