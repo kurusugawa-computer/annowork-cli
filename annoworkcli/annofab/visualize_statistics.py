@@ -270,9 +270,9 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 
     parser.add_argument("--temp_dir", type=Path, required=False, help="テンポラリディレクトリ")
 
-    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.add_argument("--annofab_user_id", type=str, help="Annofabにログインする際のユーザID")
     parser.add_argument("--annofab_password", type=str, help="Annofabにログインする際のパスワード")
+    parser.add_argument("--annofab_pat", type=str, help="Annofabにログインする際のパーソナルアクセストークン")
 
     # 残りの引数は `annofabcli statistics visualize`コマンドにそのまま渡す
     parser.add_argument(

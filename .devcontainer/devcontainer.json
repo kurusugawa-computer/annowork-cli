@@ -1,6 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.154.0/containers/docker-existing-dockerfile
 {
+	"name": "${localWorkspaceFolderBasename}",
 	"build": {
 		"dockerfile": "Dockerfile",
 		"context": ".",
@@ -23,7 +24,8 @@
 		"--env=ANNOWORK_PASSWORD",
 		// AnnoFabにもアクセスするので、AnnoFabの認証情報も記載する
 		"--env=ANNOFAB_USER_ID",
-		"--env=ANNOFAB_PASSWORD"
+		"--env=ANNOFAB_PASSWORD",
+		"--env=ANNOFAB_PAT"
 	],
 	"containerEnv": {
 		"CONTAINER_WORKSPACE": "${containerWorkspaceFolder}",

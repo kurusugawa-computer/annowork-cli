@@ -19,12 +19,12 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.9"
 pyyaml = "*"
-annoworkapi = ">=3.2.1"
-annofabapi = ">=0.72.0"
+annoworkapi = "^3.2.1"
+annofabapi = "^1"
 more-itertools = "*"
 pandas = "*"
 isodate = "*"
-annofabcli = ">=1.78.1"
+annofabcli = "^1.90"
 
 [tool.poetry.scripts]
 annoworkcli = "annoworkcli.__main__:main"
@@ -39,7 +39,7 @@ pytest-cov = "*"
 # pythonバージョンを指定している理由：lintは開発環境と同じPythonバージョンで実行するため。また古いPythonバージョンにサポートしていないライブラリのバージョンがあるため
 mypy = {version="^1", python = ">=3.11"}
 pylint = {version="^3", python = ">=3.11"}
-ruff = {version="^0.4", python=">=3.11"}
+ruff = {version="^0.6", python=">=3.11"}
 
 # typeshed
 types-requests = "*"
@@ -132,6 +132,7 @@ max-args = 10
     "E501",  # line-too-long
     "RUF100",  # unused-noqa
     "N", # pep8-naming
+    "PLC2401", # non-ascii-name
 ]
 
 

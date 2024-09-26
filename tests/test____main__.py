@@ -20,6 +20,8 @@ def test__mask_sensitive_value_in_argv__同じ引数を指定する():
             "dave",
             "--annowork_password",
             "pw_dave",
+            "--annofab_pat",
+            "pat_eve",
         ]
     )
     assert actual == [
@@ -38,5 +40,7 @@ def test__mask_sensitive_value_in_argv__同じ引数を指定する():
         "--annowork_user_id",
         "***",
         "--annowork_password",
+        "***",
+        "--annofab_pat",
         "***",
     ]

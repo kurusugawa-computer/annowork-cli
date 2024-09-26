@@ -6,7 +6,7 @@ from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
-from annoworkcli.annofab.utils import build_annofabapi_resource_and_login
+from annoworkcli.annofab.utils import build_annofabapi_resource
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 
 logger = logging.getLogger(__name__)
@@ -76,10 +76,10 @@ class PutAnnofabAccountId:
 
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
-    annofab_service = build_annofabapi_resource_and_login(
+    annofab_service = build_annofabapi_resource(
         annofab_login_user_id=args.annofab_user_id,
         annofab_login_password=args.annofab_password,
-        mfa_code=args.annofab_mfa_code,
+        annofab_pat=args.annofab_pat,
     )
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
@@ -112,9 +112,9 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         default=False,
         help="上書きする",
     )
-    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.add_argument("--annofab_user_id", type=str, help="Annofabにログインする際のユーザID")
     parser.add_argument("--annofab_password", type=str, help="Annofabにログインする際のパスワード")
+    parser.add_argument("--annofab_pat", type=str, help="Annofabにログインする際のパーソナルアクセストークン")
 
     parser.set_defaults(subcommand_func=main)
 
