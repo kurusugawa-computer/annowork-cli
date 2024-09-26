@@ -1,5 +1,7 @@
 
 [pylint]
+max-positional-arguments=10
+
 disable =
     logging-fstring-interpolation,
 # ===== May not modify =====

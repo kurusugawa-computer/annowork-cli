@@ -1058,7 +1058,6 @@ def main(args):  # noqa: ANN001, ANN201
             annofab_login_user_id=args.annofab_user_id,
             annofab_login_password=args.annofab_password,
             annofab_pat=args.annofab_pat,
-            mfa_code=args.annofab_mfa_code,
         )
 
         df_actual = main_obj.get_df_actual(

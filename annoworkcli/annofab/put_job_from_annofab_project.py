@@ -59,7 +59,6 @@ def main(args):  # noqa: ANN001, ANN201
             annofab_login_user_id=args.annofab_user_id,
             annofab_login_password=args.annofab_password,
             annofab_pat=args.annofab_pat,
-            mfa_code=args.annofab_mfa_code,
         ),
     )
     main_obj.put_job_from_annofab_project(parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id)

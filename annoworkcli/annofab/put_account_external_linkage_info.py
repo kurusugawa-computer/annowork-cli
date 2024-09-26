@@ -80,7 +80,6 @@ def main(args):  # noqa: ANN001, ANN201
         annofab_login_user_id=args.annofab_user_id,
         annofab_login_password=args.annofab_password,
         annofab_pat=args.annofab_pat,
-        mfa_code=args.annofab_mfa_code,
     )
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
