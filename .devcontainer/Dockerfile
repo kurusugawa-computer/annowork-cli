@@ -29,7 +29,7 @@ RUN set -x \
     # for docker
     && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
     && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
-    # Python3.11をインストールするために、deadsnakes PPAを追加
+    # Python3.12をインストールするために、deadsnakes PPAを追加
     && add-apt-repository ppa:deadsnakes/ppa \
     # Install packages
     && apt-get update \
@@ -37,7 +37,7 @@ RUN set -x \
         # docker
         docker-ce-cli \
         # python
-        python3.11-dev \
+        python3.12-dev \
         python3-pip \
         # common tools
         bash-completion \
@@ -61,7 +61,8 @@ RUN set -x \
 
 
 # Python / pip
-RUN ln -s $(which python3.11) /usr/bin/python
+RUN ln -s $(which python3.12) /usr/bin/python
+RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python -
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DEFAULT_TIMEOUT=100 \
     PIP_NO_CACHE_DIR=on \
@@ -69,12 +70,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # poetry
 RUN set -x \
-    && python -m pip install -U \
-        pip \
-        setuptools \
-        requests \
-    && python -m pip install \
-        "poetry<1.8"
+    && python -m pip install "poetry<1.9"
 
 # Add user / Grant sudo privileges
 RUN useradd -m -s /bin/bash -u 5000 -U vscode \

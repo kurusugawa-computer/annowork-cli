@@ -11,7 +11,7 @@ from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
-from annoworkcli.annofab.utils import build_annofabapi_resource_and_login
+from annoworkcli.annofab.utils import build_annofabapi_resource
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
@@ -126,7 +126,7 @@ class ListJobWithAnnofabProject:
         return job_list
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -135,9 +135,10 @@ def main(args):  # noqa: ANN001, ANN201
     main_obj = ListJobWithAnnofabProject(
         annowork_service=annowork_service,
         workspace_id=args.workspace_id,
-        annofab_service=build_annofabapi_resource_and_login(
+        annofab_service=build_annofabapi_resource(
             annofab_login_user_id=args.annofab_user_id,
             annofab_login_password=args.annofab_password,
+            annofab_pat=args.annofab_pat,
             mfa_code=args.annofab_mfa_code,
         ),
         parallelism=args.parallelism,
@@ -209,9 +210,10 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
 
-    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.add_argument("--annofab_user_id", type=str, help="Annofabにログインする際のユーザID")
     parser.add_argument("--annofab_password", type=str, help="Annofabにログインする際のパスワード")
+    parser.add_argument("--annofab_pat", type=str, help="Annofabにログインする際のパーソナルアクセストークン")
+    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.set_defaults(subcommand_func=main)
 
 

@@ -17,7 +17,7 @@ from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
 from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
-from annoworkcli.annofab.utils import build_annofabapi_resource_and_login
+from annoworkcli.annofab.utils import build_annofabapi_resource
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv
@@ -1054,9 +1054,10 @@ def main(args):  # noqa: ANN001, ANN201
     if args.actual_file is not None:
         df_actual = get_dataframe_from_input_file(args.actual_file)
     else:
-        annofab_service = build_annofabapi_resource_and_login(
+        annofab_service = build_annofabapi_resource(
             annofab_login_user_id=args.annofab_user_id,
             annofab_login_password=args.annofab_password,
+            annofab_pat=args.annofab_pat,
             mfa_code=args.annofab_mfa_code,
         )
 
@@ -1197,10 +1198,11 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
-    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
     parser.add_argument("--annofab_user_id", type=str, help="Annofabにログインする際のユーザID")
     parser.add_argument("--annofab_password", type=str, help="Annofabにログインする際のパスワード")
-
+    parser.add_argument("--annofab_pat", type=str, help="Annofabにログインする際のパーソナルアクセストークン")
+    parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
+    
     parser.set_defaults(subcommand_func=main)
 
 
