@@ -126,7 +126,7 @@ class ListJobWithAnnofabProject:
         return job_list
 
 
-def main(args: argparse.Namespace) -> None:  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -139,7 +139,6 @@ def main(args: argparse.Namespace) -> None:  # noqa: ANN001, ANN201
             annofab_login_user_id=args.annofab_user_id,
             annofab_login_password=args.annofab_password,
             annofab_pat=args.annofab_pat,
-            mfa_code=args.annofab_mfa_code,
         ),
         parallelism=args.parallelism,
     )

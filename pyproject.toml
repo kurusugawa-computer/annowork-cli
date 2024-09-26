@@ -132,6 +132,7 @@ max-args = 10
     "E501",  # line-too-long
     "RUF100",  # unused-noqa
     "N", # pep8-naming
+    "PLC2401", # non-ascii-name
 ]
 
 

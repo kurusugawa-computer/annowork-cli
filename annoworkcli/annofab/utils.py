@@ -4,7 +4,6 @@ from typing import Optional
 import annofabapi
 from annofabapi import build as build_annofabapi
 from annofabapi.exceptions import CredentialsNotFoundError
-from annofabapi.exceptions import MfaEnabledUserExecutionError as AnnofabApiMfaEnabledUserExecutionError
 
 
 def _get_annofab_user_id_from_stdin() -> str:
@@ -24,7 +23,10 @@ def _get_annofab_password_from_stdin() -> str:
 
 
 def build_annofabapi_resource(
-    *, annofab_login_user_id: Optional[str] = None, annofab_login_password: Optional[str] = None, annofab_pat:Optional[str]=None, mfa_code: Optional[str] = None
+    *,
+    annofab_login_user_id: Optional[str] = None,
+    annofab_login_password: Optional[str] = None,
+    annofab_pat: Optional[str] = None,
 ) -> annofabapi.Resource:
     """
     annofabapi.Resourceインスタンスを生成する。

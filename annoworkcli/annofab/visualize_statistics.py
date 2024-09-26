@@ -274,7 +274,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument("--annofab_password", type=str, help="Annofabにログインする際のパスワード")
     parser.add_argument("--annofab_pat", type=str, help="Annofabにログインする際のパーソナルアクセストークン")
     parser.add_argument("--annofab_mfa_code", type=str, help="Annofabにログインする際のMFAコード")
-    
+
     # 残りの引数は `annofabcli statistics visualize`コマンドにそのまま渡す
     parser.add_argument(
         "--annofabcli_options",
