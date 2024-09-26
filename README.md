@@ -11,7 +11,7 @@ AnnoworkのCLIです。
 
 
 # Requirements
-* Python3.8+
+* Python3.9+
 
 
 # Install
@@ -41,15 +41,7 @@ password annowork_password
 
 ### `annoworkcli annofab`コマンドを利用する場合
 `annoworkcli annofab`コマンドはannofabのwebapiにアクセスするため、annofabのwebapiの認証情報を指定する必要があります。
-* 環境変数`ANNOFAB_USER_ID` , `ANNOFAB_PASSWORD`
-* `$HOME/.netrc`ファイル
-
-```
-machine annofab.com
-login annofab_user_id
-password annofab_password
-```
-
+* 環境変数`ANNOFAB_USER_ID` , `ANNOFAB_PASSWORD`または`ANNOFAB_PAT`
 
 
 
