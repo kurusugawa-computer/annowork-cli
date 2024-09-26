@@ -35,23 +35,23 @@ pytest = "^8"
 pytest-xdist = "*"
 pytest-cov = "*"
 
+
+# pythonバージョンを指定している理由：linterやdocumentationツールは開発環境と同じPythonバージョンで実行するため。また古いPythonバージョンにサポートしていないライブラリのバージョンがあるため
 [tool.poetry.group.linter.dependencies]
-# pythonバージョンを指定している理由：lintは開発環境と同じPythonバージョンで実行するため。また古いPythonバージョンにサポートしていないライブラリのバージョンがあるため
-mypy = {version="^1", python = ">=3.11"}
-pylint = {version="^3", python = ">=3.11"}
-ruff = {version="^0.6", python=">=3.11"}
+mypy = {version="^1", python = ">=3.12"}
+pylint = {version="^3", python = ">=3.12"}
+ruff = {version="^0.6", python=">=3.12"}
 
 # typeshed
 types-requests = "*"
 types-python-dateutil = "*"
 types-PyYAML = "*"
 
-
 [tool.poetry.group.documentation.dependencies]
-sphinx = "^7"
-pydata-sphinx-theme = ">=0.13"
-sphinx-last-updated-by-git = "*"
-sphinx-argparse = "*"
+sphinx = {version="^8", python=">=3.12"}
+pydata-sphinx-theme = {version=">=0.13", python=">=3.12"}
+sphinx-last-updated-by-git = {version="*", python=">=3.12"}
+sphinx-argparse = {version="*", python=">=3.12"}
 
 [tool.poetry.group.dev]
 # 開発するときのみ必要なライブラリ。インストールしなくても開発はできるので、オプショナルにする
@@ -84,7 +84,7 @@ ignore = [
     "ANN101", # missing-type-self: 引数selfには型ヒントは付けていないため
     "ANN102", # missing-type-cls: 引数clsには型ヒントは付けていないため
     "ERA", # : 役立つこともあるが、コメントアウトしていないコードも警告されるので無視する
-    "PERF203", # try-except-in-loop: ループ内でtry-exceptを使うこともあるため無視する。またPython3.11以降ｈ
+    "PERF203", # try-except-in-loop: ループ内でtry-exceptを使うこともあるため無視する。
     "FIX", # TODOやFIXMEを使うため無視する
     "TD", # TODOコメントの書き方に気にしていないので無視する
 
