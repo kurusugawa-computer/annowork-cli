@@ -231,6 +231,9 @@ def visualize_statistics(temp_dir: Path, args):  # noqa: ANN001, ANN201
     if args.annofab_password is not None:
         command.extend(["--annofab_password", str(args.annofab_password)])
 
+    if args.annofab_pat is not None:
+        command.extend(["--annofab_pat", str(args.annofab_pat)])
+
     if args.annofabcli_options is not None:
         command.extend(args.annofabcli_options)
 
