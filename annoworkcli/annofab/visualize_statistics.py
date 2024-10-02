@@ -156,7 +156,7 @@ def mask_credential_in_command(command: list[str]) -> list[str]:
         command: 実行するコマンドのリスト（変更されません）
     """
     tmp_command = copy.deepcopy(command)
-    for masked_option in ["--annofab_user_id", "--annofab_password"]:
+    for masked_option in ["--annofab_user_id", "--annofab_password", "--annofab_pat"]:
         try:
             index = tmp_command.index(masked_option)
             tmp_command[index + 1] = "***"
