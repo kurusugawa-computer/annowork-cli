@@ -1,17 +1,14 @@
 import argparse
 import copy
-import datetime
 import logging
 import subprocess
 import tempfile
 from collections import defaultdict
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional, Tuple  # noqa: UP035
+from typing import Dict, Optional  # noqa: UP035
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
-from dataclasses_json import DataClassJsonMixin
 
 import annoworkcli
 from annoworkcli.actual_working_time.list_actual_working_hours_daily import create_actual_working_hours_daily_list
@@ -23,21 +20,10 @@ from annoworkcli.common.utils import print_csv
 logger = logging.getLogger(__name__)
 
 
-ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]  # noqa: UP006
+ActualWorktimeHourDict = dict[tuple[str, str, str], float]
 """実績作業時間の日ごとの情報を格納する辞書
-key: (date, workspace_member_id, job_id), value: 実績作業時間
+key: (date, account_id, project_id), value: 実績作業時間[時間]
 """
-
-
-@dataclass
-class AnnofabLabor(DataClassJsonMixin):
-    """Annofab用の実績作業時間情報"""
-
-    date: str
-    account_id: str
-    project_id: str
-    actual_worktime_hour: float
-
 
 JobIdAnnofabProjectIdDict = Dict[str, str]  # noqa: UP006
 """key:job_id, value:annofab_project_idのdict
@@ -106,13 +92,17 @@ class ListLabor:
             result[user_id] = annofab_account_id
         return result
 
-    def get_annofab_labor_list(
+    def get_annofab_labor_dict(
         self,
         job_id_list: Optional[list[str]],
         annofab_project_id_list: Optional[list[str]],
         start_date: Optional[str],
         end_date: Optional[str],
-    ) -> list[AnnofabLabor]:
+    ) -> ActualWorktimeHourDict:
+        """
+        Annofabに渡す「日、ユーザー、プロジェクトごとの実績作業時間」を取得します。
+
+        """
         # job_id_listとjob_id_annofab_project_id_dictのどちらかは必ずnot None
         assert job_id_list is not None or annofab_project_id_list is not None
         if job_id_list is not None:
@@ -134,7 +124,7 @@ class ListLabor:
             raise RuntimeError("`job_id_list`と`annofab_project_id_list`の両方がNoneです。")
 
         if len(actual_working_time_list) == 0:
-            return []
+            return {}
 
         # annofabのデータは日本時間に固定されているので、日本時間を指定する
         daily_list = create_actual_working_hours_daily_list(actual_working_time_list, timezone_offset_hours=TIMEZONE_OFFSET_HOURS)
@@ -144,7 +134,8 @@ class ListLabor:
         if len(user_id_set) != len(user_id_annofab_account_id_dict):
             raise RuntimeError("アカウント外部連携情報にAnnofabのaccount_idが設定されていないユーザがいます。")
 
-        result = []
+        result: ActualWorktimeHourDict = defaultdict(float)
+
         for elm in daily_list:
             annofab_project_id = job_id_annofab_project_id_dict.get(elm.job_id)
             if annofab_project_id is None:
@@ -152,14 +143,8 @@ class ListLabor:
                 continue
 
             annofab_account_id = user_id_annofab_account_id_dict[elm.user_id]
-            result.append(
-                AnnofabLabor(
-                    date=elm.date,
-                    account_id=annofab_account_id,
-                    project_id=annofab_project_id,
-                    actual_worktime_hour=elm.actual_working_hours,
-                )
-            )
+
+            result[(elm.date, annofab_account_id, annofab_project_id)] += elm.actual_working_hours
         return result
 
 
@@ -180,22 +165,22 @@ def mask_credential_in_command(command: list[str]) -> list[str]:
     return tmp_command
 
 
-def visualize_statistics(temp_dir: Path, args):  # noqa: ANN001, ANN201
+def visualize_statistics(temp_dir: Path, args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
     main_obj = ListLabor(annowork_service, args.workspace_id)
-    annofab_labor_list = main_obj.get_annofab_labor_list(
+    annofab_labor_dict = main_obj.get_annofab_labor_dict(
         job_id_list=job_id_list,
         annofab_project_id_list=annofab_project_id_list,
         start_date=args.start_date,
         end_date=args.end_date,
     )
-    if len(annofab_labor_list) > 0:
-        df = pandas.DataFrame(annofab_labor_list)
-    else:
-        df = pandas.DataFrame(columns=["date", "account_id", "project_id", "actual_worktime_hour"])
-
+    tmp_data = [
+        {"date": date, "account_id": account_id, "project_id": project_id, "actual_worktime_hour": actual_worktime_hour}
+        for (date, account_id, project_id), actual_worktime_hour in annofab_labor_dict.items()
+    ]
+    df = pandas.DataFrame(tmp_data, columns=["date", "account_id", "project_id", "actual_worktime_hour"])
     annofab_labor_csv = temp_dir / "annofab_labor.csv"
     print_csv(df, output=annofab_labor_csv)
 
