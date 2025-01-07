@@ -2,12 +2,11 @@ import argparse
 import datetime
 import json
 import logging
-import typing
 from collections import defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple  # noqa: UP035
+from typing import Any, Optional
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree
@@ -22,12 +21,12 @@ from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
 
-ActualWorkingHoursDict = Dict[Tuple[datetime.date, str, str], float]  # noqa: UP006
+ActualWorkingHoursDict = dict[tuple[datetime.date, str, str], float]
 """実績作業時間の日ごとの情報を格納する辞書
 key: (date, workspace_member_id, job_id), value: 実績作業時間
 """
 
-ActualWorkingTimeNoteDict = Dict[Tuple[datetime.date, str, str], List[str]]  # noqa: UP006
+ActualWorkingTimeNoteDict = dict[tuple[datetime.date, str, str], list[str]]
 """実績作業の備考を格納する辞書
 key: (date, workspace_member_id, job_id), value: 備考のlist
 dateは実績のstart_datetimeから算出する
@@ -43,9 +42,7 @@ class ActualWorkingHoursDaily(DataClassJsonMixin):
     user_id: str
     username: str
     actual_working_hours: float
-    # listでなくtyping.Listを使っている理由：`list`だとPython3.8でデコード時にエラーが発生するため
-    # https://qiita.com/yuji38kwmt/items/ce49efc91bb9b6430437
-    notes: Optional[typing.List[str]]  # noqa: UP006
+    notes: Optional[list[str]]
 
 
 @dataclass
@@ -211,8 +208,7 @@ class ListActualWorkingHoursDaily:
         all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_job_list}
         parent_job_id_set = {get_parent_job_id_from_job_tree(e["job_tree"]) for e in all_job_list}
-        if None in parent_job_id_set:
-            parent_job_id_set.remove(None)
+        parent_job_id_set.discard(None)
 
         result = []
         for elm in daily_list:
