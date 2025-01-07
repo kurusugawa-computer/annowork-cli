@@ -98,8 +98,7 @@ class ListActualWorkingTime:
         job_dict = {e["job_id"]: e for e in job_list}
 
         parent_job_id_set = {get_parent_job_id_from_job_tree(e["job_tree"]) for e in job_list}
-        if None in parent_job_id_set:
-            parent_job_id_set.remove(None)
+        parent_job_id_set.discard(None)
 
         for actual in actual_working_time_list:
             workspace_member_id = actual["workspace_member_id"]

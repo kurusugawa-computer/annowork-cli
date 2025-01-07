@@ -208,8 +208,7 @@ class ListActualWorkingHoursDaily:
         all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_job_list}
         parent_job_id_set = {get_parent_job_id_from_job_tree(e["job_tree"]) for e in all_job_list}
-        if None in parent_job_id_set:
-            parent_job_id_set.remove(None)
+        parent_job_id_set.discard(None)
 
         result = []
         for elm in daily_list:
