@@ -4,7 +4,7 @@ from collections import defaultdict
 from collections.abc import Collection
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple  # noqa: UP035
+from typing import Any, Optional
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -38,7 +38,7 @@ class AssignedHoursDaily(DataClassJsonMixin):
     assigned_working_hours: float
 
 
-AssignedHoursDict = Dict[Tuple[str, str, str], float]  # noqa: UP006
+AssignedHoursDict = dict[tuple[str, str, str], float]
 """アサイン時間の日ごとの情報を格納する辞書
 key: (date, workspace_member_id, job_id), value: アサイン時間
 """

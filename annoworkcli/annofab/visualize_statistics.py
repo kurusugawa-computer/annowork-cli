@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, Optional  # noqa: UP035
+from typing import Optional
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -25,7 +25,7 @@ ActualWorktimeHourDict = dict[tuple[str, str, str], float]
 key: (date, account_id, project_id), value: 実績作業時間[時間]
 """
 
-JobIdAnnofabProjectIdDict = Dict[str, str]  # noqa: UP006
+JobIdAnnofabProjectIdDict = dict[str, str]
 """key:job_id, value:annofab_project_idのdict
 """
 

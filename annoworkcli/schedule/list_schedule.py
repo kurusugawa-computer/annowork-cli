@@ -2,7 +2,7 @@ import argparse
 import logging
 from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple  # noqa: UP035
+from typing import Any, Optional
 
 import pandas
 from annoworkapi.enums import ScheduleType
@@ -14,7 +14,7 @@ from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
 
-ExpectedWorkingHoursDict = Dict[Tuple[str, str], float]  # noqa: UP006
+ExpectedWorkingHoursDict = dict[tuple[str, str], float]
 """keyがtuple(date, workspace_member_id), valueが予定稼働時間のdict
 """
 
