@@ -122,8 +122,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "put_account_external_linkage_info"
     subcommand_help = (
-        "アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。\n"
-        "Annofabのuser_idはAnnoworkのuser_idと一致している必要があります。"
+        "アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。\nAnnofabのuser_idはAnnoworkのuser_idと一致している必要があります。"
     )
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)

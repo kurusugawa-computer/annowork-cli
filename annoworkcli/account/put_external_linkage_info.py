@@ -51,7 +51,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         "--external_linkage_info",
         type=str,
         required=True,
-        help="登録するアカウント外部連携情報。\n" f"(ex) ``{json.dumps(SAMPLE_EXTERNAL_LINKAGE_INFO)}`` ",
+        help=f"登録するアカウント外部連携情報。\n(ex) ``{json.dumps(SAMPLE_EXTERNAL_LINKAGE_INFO)}`` ",
     )
 
     parser.set_defaults(subcommand_func=main)

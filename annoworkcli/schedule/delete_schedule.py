@@ -77,14 +77,14 @@ class DeleteSchedule:
             try:
                 self.annowork_service.api.delete_schedule(self.workspace_id, schedule_id)
                 logger.debug(
-                    f"{index+1} 件目: 作業計画情報を削除しました。:: "
+                    f"{index + 1} 件目: 作業計画情報を削除しました。:: "
                     f"schedule_id='{schedule_id}', start_date='{schedule['start_date']}, end_date='{schedule['end_date']}, "
                     f"user_id='{user_id}', job_name='{job_name}'"
                 )
                 success_count += 1
             except requests.exceptions.HTTPError:
                 logger.debug(
-                    f"{index+1} 件目: 作業計画情報の削除に失敗しました。:: "
+                    f"{index + 1} 件目: 作業計画情報の削除に失敗しました。:: "
                     f"schedule_id='{schedule_id}', start_date='{schedule['start_date']}, end_date='{schedule['end_date']}, "
                     f"user_id='{user_id}', job_name='{job_name}'",
                     exc_info=True,
