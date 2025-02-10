@@ -58,7 +58,7 @@ class SimpleJob(DataClassJsonMixin):
 
 
 @dataclass
-class SimpleworkspaceMember(DataClassJsonMixin):
+class SimpleWorkspaceMember(DataClassJsonMixin):
     workspace_member_id: str
     user_id: str
     username: str
@@ -102,7 +102,7 @@ def create_actual_working_hours_daily_list(
     notes_dict: ActualWorkingTimeNoteDict = defaultdict(list)
 
     job_dict: dict[str, SimpleJob] = {}
-    member_dict: dict[str, SimpleworkspaceMember] = {}
+    member_dict: dict[str, SimpleWorkspaceMember] = {}
 
     # none 判定
     if timezone_offset_hours is not None:
@@ -117,7 +117,7 @@ def create_actual_working_hours_daily_list(
             results_dict[key] += value
 
         if actual["workspace_member_id"] not in member_dict:
-            member_dict[actual["workspace_member_id"]] = SimpleworkspaceMember(
+            member_dict[actual["workspace_member_id"]] = SimpleWorkspaceMember(
                 workspace_member_id=actual["workspace_member_id"],
                 user_id=actual["user_id"],
                 username=actual["username"],
@@ -223,36 +223,23 @@ class ListActualWorkingHoursDaily:
         return result
 
 
-def get_required_columns(show_parent_job: bool) -> list[str]:  # noqa: FBT001
-    if show_parent_job:
-        required_columns = [
-            "date",
-            "job_id",
-            "job_name",
-            "parent_job_id",
-            "parent_job_name",
-            "workspace_member_id",
-            "user_id",
-            "username",
-            "actual_working_hours",
-            "notes",
-        ]
-    else:
-        required_columns = [
-            "date",
-            "job_id",
-            "job_name",
-            "workspace_member_id",
-            "user_id",
-            "username",
-            "actual_working_hours",
-            "notes",
-        ]
-
+def get_required_columns() -> list[str]:
+    required_columns = [
+        "date",
+        "job_id",
+        "job_name",
+        "parent_job_id",
+        "parent_job_name",
+        "workspace_member_id",
+        "user_id",
+        "username",
+        "actual_working_hours",
+        "notes",
+    ]
     return required_columns
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -294,9 +281,7 @@ def main(args):  # noqa: ANN001, ANN201
         logger.warning("日ごとの実績作業時間情報は0件なので、出力しません。")
         return
 
-    show_parent_job: bool = args.show_parent_job
-    if show_parent_job:
-        result = main_obj.add_parent_job_info(result)
+    result = main_obj.add_parent_job_info(result)
 
     if OutputFormat(args.format) == OutputFormat.JSON:
         # `.schema().dump(many=True)`を使わない理由：使うと警告が発生するから
@@ -308,11 +293,11 @@ def main(args):  # noqa: ANN001, ANN201
         print_json(dict_result, is_pretty=True, output=args.output)
     else:
         df = pandas.DataFrame(result)
-        required_columns = get_required_columns(show_parent_job)
+        required_columns = get_required_columns()
         print_csv(df[required_columns], output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     required_group = parser.add_mutually_exclusive_group(required=True)
 
     required_group.add_argument(
@@ -335,12 +320,6 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         "--timezone_offset",
         type=float,
         help="日付に対するタイムゾーンのオフセット時間。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。",
-    )
-
-    parser.add_argument(
-        "--show_parent_job",
-        action="store_true",
-        help="親のジョブ情報も出力します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
