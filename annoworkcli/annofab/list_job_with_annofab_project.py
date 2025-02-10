@@ -71,7 +71,7 @@ class ListJobWithAnnofabProject:
                     continue
                 result[af_project["project_id"]] = af_project
                 if (index + 1) % 100 == 0:
-                    logger.debug(f"{index+1}件のAnnofabプロジェクト情報を取得しました。")
+                    logger.debug(f"{index + 1}件のAnnofabプロジェクト情報を取得しました。")
 
             return result
 

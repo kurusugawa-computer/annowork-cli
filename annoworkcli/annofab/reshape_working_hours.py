@@ -832,7 +832,7 @@ class ReshapeWorkingHours:
         df_duplicated = df[df.duplicated(["user_id"])]
         if len(df_duplicated) > 0:
             logger.warning(
-                f"{len(df_duplicated)} 件のユーザに複数の会社情報がワークスペースタグとして設定されています。" f":: {list(df_duplicated['user_id'])}"
+                f"{len(df_duplicated)} 件のユーザに複数の会社情報がワークスペースタグとして設定されています。:: {list(df_duplicated['user_id'])}"
             )
             df = df.drop_duplicates(subset=["user_id"])
         return df
@@ -1146,7 +1146,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         type=str,
         nargs="+",
         required=False,
-        help="絞り込み対象の親のジョブID。\n" "指定すると、actual_fileのjob_idの親ジョブ、assigned_fileのjob_idで絞り込まれます。",
+        help="絞り込み対象の親のジョブID。\n指定すると、actual_fileのjob_idの親ジョブ、assigned_fileのjob_idで絞り込まれます。",
     )
     job_id_group.add_argument(
         "-j",
@@ -1189,9 +1189,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.add_argument(
         "--show_parent_job",
         action="store_true",
-        help="親のジョブ情報も出力します。``--shape_type`` に以下の値を渡したときに有効なオプションです。\n"
-        "* total_by_job"
-        "* list_by_date_user_job",
+        help="親のジョブ情報も出力します。``--shape_type`` に以下の値を渡したときに有効なオプションです。\n* total_by_job* list_by_date_user_job",
     )
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")

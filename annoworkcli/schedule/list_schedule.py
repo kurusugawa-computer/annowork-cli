@@ -87,7 +87,7 @@ class ListSchedule:
             workspace_member_id = schedule["workspace_member_id"]
             member = workspace_member_dict.get(schedule["workspace_member_id"])
             if member is None:
-                logger.warning(f"{workspace_member_id=} であるワークスペースメンバは存在しません。 " f":: schedule_id= '{schedule['schedule_id']}' ")
+                logger.warning(f"{workspace_member_id=} であるワークスペースメンバは存在しません。 :: schedule_id= '{schedule['schedule_id']}' ")
                 continue
 
             schedule["user_id"] = member["user_id"]
@@ -96,7 +96,7 @@ class ListSchedule:
             job_id = schedule["job_id"]
             job = job_dict.get(job_id)
             if job is None:
-                logger.warning(f"{job_id=} であるジョブは存在しません。 " f":: schedule_id= '{schedule['schedule_id']}' ")
+                logger.warning(f"{job_id=} であるジョブは存在しません。 :: schedule_id= '{schedule['schedule_id']}' ")
                 continue
             schedule["job_name"] = job["job_name"]
 

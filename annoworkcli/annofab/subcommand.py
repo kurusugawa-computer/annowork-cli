@@ -25,7 +25,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "annofab"
     subcommand_help = "Annofabにアクセスするサブコマンド"
-    description = "Annofabにアクセスするサブコマンド\n" "Annofabの認証情報を事前に設定しておく必要があります。"
+    description = "Annofabにアクセスするサブコマンド\nAnnofabの認証情報を事前に設定しておく必要があります。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=description, is_subcommand=False)
     parse_args(parser)
