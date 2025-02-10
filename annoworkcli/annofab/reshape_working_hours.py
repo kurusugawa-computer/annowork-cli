@@ -868,8 +868,6 @@ class ReshapeWorkingHours:
             df_actual (pandas.DataFrame): [description]
             df_assigned (pandas.DataFrame): [description]
             shape_type (ShapeType): [description]
-            show_parent_job (bool, optional): [description]. 出力対象のDataFrameに親ジョブ情報を格納します。
-                ただし、shape_typeがTOTAL_BY_JOB, LIST_BY_DATE_USER_JOBのときのみ有効なオプションです。
 
         Returns:
             pandas.DataFrame: [description]
