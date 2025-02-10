@@ -106,7 +106,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
     subcommand_name = "put_job"
     subcommand_help = "Annofabプロジェクトからジョブを作成します。"
-    description = "Annofabプロジェクトからジョブを作成します。\n" "job_idは指定したannofab_project_idと同じ値にします。"
+    description = "Annofabプロジェクトからジョブを作成します。\njob_idは指定したannofab_project_idと同じ値にします。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=description)
     parse_args(parser)

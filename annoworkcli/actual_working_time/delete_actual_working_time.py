@@ -58,14 +58,14 @@ class DeleteActualWorkingTime:
                     workspace_member_id=actual["workspace_member_id"],
                     actual_working_time_id=actual["actual_working_time_id"],
                 )
-                logger.debug(f"{index+1} 件目: 実績作業時間を削除しました。:: {actual2}")
+                logger.debug(f"{index + 1} 件目: 実績作業時間を削除しました。:: {actual2}")
                 success_count += 1
             except Exception:
-                logger.warning(f"{index+1} 件目: 実績作業時間の削除に失敗しました。", exc_info=True)
+                logger.warning(f"{index + 1} 件目: 実績作業時間の削除に失敗しました。", exc_info=True)
                 continue
             finally:
                 if (index + 1) % 100 == 0:
-                    logger.debug(f"{index+1} 件 実績作業時間情報を削除しました。")
+                    logger.debug(f"{index + 1} 件 実績作業時間情報を削除しました。")
 
         logger.info(f"{success_count} / {len(actual_working_times)} 件の実績作業時間を削除しました。")
 
@@ -112,9 +112,7 @@ class DeleteActualWorkingTime:
             logger.info("削除する実績作業時間情報はありませんでした。")
             return
 
-        message = (
-            f"実績作業時間情報 {len(actual_working_times)} 件を削除します。よろしいですか？ :: " f"start_date={start_date}, end_date={end_date}, "
-        )
+        message = f"実績作業時間情報 {len(actual_working_times)} 件を削除します。よろしいですか？ :: start_date={start_date}, end_date={end_date}, "
         if job_id is not None:
             job = self.annowork_service.api.get_job(self.workspace_id, job_id)
             message += f"job_id={job_id}, job_name={job['job_name']}, "

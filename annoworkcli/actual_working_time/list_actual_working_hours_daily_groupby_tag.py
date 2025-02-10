@@ -47,7 +47,6 @@ class ListActualWorkingTimeGroupbyTag:
         actual_working_hours_daily: list[ActualWorkingHoursDaily],
         target_workspace_tag_ids: Optional[Collection[str]] = None,
         target_workspace_tag_names: Optional[Collection[str]] = None,
-        show_parent_job: bool = False,  # noqa: FBT001, FBT002
     ) -> list[dict[str, Any]]:
         """実績作業時間のlistから、ワークスペースタグごとに集計したlistを返す。"""
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
@@ -102,8 +101,7 @@ class ListActualWorkingTimeGroupbyTag:
 
         results.sort(key=lambda e: (e["date"], e["job_id"]))
 
-        if show_parent_job:
-            self.add_parent_job_info(results)
+        self.add_parent_job_info(results)
 
         return results
 
@@ -137,7 +135,7 @@ class ListActualWorkingTimeGroupbyTag:
         actual_working_hours_daily_list = filter_actual_daily_list(actual_working_hours_daily_list, start_date=start_date, end_date=end_date)
         return actual_working_hours_daily_list
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         *,
         output: Path,
@@ -149,8 +147,7 @@ class ListActualWorkingTimeGroupbyTag:
         end_date: Optional[str] = None,
         target_workspace_tag_ids: Optional[Collection[str]] = None,
         target_workspace_tag_names: Optional[Collection[str]] = None,
-        show_parent_job: bool = False,
-    ):
+    ) -> None:
         actual_working_hours_daily_list = self.get_actual_working_hours_daily(
             job_ids=job_ids, parent_job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
         )
@@ -162,7 +159,6 @@ class ListActualWorkingTimeGroupbyTag:
             actual_working_hours_daily_list,
             target_workspace_tag_ids=target_workspace_tag_ids,
             target_workspace_tag_names=target_workspace_tag_names,
-            show_parent_job=show_parent_job,
         )
 
         logger.info(f"{len(results)} 件のワークスペースタグで集計した実績作業時間の一覧を出力します。")
@@ -172,22 +168,14 @@ class ListActualWorkingTimeGroupbyTag:
         else:
             df = pandas.json_normalize(results)
             df.fillna(0, inplace=True)
-            if show_parent_job:
-                required_columns = [
-                    "date",
-                    "job_id",
-                    "job_name",
-                    "parent_job_id",
-                    "parent_job_name",
-                    "actual_working_hours.total",
-                ]
-            else:
-                required_columns = [
-                    "date",
-                    "job_id",
-                    "job_name",
-                    "actual_working_hours.total",
-                ]
+            required_columns = [
+                "date",
+                "job_id",
+                "job_name",
+                "parent_job_id",
+                "parent_job_name",
+                "actual_working_hours.total",
+            ]
 
             remaining_columns = list(set(df.columns) - set(required_columns))
             columns = required_columns + sorted(remaining_columns)
@@ -195,7 +183,7 @@ class ListActualWorkingTimeGroupbyTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -225,7 +213,6 @@ def main(args):  # noqa: ANN001, ANN201
         target_workspace_tag_names=workspace_tag_name_list,
         output=args.output,
         output_format=OutputFormat(args.format),
-        show_parent_job=args.show_parent_job,
     )
 
 
@@ -269,12 +256,6 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         "--timezone_offset",
         type=float,
         help="日付に対するタイムゾーンのオフセット時間。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。",
-    )
-
-    parser.add_argument(
-        "--show_parent_job",
-        action="store_true",
-        help="親のジョブ情報も出力します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")

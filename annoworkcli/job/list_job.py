@@ -30,11 +30,11 @@ def filter_job_list_with_external_linkage_info_url(job_list: list[dict[str, Any]
 
 
 class ListJob:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         annowork_service: AnnoworkResource,
         workspace_id: str,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
@@ -44,7 +44,6 @@ class ListJob:
         job_id_list: Optional[list[str]] = None,
         parent_job_id_list: Optional[list[str]] = None,
         external_linkage_info_url_list: Optional[list[str]] = None,
-        is_add_parent_job_info: bool = False,
     ) -> list[dict[str, Any]]:
         all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         job_list = all_job_list
@@ -58,21 +57,20 @@ class ListJob:
             job_list = filter_job_list_with_external_linkage_info_url(job_list, external_linkage_info_url_list)
 
         # 親のジョブ情報を追加する
-        if is_add_parent_job_info:
-            all_job_dict = {job["job_id"]: job for job in all_job_list}
-            for job in job_list:
-                parent_job_id = get_parent_job_id_from_job_tree(job["job_tree"])
-                parent_job = all_job_dict.get(parent_job_id)
-                if parent_job is not None:
-                    job["parent_job_id"] = parent_job["job_id"]
-                    job["parent_job_name"] = parent_job["job_name"]
-                else:
-                    job["parent_job_id"] = None
-                    job["parent_job_name"] = None
+        all_job_dict = {job["job_id"]: job for job in all_job_list}
+        for job in job_list:
+            parent_job_id = get_parent_job_id_from_job_tree(job["job_tree"])
+            parent_job = all_job_dict.get(parent_job_id)
+            if parent_job is not None:
+                job["parent_job_id"] = parent_job["job_id"]
+                job["parent_job_name"] = parent_job["job_name"]
+            else:
+                job["parent_job_id"] = None
+                job["parent_job_name"] = None
 
         return job_list
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         output: Path,
         output_format: OutputFormat,
@@ -80,13 +78,11 @@ class ListJob:
         job_id_list: Optional[list[str]],
         parent_job_id_list: Optional[list[str]],
         external_linkage_info_url_list: Optional[list[str]],
-        is_add_parent_job_info: bool,
-    ):
+    ) -> None:
         job_list = self.get_job_list(
             job_id_list=job_id_list,
             parent_job_id_list=parent_job_id_list,
             external_linkage_info_url_list=external_linkage_info_url_list,
-            is_add_parent_job_info=is_add_parent_job_info,
         )
         if len(job_list) == 0:
             logger.warning("ジョブ情報は0件なので、出力しません。")
@@ -101,7 +97,7 @@ class ListJob:
             print_csv(df, output=output)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
 
     job_id_list = get_list_from_args(args.job_id)
@@ -114,11 +110,10 @@ def main(args):  # noqa: ANN001, ANN201
         job_id_list=job_id_list,
         parent_job_id_list=parent_job_id_list,
         external_linkage_info_url_list=external_linkage_info_url_list,
-        is_add_parent_job_info=args.show_parent_job,
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -150,12 +145,6 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         nargs="+",
         required=False,
         help="外部連携情報のURLで絞り込みます。URL末尾のスラッシュの有無に影響されないように、前方一致で絞り込みます。",
-    )
-
-    parser.add_argument(
-        "--show_parent_job",
-        action="store_true",
-        help="親のジョブの情報も出力します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")

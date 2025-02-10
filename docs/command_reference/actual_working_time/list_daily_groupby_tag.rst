@@ -30,7 +30,9 @@ Examples
             "type:acceptor": 4,
             "type:monitored": 5,
             "total": 10
-         }
+         },
+         "parent_job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
+         "parent_job_name": "PLANET"         
       }
    ]
 
@@ -43,35 +45,6 @@ Examples
    たとえば上記の出力結果だと、``actual_working_hours.total ≠ actual_working_hours.type:acceptor + actual_working_hours.type:monitored`` です。
 
    
-
-``--show_parent_job`` を指定すると、実績作業時間に紐づくジョブの親ジョブの情報も出力します。
-
-
-.. code-block:: 
-
-    $ annoworkcli actual_working_time list_daily --workspace_id org --start_date 2022-01-01 \
-     --show_parent_job --format json --output out2.json
-
-
-
-.. code-block:: json
-   :caption: out2.json
-
-   [
-      {
-         "date": "2022-01-02",
-         "job_id": "caa0da6f-34aa-40cb-abc0-976c9aab3b40",
-         "job_name": "MOON",
-         "actual_working_hours": {
-            "type:acceptor": 4,
-            "type:monitored": 5,
-            "total": 10
-         },
-         "parent_job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
-         "parent_job_name": "PLANET"         
-      }
-   ]
-
 
 
 

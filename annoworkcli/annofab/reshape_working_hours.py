@@ -832,7 +832,7 @@ class ReshapeWorkingHours:
         df_duplicated = df[df.duplicated(["user_id"])]
         if len(df_duplicated) > 0:
             logger.warning(
-                f"{len(df_duplicated)} 件のユーザに複数の会社情報がワークスペースタグとして設定されています。" f":: {list(df_duplicated['user_id'])}"
+                f"{len(df_duplicated)} 件のユーザに複数の会社情報がワークスペースタグとして設定されています。:: {list(df_duplicated['user_id'])}"
             )
             df = df.drop_duplicates(subset=["user_id"])
         return df
@@ -856,12 +856,11 @@ class ReshapeWorkingHours:
         df.rename(columns={"job_name": "parent_job_name", "job_id": "parent_job_id"}, inplace=True)
         return df
 
-    def get_df_output(  # noqa: PLR0912
+    def get_df_output(
         self,
         df_actual: pandas.DataFrame,
         df_assigned: pandas.DataFrame,
         shape_type: ShapeType,
-        show_parent_job: bool = False,  # noqa: FBT001, FBT002
     ) -> pandas.DataFrame:
         """実績時間DataFrameとアサイン時間のDataFrameから、shape_typeに従ったDataFrameを生成します。
 
@@ -869,8 +868,6 @@ class ReshapeWorkingHours:
             df_actual (pandas.DataFrame): [description]
             df_assigned (pandas.DataFrame): [description]
             shape_type (ShapeType): [description]
-            show_parent_job (bool, optional): [description]. 出力対象のDataFrameに親ジョブ情報を格納します。
-                ただし、shape_typeがTOTAL_BY_JOB, LIST_BY_DATE_USER_JOBのときのみ有効なオプションです。
 
         Returns:
             pandas.DataFrame: [description]
@@ -886,12 +883,9 @@ class ReshapeWorkingHours:
             df_output = reshape_obj.get_df_total_by_user(df_actual=df_actual, df_assigned=df_assigned, df_user_company=df_user_company)
 
         elif shape_type == ShapeType.TOTAL_BY_JOB:
-            if show_parent_job:
-                df_job_parent_job = self.get_df_job_parent_job()
-                df_parent_job = self.get_df_parent_job()
-                df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
-            else:
-                df_job_parent_job = None
+            df_job_parent_job = self.get_df_job_parent_job()
+            df_parent_job = self.get_df_parent_job()
+            df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
 
             df_output = reshape_obj.get_df_total_by_job(
                 df_actual=df_actual,
@@ -919,12 +913,9 @@ class ReshapeWorkingHours:
             )
 
         elif shape_type == ShapeType.TOTAL_BY_USER_JOB:
-            if show_parent_job:
-                df_job_parent_job = self.get_df_job_parent_job()
-                df_parent_job = self.get_df_parent_job()
-                df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
-            else:
-                df_job_parent_job = None
+            df_job_parent_job = self.get_df_job_parent_job()
+            df_parent_job = self.get_df_parent_job()
+            df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
 
             df_output = reshape_obj.get_df_total_by_user_job(
                 df_actual=df_actual,
@@ -935,12 +926,9 @@ class ReshapeWorkingHours:
             df_output = reshape_obj.get_df_total(df_actual=df_actual, df_assigned=df_assigned)
 
         elif shape_type == ShapeType.LIST_BY_DATE_USER_JOB:
-            if show_parent_job:
-                df_job_parent_job = self.get_df_job_parent_job()
-                df_parent_job = self.get_df_parent_job()
-                df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
-            else:
-                df_job_parent_job = None
+            df_job_parent_job = self.get_df_job_parent_job()
+            df_parent_job = self.get_df_parent_job()
+            df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
 
             df_output = reshape_obj.get_df_list_by_date_user_job(df_actual=df_actual, df_job_parent_job=df_job_parent_job)
 
@@ -1100,7 +1088,7 @@ def main(args):  # noqa: ANN001, ANN201
         job_ids=job_id_list,
     )
 
-    df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type, show_parent_job=args.show_parent_job)
+    df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type)
 
     output_path: Optional[Path] = args.output
 
@@ -1146,7 +1134,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         type=str,
         nargs="+",
         required=False,
-        help="絞り込み対象の親のジョブID。\n" "指定すると、actual_fileのjob_idの親ジョブ、assigned_fileのjob_idで絞り込まれます。",
+        help="絞り込み対象の親のジョブID。\n指定すると、actual_fileのjob_idの親ジョブ、assigned_fileのjob_idで絞り込まれます。",
     )
     job_id_group.add_argument(
         "-j",
@@ -1184,14 +1172,6 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
             "* list_by_date_user_job: 作業時間の一覧を日付、ユーザ、ジョブ単位で出力します。 ``--assigned_file`` は不要です。 \n"
             "* list_by_date_user_parent_job: 作業時間の一覧を日付、ユーザ、親ジョブ単位で出力します。 ``--assigned_file`` は不要です。 \n"
         ),
-    )
-
-    parser.add_argument(
-        "--show_parent_job",
-        action="store_true",
-        help="親のジョブ情報も出力します。``--shape_type`` に以下の値を渡したときに有効なオプションです。\n"
-        "* total_by_job"
-        "* list_by_date_user_job",
     )
 
     parser.add_argument("--parallelism", type=int, required=False, help="並列度。指定しない場合は、逐次的に処理します。")

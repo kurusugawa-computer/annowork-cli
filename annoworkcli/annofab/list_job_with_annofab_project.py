@@ -36,14 +36,14 @@ def get_annofab_project_ids(job_list: list[dict[str, Any]]) -> set[str]:
 
 
 class ListJobWithAnnofabProject:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         *,
         annowork_service: AnnoworkResource,
         workspace_id: str,
         annofab_service: AnnofabResource,
         parallelism: Optional[int] = None,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.annofab_service = annofab_service
@@ -71,7 +71,7 @@ class ListJobWithAnnofabProject:
                     continue
                 result[af_project["project_id"]] = af_project
                 if (index + 1) % 100 == 0:
-                    logger.debug(f"{index+1}件のAnnofabプロジェクト情報を取得しました。")
+                    logger.debug(f"{index + 1}件のAnnofabプロジェクト情報を取得しました。")
 
             return result
 
@@ -80,7 +80,6 @@ class ListJobWithAnnofabProject:
         job_id_list: Optional[list[str]] = None,
         parent_job_id_list: Optional[list[str]] = None,
         annofab_project_id_list: Optional[list[str]] = None,
-        is_show_parent_job: bool = False,  # noqa: FBT001, FBT002
     ) -> list[dict[str, Any]]:
         job_list = self.list_job_obj.get_job_list(
             job_id_list=job_id_list,
@@ -95,11 +94,10 @@ class ListJobWithAnnofabProject:
         af_project_dict = self.get_af_project_dict(job_list)
 
         for job in job_list:
-            if is_show_parent_job:
-                parent_job_id = get_parent_job_id_from_job_tree(job["job_tree"])
-                parent_job_name = all_job_dict[parent_job_id]["job_name"] if parent_job_id is not None else None
-                job["parent_job_id"] = parent_job_id
-                job["parent_job_name"] = parent_job_name
+            parent_job_id = get_parent_job_id_from_job_tree(job["job_tree"])
+            parent_job_name = all_job_dict[parent_job_id]["job_name"] if parent_job_id is not None else None
+            job["parent_job_id"] = parent_job_id
+            job["parent_job_name"] = parent_job_name
 
             external_linkage_info_url = job["external_linkage_info"].get("url")
             if external_linkage_info_url is None:
@@ -146,7 +144,6 @@ def main(args: argparse.Namespace) -> None:
         job_id_list=job_id_list,
         parent_job_id_list=parent_job_id_list,
         annofab_project_id_list=annofab_project_id_list,
-        is_show_parent_job=args.show_parent_job,
     )
 
     if len(job_list) == 0:
@@ -162,7 +159,7 @@ def main(args: argparse.Namespace) -> None:
         print_csv(df, output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -195,12 +192,6 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
         nargs="+",
         required=False,
         help="絞り込み対象であるAnnofabプロジェクトのproject_idを指定してください。",
-    )
-
-    parser.add_argument(
-        "--show_parent_job",
-        action="store_true",
-        help="親のジョブ情報も出力します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")

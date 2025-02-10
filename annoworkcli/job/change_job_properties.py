@@ -23,7 +23,7 @@ class ChangeJobProperties:
             return False
 
         if not self.all_yes:
-            is_yes, all_yes = prompt_yesnoall(f"job_id={job_id}, job_name={job['job_name']}" f" のジョブのステータスを '{status}' に変更しますか？")
+            is_yes, all_yes = prompt_yesnoall(f"job_id={job_id}, job_name={job['job_name']} のジョブのステータスを '{status}' に変更しますか？")
             if not is_yes:
                 return False
             if all_yes:

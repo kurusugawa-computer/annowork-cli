@@ -108,11 +108,11 @@ class ListAssignedHoursDaily:
 
             job = all_jobs_dict.get(job_id)
             if job is None:
-                logger.warning(f"{job_id=} であるジョブは存在しません。 " f":: date='{date}', workspace_member_id='{workspace_member_id}'")
+                logger.warning(f"{job_id=} であるジョブは存在しません。 :: date='{date}', workspace_member_id='{workspace_member_id}'")
 
             member = all_members_dict.get(workspace_member_id)
             if member is None:
-                logger.warning(f"{workspace_member_id=} であるメンバーは存在しません。 " f":: date='{date}', job_id='{job_id}'")
+                logger.warning(f"{workspace_member_id=} であるメンバーは存在しません。 :: date='{date}', job_id='{job_id}'")
 
             result_list.append(
                 AssignedHoursDaily(
