@@ -87,7 +87,9 @@ class ListActualWorkingTime:
         delta = str_to_datetime(actual_working_time["end_datetime"]) - str_to_datetime(actual_working_time["start_datetime"])
         return delta.total_seconds() / 3600
 
-    def set_additional_info_to_actual_working_time(self, actual_working_time_list: list[dict[str, Any]], is_add_parent_job_info: bool = False):  # noqa: ANN201, FBT001, FBT002
+    def set_additional_info_to_actual_working_time(
+        self, actual_working_time_list: list[dict[str, Any]], *, is_add_parent_job_info: bool = False
+    ) -> None:
         """workspace_member_id, job_idに紐づく情報を付与する。
 
         Args:
@@ -117,7 +119,7 @@ class ListActualWorkingTime:
             job_id = actual["job_id"]
             job = job_dict.get(job_id)
             if job is None:
-                logger.warning(f"{job_id=} であるジョブは存在しません。 " f":: actual_working_time_id= '{actual['actual_working_time_id']}' ")
+                logger.warning(f"{job_id=} であるジョブは存在しません。 :: actual_working_time_id= '{actual['actual_working_time_id']}' ")
                 continue
             actual["job_name"] = job["job_name"]
             if is_add_parent_job_info:
@@ -197,7 +199,7 @@ class ListActualWorkingTime:
             self.set_additional_info_to_actual_working_time(result, is_add_parent_job_info=is_add_parent_job_info)
         return result
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         *,
         output: Path,
@@ -207,8 +209,7 @@ class ListActualWorkingTime:
         job_id_list: Optional[list[str]] = None,
         parent_job_id_list: Optional[list[str]] = None,
         user_id_list: Optional[list[str]] = None,
-        is_add_parent_job_info: bool = False,
-    ):
+    ) -> None:
         result = self.get_actual_working_times(
             start_date=start_date,
             end_date=end_date,
@@ -216,7 +217,7 @@ class ListActualWorkingTime:
             parent_job_ids=parent_job_id_list,
             user_ids=user_id_list,
             is_set_additional_info=True,
-            is_add_parent_job_info=is_add_parent_job_info,
+            is_add_parent_job_info=True,
         )
         if len(result) == 0:
             logger.warning("実績作業時間情報は0件なので、出力しません。")
@@ -228,42 +229,27 @@ class ListActualWorkingTime:
             print_json(result, is_pretty=True, output=output)
         else:
             df = pandas.DataFrame(result)
-            if is_add_parent_job_info:
-                required_columns = [
-                    "workspace_id",
-                    "actual_working_time_id",
-                    "job_id",
-                    "job_name",
-                    "parent_job_id",
-                    "parent_job_name",
-                    "workspace_member_id",
-                    "user_id",
-                    "username",
-                    "start_datetime",
-                    "end_datetime",
-                    "actual_working_hours",
-                    "note",
-                ]
-            else:
-                required_columns = [
-                    "workspace_id",
-                    "actual_working_time_id",
-                    "job_id",
-                    "job_name",
-                    "workspace_member_id",
-                    "user_id",
-                    "username",
-                    "start_datetime",
-                    "end_datetime",
-                    "actual_working_hours",
-                    "note",
-                ]
+            required_columns = [
+                "workspace_id",
+                "actual_working_time_id",
+                "job_id",
+                "job_name",
+                "parent_job_id",
+                "parent_job_name",
+                "workspace_member_id",
+                "user_id",
+                "username",
+                "start_datetime",
+                "end_datetime",
+                "actual_working_hours",
+                "note",
+            ]
             remaining_columns = list(set(df.columns) - set(required_columns))
             columns = required_columns + remaining_columns
             print_csv(df[columns], output=output)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
@@ -287,7 +273,6 @@ def main(args):  # noqa: ANN001, ANN201
         user_id_list=user_id_list,
         start_date=start_date,
         end_date=end_date,
-        is_add_parent_job_info=args.show_parent_job,
         output=args.output,
         output_format=OutputFormat(args.format),
     )
@@ -311,12 +296,6 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 
     parser.add_argument("--start_date", type=str, required=False, help="取得する範囲の開始日（システムのローカルな日付）")
     parser.add_argument("--end_date", type=str, required=False, help="取得する範囲の終了日（システムのローカルな日付）")
-
-    parser.add_argument(
-        "--show_parent_job",
-        action="store_true",
-        help="親のジョブ情報も出力します。",
-    )
 
     parser.add_argument(
         "--timezone_offset",
