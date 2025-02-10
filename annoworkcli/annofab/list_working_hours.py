@@ -105,14 +105,14 @@ def _get_df_working_hours_from_df(
 
 
 class ListWorkingHoursWithAnnofab:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         *,
         annowork_service: AnnoworkResource,
         workspace_id: str,
         annofab_service: AnnofabResource,
         parallelism: Optional[int] = None,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.annofab_service = annofab_service
@@ -278,7 +278,7 @@ class ListWorkingHoursWithAnnofab:
         return df[["job_id", "parent_job_id", "parent_job_name"]]
 
     @staticmethod
-    def _get_required_columns(is_show_parent_job: bool) -> list[str]:  # noqa: FBT001
+    def _get_required_columns() -> list[str]:
         job_columns = [
             "job_id",
             "job_name",
@@ -290,14 +290,11 @@ class ListWorkingHoursWithAnnofab:
         ]
         annofab_columns = ["annofab_project_id", "annofab_project_title", "annofab_account_id", "annofab_working_hours"]
 
-        if is_show_parent_job:
-            parent_job_columns = [
-                "parent_job_id",
-                "parent_job_name",
-            ]
-            required_columns = ["date"] + job_columns + parent_job_columns + user_columns + ["actual_working_hours"] + annofab_columns  # noqa: RUF005
-        else:
-            required_columns = ["date"] + job_columns + user_columns + ["actual_working_hours"] + annofab_columns  # noqa: RUF005
+        parent_job_columns = [
+            "parent_job_id",
+            "parent_job_name",
+        ]
+        required_columns = ["date"] + job_columns + parent_job_columns + user_columns + ["actual_working_hours"] + annofab_columns  # noqa: RUF005
 
         required_columns.append("notes")
         return required_columns
@@ -309,7 +306,6 @@ class ListWorkingHoursWithAnnofab:
         end_date: Optional[str] = None,
         job_ids: Optional[Collection[str]] = None,
         user_ids: Optional[Collection[str]] = None,
-        is_show_parent_job: bool = False,
     ) -> pandas.DataFrame:
         def _get_af_project_ids(df: pandas.DataFrame) -> list[str]:
             """
@@ -392,12 +388,11 @@ class ListWorkingHoursWithAnnofab:
         if user_ids is not None:
             df = df[df["user_id"].isin(set(user_ids))]
 
-        if is_show_parent_job:
-            df_job_parent_job = self._get_df_job_parent_job()
-            df = df.merge(df_job_parent_job, how="left", on="job_id")
+        df_job_parent_job = self._get_df_job_parent_job()
+        df = df.merge(df_job_parent_job, how="left", on="job_id")
 
         df.sort_values(["date", "job_id", "user_id"], inplace=True)
-        required_columns = self._get_required_columns(is_show_parent_job)
+        required_columns = self._get_required_columns()
         return df[required_columns]
 
     def get_job_id_list_from_parent_job_id_list(self, parent_job_id_list: Collection[str]) -> list[str]:
@@ -415,7 +410,7 @@ class ListWorkingHoursWithAnnofab:
         return [e["job_id"] for e in self.all_jobs if _match_job(e)]
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
@@ -451,7 +446,6 @@ def main(args):  # noqa: ANN001, ANN201
         end_date=end_date,
         job_ids=job_id_list,
         user_ids=user_id_list,
-        is_show_parent_job=args.show_parent_job,
     )
 
     if len(df) == 0:
@@ -466,7 +460,7 @@ def main(args):  # noqa: ANN001, ANN201
         print_csv(df, output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",
@@ -493,12 +487,6 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 
     parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
     parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
-
-    parser.add_argument(
-        "--show_parent_job",
-        action="store_true",
-        help="親のジョブ情報も出力します。",
-    )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 
