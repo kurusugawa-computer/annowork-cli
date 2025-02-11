@@ -232,10 +232,10 @@ class ListActualWorkingTime:
             required_columns = [
                 "workspace_id",
                 "actual_working_time_id",
-                "job_id",
-                "job_name",
                 "parent_job_id",
                 "parent_job_name",
+                "job_id",
+                "job_name",
                 "workspace_member_id",
                 "user_id",
                 "username",

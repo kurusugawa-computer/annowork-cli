@@ -226,10 +226,10 @@ class ListActualWorkingHoursDaily:
 def get_required_columns() -> list[str]:
     required_columns = [
         "date",
-        "job_id",
-        "job_name",
         "parent_job_id",
         "parent_job_name",
+        "job_id",
+        "job_name",
         "workspace_member_id",
         "user_id",
         "username",
