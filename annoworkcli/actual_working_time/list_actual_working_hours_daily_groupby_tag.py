@@ -170,10 +170,10 @@ class ListActualWorkingTimeGroupbyTag:
             df.fillna(0, inplace=True)
             required_columns = [
                 "date",
-                "job_id",
-                "job_name",
                 "parent_job_id",
                 "parent_job_name",
+                "job_id",
+                "job_name",
                 "actual_working_hours.total",
             ]
 
