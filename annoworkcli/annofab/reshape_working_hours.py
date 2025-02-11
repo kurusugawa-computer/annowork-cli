@@ -56,14 +56,14 @@ class ShapeType(Enum):
     """作業時間の一覧を、日付, ユーザ, ジョブ単位で出力する。アサイン対象のジョブと比較できないので、アサイン時間は含まない。"""
 
 
-def filter_df(  # noqa: ANN201
+def filter_df(
     df: pandas.DataFrame,
     *,
     job_ids: Optional[Collection[str]] = None,
     user_ids: Optional[Collection[str]] = None,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
-):
+) -> pandas.DataFrame:
     if start_date is not None:
         df = df[df["date"] >= start_date]
 
@@ -543,7 +543,7 @@ class ReshapeDataFrame:
             ]
         )
 
-    def get_df_list_by_date_user_job(self, df_actual: pandas.DataFrame) -> pandas.DataFrame:
+    def get_df_list_by_date_user_job(self, df_actual: pandas.DataFrame, *, df_job_parent_job: Optional[pandas.DataFrame] = None) -> pandas.DataFrame:
         """
         `--shape_type list_by_date_user_job`に対応するDataFrameを生成する。
 
@@ -553,6 +553,9 @@ class ReshapeDataFrame:
 
         """
         df = df_actual
+        if df_job_parent_job is not None:
+            # `df`に`parent_job_name`などの列が含まれている可能性があるので、`suffixes`を指定して列名を変更する
+            df = df.merge(df_job_parent_job, on="job_id", how="left", suffixes=("_tmp", None))
 
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
         df["monitor_rate"] = df["monitored_working_hours"] / df["actual_working_hours"]
@@ -560,12 +563,18 @@ class ReshapeDataFrame:
         df.reset_index(inplace=True)
         df.sort_values(by=["date", "user_id", "job_name"], key=lambda e: e.str.lower(), inplace=True)
 
+        extension_columns = []
+        if df_job_parent_job is not None:
+            extension_columns = [
+                "parent_job_id",
+                "parent_job_name",
+            ]
+
         columns = [
             "date",
             "user_id",
             "username",
-            "parent_job_id",
-            "parent_job_name",
+            *extension_columns,
             "job_id",
             "job_name",
             "annofab_project_id",
@@ -737,13 +746,13 @@ def get_dataframe_from_input_file(input_file: Path) -> pandas.DataFrame:
 
 
 class ReshapeWorkingHours:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         *,
         annowork_service: AnnoworkResource,
         workspace_id: str,
         parallelism: Optional[int] = None,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.parallelism = parallelism
@@ -914,7 +923,11 @@ class ReshapeWorkingHours:
             df_output = reshape_obj.get_df_total(df_actual=df_actual, df_assigned=df_assigned)
 
         elif shape_type == ShapeType.LIST_BY_DATE_USER_JOB:
-            df_output = reshape_obj.get_df_list_by_date_user_job(df_actual=df_actual)
+            df_job_parent_job = self.get_df_job_parent_job()
+            df_parent_job = self.get_df_parent_job()
+            df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
+
+            df_output = reshape_obj.get_df_list_by_date_user_job(df_actual=df_actual, df_job_parent_job=df_job_parent_job)
 
         elif shape_type == ShapeType.LIST_BY_DATE_USER_PARENT_JOB:
             df_job_parent_job = self.get_df_job_parent_job()
@@ -996,7 +1009,7 @@ def get_empty_df_assigned() -> pandas.DataFrame:
     )
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     main_obj = ReshapeWorkingHours(
         annowork_service=build_annoworkapi(args),
         workspace_id=args.workspace_id,
@@ -1083,7 +1096,7 @@ def main(args):  # noqa: ANN001, ANN201
     print_csv(df_output, output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",
