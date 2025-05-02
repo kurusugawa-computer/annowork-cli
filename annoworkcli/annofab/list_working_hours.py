@@ -73,6 +73,7 @@ def _get_df_working_hours_from_df(
         on=["annofab_project_id"],
         suffixes=(None, TMP_SUFFIX),
     )
+
     df_merged["job_id"] = df_merged["job_id"].fillna(df_merged[f"job_id{TMP_SUFFIX}"])
     df_merged["job_name"] = df_merged["job_name"].fillna(df_merged[f"job_name{TMP_SUFFIX}"])
 
@@ -82,8 +83,8 @@ def _get_df_working_hours_from_df(
 
     df_merged.fillna(
         {
-            "actual_working_hours": 0,
-            "annofab_working_hours": 0,
+            "actual_working_hours": 0.0,
+            "annofab_working_hours": 0.0,
         },
         inplace=True,
     )
@@ -169,7 +170,7 @@ class ListWorkingHoursWithAnnofab:
         df_user = pandas.DataFrame(self.all_workspace_members, columns=["user_id", "username", "workspace_member_id"])
 
         df = df_user.merge(df_af_account, how="inner", on="user_id")
-        return df
+        return df.astype("string")
 
     def _get_df_job_and_af_project(self, job_ids: Collection[str]) -> pandas.DataFrame:
         """
@@ -198,7 +199,7 @@ class ListWorkingHoursWithAnnofab:
         df_af_project["annofab_project_title"] = df_af_project["annofab_project_id"].apply(get_project_title)
 
         df = df_job.merge(df_af_project, how="inner", on="job_id")
-        return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
+        return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]].astype("string")
 
     def _get_af_working_hours_from_af_project(self, af_project_id: str, start_date: Optional[str], end_date: Optional[str]) -> list[dict[str, Any]]:
         try:
@@ -261,7 +262,7 @@ class ListWorkingHoursWithAnnofab:
         df = pandas.DataFrame(columns=["date", "annofab_project_id", "annofab_account_id", "annofab_working_hours"])
         # `astype()`を使用する理由：後続の処理で`fillna()`を実行した際に、「Downcasting object dtype arrays ～」というFutureWarningを発生させないようにするため  # noqa: E501
         # https://qiita.com/yuji38kwmt/items/ba07a25924cfda363e42
-        df = df.astype({"annofab_working_hours": "float64"})
+        df = df.astype({"annofab_working_hours": "float64", "date": "string", "annofab_project_id": "string", "annofab_account_id": "string"})
         return df
 
     def _get_df_job_parent_job(self) -> pandas.DataFrame:
@@ -357,6 +358,10 @@ class ListWorkingHoursWithAnnofab:
                 "actual_working_hours",
                 "notes",
             ],
+        ).astype(
+            dict.fromkeys(["date", "job_id", "job_name", "workspace_member_id", "user_id", "username"], "string").update(
+                {"actual_working_hours": "float64"}
+            )
         )
 
         # df_actual_working_hours には含まれていないユーザがAnnofabプロジェクトで作業している可能性があるので、
