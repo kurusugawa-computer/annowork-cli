@@ -74,9 +74,7 @@ def filter_df(
         df = df[df["user_id"].isin(set(user_ids))]
 
     if job_ids is not None:
-        # job_idが空の行は対象にする。Annoworkに実績はないが、Annofabで作業しているケース（実績の入力漏れ）があるため
-        # numpy.nanだけでなくpandas.NAなどを指定する理由：空セルはpandasのdtypesによって変わるため
-        df = df[df["job_id"].isin(set(job_ids) | {None, numpy.nan, pandas.NA, ""})]
+        df = df[df["job_id"].isin(set(job_ids))]
     return df
 
 
@@ -1024,7 +1022,7 @@ def main(args: argparse.Namespace) -> None:
     end_date = args.end_date
 
     if args.actual_file is None or args.assigned_file is None:
-        if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
+        if all(v is None for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]):
             logger.warning(
                 "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
                 "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
