@@ -390,6 +390,10 @@ class ListWorkingHoursWithAnnofab:
         )
         if user_ids is not None:
             df = df[df["user_id"].isin(set(user_ids))]
+        if start_date is not None:
+            df = df[df["date"] >= start_date]
+        if end_date is not None:
+            df = df[df["date"] <= end_date]
 
         df_job_parent_job = self._get_df_job_parent_job()
         df = df.merge(df_job_parent_job, how="left", on="job_id")
