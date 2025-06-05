@@ -550,6 +550,9 @@ class ReshapeDataFrame:
                 指定されなければ、parent_job_id, parent_job_nameは格納しません。
 
         """
+        TODOTODO
+        
+        
         df = df_actual
         if df_job_parent_job is not None:
             # `df`に`parent_job_name`などの列が含まれている可能性があるので、`suffixes`を指定して列名を変更する
@@ -1053,7 +1056,8 @@ def main(args: argparse.Namespace) -> None:
         )
         if len(df_actual) == 0:
             df_actual = get_empty_df_actual()
-
+        # TODO
+        df_actual.to_csv("out/tmp.csv", index=False, encoding="utf-8-sig")
     if args.assigned_file is not None:
         df_assigned = get_dataframe_from_input_file(args.assigned_file)
     elif (
@@ -1073,15 +1077,15 @@ def main(args: argparse.Namespace) -> None:
         if len(df_assigned) == 0:
             df_assigned = get_empty_df_assigned()
 
-    df_actual, df_assigned = main_obj.filter_df(
-        df_actual=df_actual,
-        df_assigned=df_assigned,
-        start_date=args.start_date,
-        end_date=args.end_date,
-        user_ids=user_id_list,
-        parent_job_ids=parent_job_id_list,
-        job_ids=job_id_list,
-    )
+    # df_actual, df_assigned = main_obj.filter_df(
+    #     df_actual=df_actual,
+    #     df_assigned=df_assigned,
+    #     start_date=args.start_date,
+    #     end_date=args.end_date,
+    #     user_ids=user_id_list,
+    #     parent_job_ids=parent_job_id_list,
+    #     job_ids=job_id_list,
+    # )
 
     df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type)
 
