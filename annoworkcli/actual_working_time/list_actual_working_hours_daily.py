@@ -276,12 +276,8 @@ def main(args: argparse.Namespace) -> None:
     )
 
     result = filter_actual_daily_list(result, start_date=start_date, end_date=end_date)
-
-    if len(result) > 0:
-        result = main_obj.add_parent_job_info(result)
-        logger.info(f"{len(result)} 件の日ごとの実績作業時間情報を出力します。")
-    else:
-        logger.warning("日ごとの実績作業時間情報は0件です。")
+    result = main_obj.add_parent_job_info(result)
+    logger.info(f"{len(result)} 件の日ごとの実績作業時間情報を出力します。")
 
     if OutputFormat(args.format) == OutputFormat.JSON:
         # `.schema().dump(many=True)`を使わない理由：使うと警告が発生するから

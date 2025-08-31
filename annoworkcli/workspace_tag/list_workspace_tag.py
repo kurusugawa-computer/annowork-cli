@@ -21,22 +21,25 @@ class ListWorkspaceTag:
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
         if len(workspace_tags) == 0:
-            logger.warning("ワークスペースタグ情報は0件なので、出力しません。")
-            return
+            logger.warning("ワークスペースタグ情報は0件です。")
 
         logger.debug(f"{len(workspace_tags)} 件のタグ一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(workspace_tags, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(workspace_tags)
             required_columns = [
                 "workspace_id",
                 "workspace_tag_id",
                 "workspace_tag_name",
             ]
-            remaining_columns = list(set(df.columns) - set(required_columns))
-            columns = required_columns + remaining_columns
+            if len(workspace_tags) > 0:
+                df = pandas.json_normalize(workspace_tags)
+                remaining_columns = list(set(df.columns) - set(required_columns))
+                columns = required_columns + remaining_columns
+            else:
+                df = pandas.DataFrame(columns=required_columns)
+                columns = required_columns
             print_csv(df[columns], output=output)
 
 
