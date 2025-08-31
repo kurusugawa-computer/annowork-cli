@@ -1087,12 +1087,7 @@ def main(args: argparse.Namespace) -> None:
 
     df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type)
 
-    output_path: Path | None = args.output
-
-    if len(df_output) == 0:
-        logger.warning(f"出力対象のデータは0件なので、'{output_path if output_path is not None else '標準出力'}'に出力しません。")
-        return
-
+    logger.info(f"{len(df_output)} 件のデータを出力します。")
     print_csv(df_output, output=args.output)
 
 
