@@ -76,7 +76,7 @@ class ListWorkspace:
                 continue
         return result
 
-    def main(
+    def main(  # noqa: PLR0912
         self,
         output: Path,
         output_format: OutputFormat,

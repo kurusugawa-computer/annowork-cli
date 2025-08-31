@@ -174,7 +174,7 @@ class ListActualWorkingTimeGroupbyTag:
                 "job_name",
                 "actual_working_hours.total",
             ]
-            
+
             if len(results) > 0:
                 df = pandas.json_normalize(results)
                 df.fillna(0, inplace=True)

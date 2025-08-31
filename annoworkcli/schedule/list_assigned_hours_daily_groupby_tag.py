@@ -111,7 +111,7 @@ class ListAssignedHoursDailyGroupbyTag:
                 target_workspace_tag_ids=target_workspace_tag_ids,
                 target_workspace_tag_names=target_workspace_tag_names,
             )
-            
+
         logger.info(f"{len(results)} 件のアサイン時間情報を出力します。")
 
         if output_format == OutputFormat.JSON:
@@ -123,7 +123,7 @@ class ListAssignedHoursDailyGroupbyTag:
                 "job_name",
                 "assigned_working_hours.total",
             ]
-            
+
             if len(results) > 0:
                 df = pandas.json_normalize(results)
                 df.fillna(0, inplace=True)

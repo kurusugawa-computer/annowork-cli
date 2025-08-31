@@ -148,7 +148,7 @@ class ListAssignedHoursDaily:
             result.sort(key=lambda e: e.date)
         else:
             logger.warning("アサイン時間情報は0件です。")
-            
+
         logger.info(f"{len(result)} 件のアサイン時間情報を出力します。")
 
         if output_format == OutputFormat.JSON:
@@ -163,8 +163,7 @@ class ListAssignedHoursDaily:
                 df = pandas.DataFrame(result)
             else:
                 # 空のデータフレームを作成（属性情報を含める）
-                df = pandas.DataFrame(columns=["date", "job_id", "job_name", "workspace_member_id", 
-                                           "user_id", "username", "assigned_working_hours"])
+                df = pandas.DataFrame(columns=["date", "job_id", "job_name", "workspace_member_id", "user_id", "username", "assigned_working_hours"])
             print_csv(df, output=output)
 
 

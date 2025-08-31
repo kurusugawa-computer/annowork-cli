@@ -173,7 +173,7 @@ class ListSchedule:
             user_ids=user_id_list,
             is_set_additional_info=True,
         )
-        
+
         logger.info(f"{len(result)} 件の作業計画情報を出力します。")
 
         if output_format == OutputFormat.JSON:
@@ -193,7 +193,7 @@ class ListSchedule:
                 "value",
                 "assigned_working_hours",
             ]
-            
+
             if len(result) > 0:
                 df = pandas.DataFrame(result)
                 remaining_columns = list(set(df.columns) - set(required_columns))

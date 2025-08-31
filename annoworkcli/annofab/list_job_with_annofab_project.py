@@ -147,15 +147,20 @@ def main(args: argparse.Namespace) -> None:
     )
 
     if len(job_list) == 0:
-        logger.warning("ジョブの一覧が0件なので、出力しません。")
-        return
+        logger.warning("ジョブの一覧が0件です。")
 
     logger.info(f"{len(job_list)} 件のジョブの一覧を出力します。")
 
     if OutputFormat(args.format) == OutputFormat.JSON:
         print_json(job_list, is_pretty=True, output=args.output)
     else:
-        df = pandas.json_normalize(job_list)
+        if len(job_list) > 0:
+            df = pandas.json_normalize(job_list)
+        else:
+            # 空のDataFrameを作成（最低限の列を含める）
+            df = pandas.DataFrame(
+                columns=["workspace_id", "job_id", "job_name", "parent_job_id", "parent_job_name", "annofab_project_id", "annofab_project_title"]
+            )
         print_csv(df, output=args.output)
 
 

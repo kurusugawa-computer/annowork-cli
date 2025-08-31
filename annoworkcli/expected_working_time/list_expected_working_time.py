@@ -76,7 +76,7 @@ class ListExpectedWorkingTime:
                 }
             )
 
-    def main(  
+    def main(
         self,
         *,
         output: Path,
