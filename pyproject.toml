@@ -3,7 +3,7 @@ name = "annoworkcli"
 dynamic = ["version"]
 description = "AnnoworkのCLI(Command Line Interface)"
 authors = [{ name = "Kurusugawa Computer Inc." }]
-requires-python = "~=3.9"
+requires-python = ">=3.9"
 readme = "README.md"
 license = "MIT"
 keywords = [
@@ -57,7 +57,7 @@ dev = ["ipython"]
 
 
 [tool.uv]
-default-groups = ["dev", "test", "linter", "docs"]
+default-groups = ["dev", "test", "linter", "documentation"]
 package = true
 
 

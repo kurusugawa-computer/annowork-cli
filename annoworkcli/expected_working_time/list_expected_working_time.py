@@ -92,27 +92,26 @@ class ListExpectedWorkingTime:
 
         self.set_member_info_to_working_times(result)
 
-        if len(result) == 0:
-            logger.warning("予定稼働時間情報0件なので、出力しません。")
-            return
-
         logger.info(f"{len(result)} 件の予定稼働時間情報を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(result, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(result)
-            required_columns = [
-                "workspace_id",
-                "date",
-                "workspace_member_id",
-                "user_id",
-                "username",
-                "expected_working_hours",
-            ]
-            remaining_columns = list(set(df.columns) - set(required_columns))
-            columns = required_columns + remaining_columns
-
+            if len(result) > 0:
+                df = pandas.json_normalize(result)
+                required_columns = [
+                    "workspace_id",
+                    "date",
+                    "workspace_member_id",
+                    "user_id",
+                    "username",
+                    "expected_working_hours",
+                ]
+                remaining_columns = list(set(df.columns) - set(required_columns))
+                columns = required_columns + remaining_columns
+            else:
+                columns = required_columns
+                df = pandas.DataFrame(columns=columns)
             print_csv(df[columns], output=output)
 
 
