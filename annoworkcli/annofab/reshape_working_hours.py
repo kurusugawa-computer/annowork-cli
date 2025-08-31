@@ -961,7 +961,7 @@ class ReshapeWorkingHours:
         Returns:
             tuple[pandas.DataFrame, pandas.DataFrame]: 絞り込まれたdf_actual, df_assigned
         """
-        child_job_ids: Collection | None = None
+        child_job_ids: Collection[str] | None = None
 
         if parent_job_ids is not None:
             child_job_ids = {e["job_id"] for e in self.all_jobs if get_parent_job_id_from_job_tree(e["job_tree"]) in set(parent_job_ids)}
