@@ -978,23 +978,6 @@ class ReshapeWorkingHours:
         return (df_actual, df_assigned)
 
 
-def get_empty_df_actual() -> pandas.DataFrame:
-    return pandas.DataFrame(
-        columns=[
-            "date",
-            "job_id",
-            "job_name",
-            "workspace_member_id",
-            "user_id",
-            "username",
-            "actual_working_hours",
-            "annofab_project_id",
-            "annofab_account_id",
-            "annofab_working_hours",
-        ]
-    )
-
-
 def get_empty_df_assigned() -> pandas.DataFrame:
     return pandas.DataFrame(
         columns=[
@@ -1053,8 +1036,6 @@ def main(args: argparse.Namespace) -> None:
             job_ids=job_id_list,
             user_ids=user_id_list,
         )
-        if len(df_actual) == 0:
-            df_actual = get_empty_df_actual()
 
     if args.assigned_file is not None:
         df_assigned = get_dataframe_from_input_file(args.assigned_file)
