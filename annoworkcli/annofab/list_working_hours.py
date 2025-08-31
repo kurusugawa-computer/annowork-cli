@@ -51,6 +51,7 @@ def _get_df_working_hours_from_df(
         on="job_id",
     )
 
+    
     df_merged = df_aw_working_hours.merge(df_af_working_hours, how="outer", on=["date", "annofab_project_id", "annofab_account_id"])
 
     TMP_SUFFIX = "_tmp"  # noqa: N806
@@ -193,10 +194,11 @@ class ListWorkingHoursWithAnnofab:
 
         df_job = pandas.DataFrame(self.all_jobs)
 
-        df_af_project = pandas.DataFrame({"job_id": list(job_ids)})
+        # dtype="string"を指定する理由: dtypeを指定しないとdtypeがfloatになり、後続のmerge処理でdtypeが一致しないというエラーが発生するため
+        # 参考サイト: https://qiita.com/yuji38kwmt/items/74d1990bc8554f8b81ef
+        df_af_project = pandas.DataFrame({"job_id": list(job_ids)}, dtype="string")
         df_af_project["annofab_project_id"] = df_af_project["job_id"].apply(lambda e: get_annofab_project_id_from_job(all_job_dict[e]))
         df_af_project["annofab_project_title"] = df_af_project["annofab_project_id"].apply(get_project_title)
-
         df = df_job.merge(df_af_project, how="inner", on="job_id")
         return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
 
