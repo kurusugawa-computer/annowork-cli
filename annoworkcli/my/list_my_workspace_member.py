@@ -1,7 +1,6 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Optional
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -17,7 +16,7 @@ class ListWorkspaceMember:
     def __init__(self, annowork_service: AnnoworkResource):  # noqa: ANN204
         self.annowork_service = annowork_service
 
-    def main(self, output: Optional[Path], output_format: OutputFormat, workspace_id: Optional[str] = None):  # noqa: ANN201
+    def main(self, output: Path | None, output_format: OutputFormat, workspace_id: str | None = None):  # noqa: ANN201
         query_params = {}
         if workspace_id is not None:
             query_params[workspace_id] = workspace_id
@@ -56,7 +55,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_workspace_member"
     subcommand_help = "自身のワークスペースメンバの一覧を出力します。"
 

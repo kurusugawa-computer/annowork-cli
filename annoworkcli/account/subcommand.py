@@ -1,5 +1,4 @@
 import argparse
-from typing import Optional
 
 import annoworkcli
 import annoworkcli.account.list_external_linkage_info
@@ -14,7 +13,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     annoworkcli.account.put_external_linkage_info.add_parser(subparsers)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "account"
     subcommand_help = "ユーザアカウントに関するサブコマンド"
 

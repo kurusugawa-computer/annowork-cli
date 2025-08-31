@@ -5,7 +5,7 @@ import logging
 import multiprocessing
 from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 import requests
@@ -111,7 +111,7 @@ class ListWorkingHoursWithAnnofab:
         annowork_service: AnnoworkResource,
         workspace_id: str,
         annofab_service: AnnofabResource,
-        parallelism: Optional[int] = None,
+        parallelism: int | None = None,
     ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
@@ -128,11 +128,11 @@ class ListWorkingHoursWithAnnofab:
     def get_actual_working_hours_daily(
         self,
         *,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        job_ids: Optional[Collection[str]] = None,
-        parent_job_ids: Optional[Collection[str]] = None,
-        user_ids: Optional[Collection[str]] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        job_ids: Collection[str] | None = None,
+        parent_job_ids: Collection[str] | None = None,
+        user_ids: Collection[str] | None = None,
     ) -> list[ActualWorkingHoursDaily]:
         actual_working_time_list = self.list_actual_working_time_obj.get_actual_working_times(
             job_ids=job_ids,
@@ -183,7 +183,7 @@ class ListWorkingHoursWithAnnofab:
                 * annofab_project_title
         """
 
-        def get_project_title(project_id: str) -> Optional[str]:
+        def get_project_title(project_id: str) -> str | None:
             project = self.annofab_service.wrapper.get_project_or_none(project_id)
             if project is None:
                 return None
@@ -200,7 +200,7 @@ class ListWorkingHoursWithAnnofab:
         df = df_job.merge(df_af_project, how="inner", on="job_id")
         return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
 
-    def _get_af_working_hours_from_af_project(self, af_project_id: str, start_date: Optional[str], end_date: Optional[str]) -> list[dict[str, Any]]:
+    def _get_af_working_hours_from_af_project(self, af_project_id: str, start_date: str | None, end_date: str | None) -> list[dict[str, Any]]:
         try:
             logger.debug(f"annofab_project_id= '{af_project_id}' のAnnofabプロジェクトの作業時間を取得します。:: {start_date=}, {end_date=}")
             account_statistics = self.annofab_service.wrapper.get_account_daily_statistics(af_project_id, from_date=start_date, to_date=end_date)
@@ -228,7 +228,7 @@ class ListWorkingHoursWithAnnofab:
                     )
         return result
 
-    def _get_af_working_hours(self, af_project_ids: Collection[str], start_date: Optional[str], end_date: Optional[str]) -> pandas.DataFrame:
+    def _get_af_working_hours(self, af_project_ids: Collection[str], start_date: str | None, end_date: str | None) -> pandas.DataFrame:
         """Annofabの作業時間情報が格納されたDataFrameを返す。
 
         返すDataFrameには以下の列が存在します。
@@ -300,10 +300,10 @@ class ListWorkingHoursWithAnnofab:
     def get_df_working_hours(
         self,
         *,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        job_ids: Optional[Collection[str]] = None,
-        user_ids: Optional[Collection[str]] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        job_ids: Collection[str] | None = None,
+        user_ids: Collection[str] | None = None,
     ) -> pandas.DataFrame:
         def _get_af_project_ids(df: pandas.DataFrame) -> list[str]:
             """
@@ -325,7 +325,7 @@ class ListWorkingHoursWithAnnofab:
             # `unique()`を実行する理由：前述の`drop_duplicates`でannofab_project_idはユニークなはずだが、念の為`unique()`を実行した。
             return list(df["annofab_project_id"].unique())
 
-        def _get_start_date(df: pandas.DataFrame) -> Optional[str]:
+        def _get_start_date(df: pandas.DataFrame) -> str | None:
             min_date = df["date"].min() if len(df) > 0 else None
             if start_date is None:
                 return min_date
@@ -333,7 +333,7 @@ class ListWorkingHoursWithAnnofab:
                 return min(start_date, min_date)
             return None
 
-        def _get_end_date(df: pandas.DataFrame) -> Optional[str]:
+        def _get_end_date(df: pandas.DataFrame) -> str | None:
             max_date = df["date"].max() if len(df) > 0 else None
             if end_date is None:
                 return max_date
@@ -413,8 +413,8 @@ def main(args: argparse.Namespace) -> None:
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
     user_id_list = get_list_from_args(args.user_id)
-    start_date: Optional[str] = args.start_date
-    end_date: Optional[str] = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     if all(v is None for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]):
         logger.warning(
@@ -505,7 +505,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_working_hours"
     subcommand_help = "日ごとの実績作業時間と、ジョブに紐づくAnnofabプロジェクトの作業時間を一緒に出力します。"
 

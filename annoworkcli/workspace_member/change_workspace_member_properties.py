@@ -1,7 +1,7 @@
 import argparse
 import logging
 from collections.abc import Collection
-from typing import Any, Optional
+from typing import Any
 
 from annoworkapi.enums import Role
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -110,7 +110,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "change"
     subcommand_help = "ワークスペースメンバの情報（ロールなど）を変更します。"
 

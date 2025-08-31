@@ -1,7 +1,7 @@
 import argparse
 import logging
 import sys
-from typing import Any, Optional
+from typing import Any
 
 from annoworkapi.resource import Resource as AnnoworkResource
 
@@ -23,7 +23,7 @@ class DeleteActualWorkingTime:
         annowork_service: AnnoworkResource,
         workspace_id: str,
         *,
-        timezone_offset_hours: Optional[float],
+        timezone_offset_hours: float | None,
         all_yes: bool,
     ):
         self.annowork_service = annowork_service
@@ -74,9 +74,9 @@ class DeleteActualWorkingTime:
         *,
         start_date: str,
         end_date: str,
-        job_id: Optional[str],
-        user_id: Optional[str],
-        actual_working_time_id_list: Optional[list[str]],
+        job_id: str | None,
+        user_id: str | None,
+        actual_working_time_id_list: list[str] | None,
     ):
         get_actual_working_times = self.list_actual_working_time_obj.get_actual_working_times(
             user_ids=[user_id] if user_id is not None else None,
@@ -94,11 +94,11 @@ class DeleteActualWorkingTime:
     def main(  # noqa: ANN201
         self,
         *,
-        job_id: Optional[str],
-        user_id: Optional[str],
+        job_id: str | None,
+        user_id: str | None,
         start_date: str,
         end_date: str,
-        actual_working_time_id_list: Optional[list[str]],
+        actual_working_time_id_list: list[str] | None,
     ):
         actual_working_times = self.get_actual_working_times(
             start_date=start_date,
@@ -185,7 +185,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "delete"
     subcommand_help = "実績作業時間を削除します。"
 

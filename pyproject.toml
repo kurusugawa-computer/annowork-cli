@@ -3,7 +3,7 @@ name = "annoworkcli"
 dynamic = ["version"]
 description = "AnnoworkのCLI(Command Line Interface)"
 authors = [{ name = "Kurusugawa Computer Inc." }]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 readme = "README.md"
 license = "MIT"
 keywords = [
@@ -68,7 +68,7 @@ ignore_missing_imports = true
 check_untyped_defs = true
 
 [tool.ruff]
-target-version = "py39"
+target-version = "py310"
 line-length = 150
 
 [tool.ruff.lint]

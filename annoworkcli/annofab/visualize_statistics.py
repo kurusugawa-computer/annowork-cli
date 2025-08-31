@@ -5,7 +5,6 @@ import subprocess
 import tempfile
 from collections import defaultdict
 from pathlib import Path
-from typing import Optional
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -94,10 +93,10 @@ class ListLabor:
 
     def get_annofab_labor_dict(
         self,
-        job_id_list: Optional[list[str]],
-        annofab_project_id_list: Optional[list[str]],
-        start_date: Optional[str],
-        end_date: Optional[str],
+        job_id_list: list[str] | None,
+        annofab_project_id_list: list[str] | None,
+        start_date: str | None,
+        end_date: str | None,
     ) -> ActualWorktimeHourDict:
         """
         Annofabに渡す「日、ユーザー、プロジェクトごとの実績作業時間」を取得します。
@@ -270,7 +269,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "visualize_statistics"
     subcommand_help = "Annofabの統計情報を実績作業時間と組み合わせて可視化します。"
     description = (

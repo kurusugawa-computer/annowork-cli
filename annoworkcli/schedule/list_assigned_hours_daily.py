@@ -4,7 +4,7 @@ from collections import defaultdict
 from collections.abc import Collection
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -31,10 +31,10 @@ class AssignedHoursDaily(DataClassJsonMixin):
 
     date: str
     job_id: str
-    job_name: Optional[str]
+    job_name: str | None
     workspace_member_id: str
-    user_id: Optional[str]
-    username: Optional[str]
+    user_id: str | None
+    username: str | None
     assigned_working_hours: float
 
 
@@ -69,10 +69,10 @@ class ListAssignedHoursDaily:
     def get_assigned_hours_daily_list(
         self,
         *,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        job_ids: Optional[Collection[str]] = None,
-        user_ids: Optional[Collection[str]] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        job_ids: Collection[str] | None = None,
+        user_ids: Collection[str] | None = None,
     ) -> list[AssignedHoursDaily]:
         schedule_list = self.list_schedule_obj.get_schedules(start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids)
 
@@ -133,10 +133,10 @@ class ListAssignedHoursDaily:
         *,
         output: Path,
         output_format: OutputFormat,
-        start_date: Optional[str],
-        end_date: Optional[str],
-        job_id_list: Optional[list[str]],
-        user_id_list: Optional[list[str]],
+        start_date: str | None,
+        end_date: str | None,
+        job_id_list: list[str] | None,
+        user_id_list: list[str] | None,
     ):
         result = self.get_assigned_hours_daily_list(
             start_date=start_date,
@@ -168,8 +168,8 @@ def main(args):  # noqa: ANN001, ANN201
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
 
-    start_date: Optional[str] = args.start_date
-    end_date: Optional[str] = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
@@ -220,7 +220,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_daily"
     subcommand_help = "作業計画から求めたアサイン時間を日ごとに出力します。"
 

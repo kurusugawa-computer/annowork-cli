@@ -5,7 +5,7 @@ import logging.config
 import pkgutil
 import sys
 from pathlib import Path
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
 import isodate
 import pandas
@@ -35,7 +35,7 @@ def read_lines_except_blank_line(filepath: str) -> list[str]:
     return [line for line in lines if line != ""]
 
 
-def output_string(target: str, output: Optional[Path] = None) -> None:
+def output_string(target: str, output: Path | None = None) -> None:
     """
     文字列を出力する。
 
@@ -52,7 +52,7 @@ def output_string(target: str, output: Optional[Path] = None) -> None:
             logger.info(f"{output} に出力しました。")
 
 
-def print_json(target: Any, is_pretty: bool = False, output: Optional[Path] = None) -> None:  # noqa: ANN401, FBT001, FBT002
+def print_json(target: Any, is_pretty: bool = False, output: Path | None = None) -> None:  # noqa: ANN401, FBT001, FBT002
     """
     JSONを出力する。
 
@@ -70,8 +70,8 @@ def print_json(target: Any, is_pretty: bool = False, output: Optional[Path] = No
 
 def print_csv(  # noqa: ANN201
     df: pandas.DataFrame,
-    output: Optional[Path] = None,
-    to_csv_kwargs: Optional[dict[str, Any]] = None,
+    output: Path | None = None,
+    to_csv_kwargs: dict[str, Any] | None = None,
 ):
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
@@ -97,7 +97,7 @@ def is_file_scheme(str_value: str) -> bool:
     return str_value.startswith("file://")
 
 
-def get_file_scheme_path(str_value: str) -> Optional[str]:
+def get_file_scheme_path(str_value: str) -> str | None:
     """
     file schemaのパスを取得する。file schemeでない場合は、Noneを返す
 

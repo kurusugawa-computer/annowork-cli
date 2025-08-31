@@ -1,5 +1,4 @@
 import getpass
-from typing import Optional
 
 import annofabapi
 from annofabapi import build as build_annofabapi
@@ -24,9 +23,9 @@ def _get_annofab_password_from_stdin() -> str:
 
 def build_annofabapi_resource(
     *,
-    annofab_login_user_id: Optional[str] = None,
-    annofab_login_password: Optional[str] = None,
-    annofab_pat: Optional[str] = None,
+    annofab_login_user_id: str | None = None,
+    annofab_login_password: str | None = None,
+    annofab_pat: str | None = None,
 ) -> annofabapi.Resource:
     """
     annofabapi.Resourceインスタンスを生成する。

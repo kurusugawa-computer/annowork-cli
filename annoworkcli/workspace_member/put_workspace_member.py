@@ -2,7 +2,7 @@ import argparse
 import logging
 import uuid
 from collections.abc import Collection
-from typing import Any, Optional
+from typing import Any
 
 from annoworkapi.enums import Role
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -26,8 +26,8 @@ class PutWorkspaceMember:
         self,
         user_id: str,
         role: str,
-        workspace_tag_id_list: Optional[Collection[str]],
-        old_member: Optional[dict[str, Any]],
+        workspace_tag_id_list: Collection[str] | None,
+        old_member: dict[str, Any] | None,
     ):
         """[summary]
 
@@ -58,7 +58,7 @@ class PutWorkspaceMember:
         logger.debug(f"{user_id=} :: ワークスペースメンバを追加しました。 :: username='{new_member['username']}', {workspace_member_id=}")
         return True
 
-    def main(self, user_id_list: list[str], role: str, workspace_tag_id_list: Optional[Collection[str]]):  # noqa: ANN201
+    def main(self, user_id_list: list[str], role: str, workspace_tag_id_list: Collection[str] | None):  # noqa: ANN201
         workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
         member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
@@ -128,7 +128,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "put"
     subcommand_help = "ワークスペースメンバを登録します。"
 

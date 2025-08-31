@@ -1,7 +1,6 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Optional
 
 from annoworkapi.resource import Resource as AnnoworkResource
 
@@ -19,7 +18,7 @@ class GetMyAccount:
     ):
         self.annowork_service = annowork_service
 
-    def main(self, output: Optional[Path]):  # noqa: ANN201
+    def main(self, output: Path | None):  # noqa: ANN201
         my_account = self.annowork_service.api.get_my_account()
         print_json(my_account, output=output, is_pretty=True)
 
@@ -38,7 +37,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "get"
     subcommand_help = "ログイン中のアカウント情報を出力します。"
 

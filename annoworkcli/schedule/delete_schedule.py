@@ -1,7 +1,6 @@
 import argparse
 import logging
 from collections.abc import Collection
-from typing import Optional
 
 import requests
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -30,7 +29,7 @@ class DeleteSchedule:
         self.all_yes = all_yes
 
     def delete_schedule(
-        self, schedule_ids: Collection[str], *, target_user_ids: Optional[Collection[str]] = None, target_job_ids: Optional[Collection[str]] = None
+        self, schedule_ids: Collection[str], *, target_user_ids: Collection[str] | None = None, target_job_ids: Collection[str] | None = None
     ) -> None:
         all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_jobs}
@@ -133,7 +132,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "delete"
     subcommand_help = "作業計画情報を削除します。"
 

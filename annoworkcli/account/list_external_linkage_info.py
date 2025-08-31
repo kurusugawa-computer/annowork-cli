@@ -1,7 +1,6 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Optional
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -17,7 +16,7 @@ class ListExternalLinkageInfo:
     def __init__(self, annowork_service: AnnoworkResource):  # noqa: ANN204
         self.annowork_service = annowork_service
 
-    def main(self, user_id_list: list[str], output: Optional[Path], output_format: OutputFormat):  # noqa: ANN201
+    def main(self, user_id_list: list[str], output: Path | None, output_format: OutputFormat):  # noqa: ANN201
         logger.info(f"{len(user_id_list)} 件のアカウント外部連携情報を取得します。")
 
         results = []
@@ -73,7 +72,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_external_linkage_info"
     subcommand_help = "アカウント外部連携情報取得の一覧を出力します。"
 

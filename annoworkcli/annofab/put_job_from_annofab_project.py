@@ -1,6 +1,5 @@
 import argparse
 import logging
-from typing import Optional
 
 from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -24,7 +23,7 @@ class PutJobFromAnnofabProject:
         self.workspace_id = workspace_id
         self.annofab_service = annofab_service
 
-    def put_job_from_annofab_project(self, parent_job_id: str, annofab_project_id: str, job_id: Optional[str] = None) -> bool:
+    def put_job_from_annofab_project(self, parent_job_id: str, annofab_project_id: str, job_id: str | None = None) -> bool:
         af_project = self.annofab_service.wrapper.get_project_or_none(annofab_project_id)
         if af_project is None:
             logger.warning(f"{annofab_project_id=} にアクセスできません。ジョブの登録処理をスキップします。")
@@ -103,7 +102,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "put_job"
     subcommand_help = "Annofabプロジェクトからジョブを作成します。"
     description = "Annofabプロジェクトからジョブを作成します。\njob_idは指定したannofab_project_idと同じ値にします。"

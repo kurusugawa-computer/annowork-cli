@@ -6,7 +6,7 @@ from collections import defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree
@@ -42,13 +42,13 @@ class ActualWorkingHoursDaily(DataClassJsonMixin):
     user_id: str
     username: str
     actual_working_hours: float
-    notes: Optional[list[str]]
+    notes: list[str] | None
 
 
 @dataclass
 class ActualWorkingHoursDailyWithParentJob(ActualWorkingHoursDaily):
-    parent_job_id: Optional[str]
-    parent_job_name: Optional[str]
+    parent_job_id: str | None
+    parent_job_name: str | None
 
 
 @dataclass
@@ -95,7 +95,7 @@ def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.t
 
 def create_actual_working_hours_daily_list(
     actual_working_time_list: list[dict[str, Any]],
-    timezone_offset_hours: Optional[float] = None,
+    timezone_offset_hours: float | None = None,
     show_notes: bool = True,  # noqa: FBT001, FBT002
 ) -> list[ActualWorkingHoursDaily]:
     results_dict: ActualWorkingHoursDict = defaultdict(float)
@@ -183,7 +183,7 @@ def get_actual_working_time_list_from_input_file(input_file: Path) -> list[dict[
 
 
 def filter_actual_daily_list(
-    actual_daily_list: Sequence[ActualWorkingHoursDaily], start_date: Optional[str], end_date: Optional[str]
+    actual_daily_list: Sequence[ActualWorkingHoursDaily], start_date: str | None, end_date: str | None
 ) -> list[ActualWorkingHoursDaily]:
     if start_date is None and end_date is None:
         return list(actual_daily_list)
@@ -244,8 +244,8 @@ def main(args: argparse.Namespace) -> None:
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
-    start_date: Optional[str] = args.start_date
-    end_date: Optional[str] = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
@@ -336,7 +336,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_daily"
     subcommand_help = "実績作業時間を日ごとに集約した情報を一覧として出力します。"
 

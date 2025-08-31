@@ -2,7 +2,7 @@ import argparse
 import logging
 from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annoworkapi.enums import ScheduleType
@@ -116,10 +116,10 @@ class ListSchedule:
     def get_schedules(
         self,
         *,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        job_ids: Optional[Collection[str]] = None,
-        user_ids: Optional[Collection[str]] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        job_ids: Collection[str] | None = None,
+        user_ids: Collection[str] | None = None,
         is_set_additional_info: bool = False,
     ) -> list[dict[str, Any]]:
         """
@@ -161,10 +161,10 @@ class ListSchedule:
         *,
         output: Path,
         output_format: OutputFormat,
-        start_date: Optional[str],
-        end_date: Optional[str],
-        job_id_list: Optional[list[str]],
-        user_id_list: Optional[list[str]],
+        start_date: str | None,
+        end_date: str | None,
+        job_id_list: list[str] | None,
+        user_id_list: list[str] | None,
     ):
         result = self.get_schedules(
             start_date=start_date,
@@ -208,8 +208,8 @@ def main(args):  # noqa: ANN001, ANN201
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
 
-    start_date: Optional[str] = args.start_date
-    end_date: Optional[str] = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
@@ -260,7 +260,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list"
     subcommand_help = "作業計画の一覧を出力します。"
 

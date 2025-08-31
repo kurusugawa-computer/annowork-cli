@@ -1,7 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -22,7 +22,7 @@ class ListWorkspace:
 
     def get_workspace_list(
         self,
-        workspace_id_list: Optional[list[str]] = None,
+        workspace_id_list: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         if workspace_id_list is None:
             return self.annowork_service.api.get_my_workspaces()
@@ -41,7 +41,7 @@ class ListWorkspace:
         output: Path,
         output_format: OutputFormat,
         *,
-        workspace_id_list: Optional[list[str]],
+        workspace_id_list: list[str] | None,
     ):
         workspace_list = self.get_workspace_list(workspace_id_list)
         if len(workspace_list) == 0:
@@ -89,7 +89,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list"
     subcommand_help = "ワークスペースの一覧を取得します。"
 

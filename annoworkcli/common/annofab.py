@@ -2,7 +2,7 @@
 annofabに関するutil関係の関数
 """
 
-from typing import Any, Optional
+from typing import Any
 
 import isodate
 from annoworkapi.annofab import get_annofab_project_id_from_url
@@ -11,7 +11,7 @@ TIMEZONE_OFFSET_HOURS = 9
 """Annofabのタイムゾーンのオフセット時間。AnnofabはJSTに固定されているので、9を指定する"""
 
 
-def get_annofab_project_id_from_job(job: dict[str, Any]) -> Optional[str]:
+def get_annofab_project_id_from_job(job: dict[str, Any]) -> str | None:
     url = job["external_linkage_info"].get("url")
     if url is None:
         return None

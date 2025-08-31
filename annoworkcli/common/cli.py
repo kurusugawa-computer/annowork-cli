@@ -8,7 +8,7 @@ import json
 import logging
 import os
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import annoworkapi
 from annoworkapi.api import DEFAULT_ENDPOINT_URL
@@ -62,12 +62,12 @@ class PrettyHelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaul
 
 
 def add_parser(
-    subparsers: Optional[argparse._SubParsersAction],
+    subparsers: argparse._SubParsersAction | None,
     command_name: str,
     command_help: str,
-    description: Optional[str] = None,
+    description: str | None = None,
     is_subcommand: bool = True,  # noqa: FBT001, FBT002
-    epilog: Optional[str] = None,
+    epilog: str | None = None,
 ) -> argparse.ArgumentParser:
     """
     サブコマンド用にparserを追加する
@@ -143,7 +143,7 @@ def add_parser(
     return parser
 
 
-def get_list_from_args(str_list: Optional[list[str]] = None) -> Optional[list[str]]:
+def get_list_from_args(str_list: list[str] | None = None) -> list[str] | None:
     """
     文字列のListのサイズが1で、プレフィックスが`file://`ならば、ファイルパスとしてファイルを読み込み、行をListとして返す。
     そうでなければ、引数の値をそのまま返す。
@@ -168,7 +168,7 @@ def get_list_from_args(str_list: Optional[list[str]] = None) -> Optional[list[st
         return str_list
 
 
-def get_json_from_args(target: Optional[str] = None) -> Any:  # noqa: ANN401
+def get_json_from_args(target: str | None = None) -> Any:  # noqa: ANN401
     """
     JSON形式をPythonオブジェクトに変換する。
     プレフィックスが`file://`ならば、ファイルパスとしてファイルを読み込み、Pythonオブジェクトを返す。
