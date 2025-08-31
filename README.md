@@ -11,7 +11,7 @@ AnnoworkのCLIです。
 
 
 # Requirements
-* Python3.9+
+* Python3.10+
 
 
 # Install
