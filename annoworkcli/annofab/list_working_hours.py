@@ -51,7 +51,6 @@ def _get_df_working_hours_from_df(
         on="job_id",
     )
 
-    
     df_merged = df_aw_working_hours.merge(df_af_working_hours, how="outer", on=["date", "annofab_project_id", "annofab_account_id"])
 
     TMP_SUFFIX = "_tmp"  # noqa: N806
@@ -359,6 +358,19 @@ class ListWorkingHoursWithAnnofab:
                 "actual_working_hours",
                 "notes",
             ],
+        ).astype(
+            # astypeを指定する理由：`actual_working_hours_daily_list`が0件だと数値型の`actual_working_hours`のdtypeがobjectになり、
+            # 後続の処理で想定外のエラーが発生する恐れがあるため
+            {
+                "date": "string",
+                "job_id": "string",
+                "job_name": "string",
+                "workspace_member_id": "string",
+                "user_id": "string",
+                "username": "string",
+                "actual_working_hours": "float64",
+                "notes": "string",
+            }
         )
 
         # df_actual_working_hours には含まれていないユーザがAnnofabプロジェクトで作業している可能性があるので、

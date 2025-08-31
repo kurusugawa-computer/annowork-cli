@@ -813,7 +813,20 @@ class ReshapeWorkingHours:
             job_ids=parent_job_ids,
             user_ids=user_ids,
         )
-        return pandas.DataFrame(result)
+        return pandas.DataFrame(
+            result,
+            columns=["date", "user_id", "username", "workspace_member_id", "job_id", "job_name", "assigned_working_hours"],
+        ).astype(
+            {
+                "date": "string",
+                "user_id": "string",
+                "username": "string",
+                "workspace_member_id": "string",
+                "job_id": "string",
+                "job_name": "string",
+                "assigned_working_hours": "float64",
+            }
+        )
 
     def get_df_user_company(self) -> pandas.DataFrame:
         tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
@@ -989,6 +1002,16 @@ def get_empty_df_assigned() -> pandas.DataFrame:
             "username",
             "assigned_working_hours",
         ]
+    ).astype(
+        {
+            "date": "string",
+            "job_id": "string",
+            "job_name": "string",
+            "workspace_member_id": "string",
+            "user_id": "string",
+            "username": "string",
+            "assigned_working_hours": "float64",
+        }
     )
 
 
@@ -1053,8 +1076,6 @@ def main(args: argparse.Namespace) -> None:
         df_assigned = get_empty_df_assigned()
     else:
         df_assigned = main_obj.get_df_assigned(start_date=start_date, end_date=end_date, parent_job_ids=parent_job_id_list, user_ids=user_id_list)
-        if len(df_assigned) == 0:
-            df_assigned = get_empty_df_assigned()
 
     df_actual, df_assigned = main_obj.filter_df(
         df_actual=df_actual,
