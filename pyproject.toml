@@ -1,6 +1,6 @@
 [project]
 name = "annoworkcli"
-version = "0.0.0"
+dynamic = ["version"]
 description = "AnnoworkのCLI(Command Line Interface)"
 authors = [{ name = "Kurusugawa Computer Inc." }]
 requires-python = "~=3.9"
@@ -55,13 +55,13 @@ documentation = [
 ]
 dev = ["ipython"]
 
+
 [tool.uv]
-default-groups = [
-    "test",
-    "linter",
-    "documentation",
-    "dev",
-]
+default-groups = ["dev", "test", "linter", "docs"]
+package = true
+
+
+
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -131,11 +131,12 @@ max-args = 10
     "PLC2401", # non-ascii-name
 ]
 
-[tool.poetry-dynamic-versioning]
-enable = true
-
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
 
 
