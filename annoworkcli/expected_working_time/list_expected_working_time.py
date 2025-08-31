@@ -97,16 +97,16 @@ class ListExpectedWorkingTime:
         if output_format == OutputFormat.JSON:
             print_json(result, is_pretty=True, output=output)
         else:
+            required_columns = [
+                "workspace_id",
+                "date",
+                "workspace_member_id",
+                "user_id",
+                "username",
+                "expected_working_hours",
+            ]
             if len(result) > 0:
                 df = pandas.json_normalize(result)
-                required_columns = [
-                    "workspace_id",
-                    "date",
-                    "workspace_member_id",
-                    "user_id",
-                    "username",
-                    "expected_working_hours",
-                ]
                 remaining_columns = list(set(df.columns) - set(required_columns))
                 columns = required_columns + remaining_columns
             else:

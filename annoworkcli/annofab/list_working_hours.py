@@ -370,7 +370,6 @@ class ListWorkingHoursWithAnnofab:
         )
 
         af_project_ids = _get_af_project_ids(df_job_and_af_project)
-        print(f"{af_project_ids=}")
         df_af_working_hours = self._get_af_working_hours(
             af_project_ids=af_project_ids,
             start_date=_get_start_date(df_actual_working_hours),
