@@ -377,7 +377,6 @@ class ListWorkingHoursWithAnnofab:
             start_date=_get_start_date(df_actual_working_hours),
             end_date=_get_end_date(df_actual_working_hours),
         )
-        df_af_working_hours.to_csv("out/df_af_working_hours.csv")
 
         df = _get_df_working_hours_from_df(
             df_actual_working_hours=df_actual_working_hours,
