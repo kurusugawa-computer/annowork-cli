@@ -639,7 +639,16 @@ class ReshapeDataFrame:
             inplace=True,
         )
         if len(df) == 0:
-            return pandas.DataFrame()
+            return pandas.DataFrame(
+                {
+                    ("index", ""): [SUM_ROW_NAME],
+                    (SUM_COLUMN_NAME, "assigned_working_hours"): [0],
+                    (SUM_COLUMN_NAME, "actual_working_hours"): [0],
+                    (SUM_COLUMN_NAME, "monitored_working_hours"): [0],
+                    (SUM_COLUMN_NAME, "activity_rate"): [numpy.nan],
+                    (SUM_COLUMN_NAME, "monitor_rate"): [numpy.nan],
+                }
+            )
 
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
 
@@ -1088,7 +1097,6 @@ def main(args: argparse.Namespace) -> None:
     )
 
     df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type)
-
     logger.info(f"{len(df_output)} 件のデータを出力します。")
     print_csv(df_output, output=args.output)
 
