@@ -85,15 +85,18 @@ class ListJob:
             external_linkage_info_url_list=external_linkage_info_url_list,
         )
         if len(job_list) == 0:
-            logger.warning("ジョブ情報は0件なので、出力しません。")
-            return
+            logger.warning("ジョブ情報は0件です。")
 
         logger.debug(f"{len(job_list)} 件のジョブ一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(job_list, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(job_list)
+            if len(job_list) > 0:
+                df = pandas.json_normalize(job_list)
+            else:
+                # 空のデータフレームを作成
+                df = pandas.DataFrame(columns=["workspace_id", "job_id", "job_name", "parent_job_id", "parent_job_name", "status"])
             print_csv(df, output=output)
 
 

@@ -24,15 +24,18 @@ class ListWorkspaceMember:
         my_workspace_members = self.annowork_service.api.get_my_workspace_members(query_params=query_params)
 
         if len(my_workspace_members) == 0:
-            logger.warning("ワークスペースメンバ情報は0件なので、出力しません。")
-            return
+            logger.warning("ワークスペースメンバ情報は0件です。")
 
         logger.debug(f"{len(my_workspace_members)} 件のワークスペースメンバ一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(my_workspace_members, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(my_workspace_members)
+            if len(my_workspace_members) > 0:
+                df = pandas.json_normalize(my_workspace_members)
+            else:
+                # 空のデータフレームを作成
+                df = pandas.DataFrame(columns=["workspace_id", "workspace_member_id", "user_id", "username", "role"])
             print_csv(df, output=output)
 
 

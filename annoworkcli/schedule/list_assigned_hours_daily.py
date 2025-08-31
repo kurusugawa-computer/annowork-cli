@@ -144,11 +144,11 @@ class ListAssignedHoursDaily:
             job_ids=job_id_list,
             user_ids=user_id_list,
         )
-        if len(result) == 0:
-            logger.warning("アサイン時間情報は0件なので、出力しません。")
-            return
-
-        result.sort(key=lambda e: e.date)
+        if len(result) > 0:
+            result.sort(key=lambda e: e.date)
+        else:
+            logger.warning("アサイン時間情報は0件です。")
+            
         logger.info(f"{len(result)} 件のアサイン時間情報を出力します。")
 
         if output_format == OutputFormat.JSON:
@@ -159,7 +159,12 @@ class ListAssignedHoursDaily:
                 dict_result.append(elm.to_dict())  # noqa: PERF401
             print_json(dict_result, is_pretty=True, output=output)
         else:
-            df = pandas.DataFrame(result)
+            if len(result) > 0:
+                df = pandas.DataFrame(result)
+            else:
+                # 空のデータフレームを作成（属性情報を含める）
+                df = pandas.DataFrame(columns=["date", "job_id", "job_name", "workspace_member_id", 
+                                           "user_id", "username", "assigned_working_hours"])
             print_csv(df, output=output)
 
 

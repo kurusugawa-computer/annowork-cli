@@ -45,15 +45,18 @@ class ListWorkspace:
     ):
         workspace_list = self.get_workspace_list(workspace_id_list)
         if len(workspace_list) == 0:
-            logger.warning("ワークスペース情報は0件なので、出力しません。")
-            return
+            logger.warning("ワークスペース情報は0件です。")
 
         logger.debug(f"{len(workspace_list)} 件のワークスペース一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(workspace_list, is_pretty=True, output=output)
         else:
-            df = pandas.DataFrame(workspace_list)
+            if len(workspace_list) > 0:
+                df = pandas.DataFrame(workspace_list)
+            else:
+                # 空のデータフレームを作成
+                df = pandas.DataFrame(columns=["workspace_id", "name", "description", "status"])
             print_csv(df, output=output)
 
 

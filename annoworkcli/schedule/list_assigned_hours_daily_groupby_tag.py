@@ -103,29 +103,35 @@ class ListAssignedHoursDailyGroupbyTag:
             user_ids=user_id_list,
         )
         if len(assigned_hours_list) == 0:
-            logger.warning("アサイン時間情報は0件なので、出力しません。")
-            return
-
-        results = self.get_assigned_hours_groupby_tag(
-            assigned_hours_list,
-            target_workspace_tag_ids=target_workspace_tag_ids,
-            target_workspace_tag_names=target_workspace_tag_names,
-        )
+            logger.warning("アサイン時間情報は0件です。")
+            results = []
+        else:
+            results = self.get_assigned_hours_groupby_tag(
+                assigned_hours_list,
+                target_workspace_tag_ids=target_workspace_tag_ids,
+                target_workspace_tag_names=target_workspace_tag_names,
+            )
+            
         logger.info(f"{len(results)} 件のアサイン時間情報を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(results, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(results)
-            df.fillna(0, inplace=True)
             required_columns = [
                 "date",
                 "job_id",
                 "job_name",
                 "assigned_working_hours.total",
             ]
-            remaining_columns = list(set(df.columns) - set(required_columns))
-            columns = required_columns + sorted(remaining_columns)
+            
+            if len(results) > 0:
+                df = pandas.json_normalize(results)
+                df.fillna(0, inplace=True)
+                remaining_columns = list(set(df.columns) - set(required_columns))
+                columns = required_columns + sorted(remaining_columns)
+            else:
+                df = pandas.DataFrame(columns=required_columns)
+                columns = required_columns
 
             print_csv(df[columns], output=output)
 
