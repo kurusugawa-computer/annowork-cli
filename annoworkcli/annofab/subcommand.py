@@ -1,5 +1,4 @@
 import argparse
-from typing import Optional
 
 import annoworkcli
 import annoworkcli.annofab.list_job_with_annofab_project
@@ -22,7 +21,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     annoworkcli.annofab.put_job_from_annofab_project.add_parser(subparsers)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "annofab"
     subcommand_help = "Annofabにアクセスするサブコマンド"
     description = "Annofabにアクセスするサブコマンド\nAnnofabの認証情報を事前に設定しておく必要があります。"

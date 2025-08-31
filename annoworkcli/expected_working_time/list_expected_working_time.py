@@ -2,7 +2,7 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -21,7 +21,7 @@ class ListExpectedWorkingTime:
         self.workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
 
     def get_expected_working_times_by_user_id(
-        self, user_id_list: list[str], *, start_date: Optional[str] = None, end_date: Optional[str] = None
+        self, user_id_list: list[str], *, start_date: str | None = None, end_date: str | None = None
     ) -> list[dict[str, Any]]:
         workspace_member_dict = {e["user_id"]: e["workspace_member_id"] for e in self.workspace_members}
 
@@ -48,8 +48,8 @@ class ListExpectedWorkingTime:
     def get_expected_working_times(
         self,
         *,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> list[dict[str, Any]]:
         query_params = {}
         if start_date is not None:
@@ -81,9 +81,9 @@ class ListExpectedWorkingTime:
         *,
         output: Path,
         output_format: OutputFormat,
-        user_id_list: Optional[list[str]] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        user_id_list: list[str] | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ):
         if user_id_list is not None:
             result = self.get_expected_working_times_by_user_id(user_id_list=user_id_list, start_date=start_date, end_date=end_date)
@@ -118,8 +118,8 @@ class ListExpectedWorkingTime:
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
-    start_date: Optional[str] = args.start_date
-    end_date: Optional[str] = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     command = " ".join(sys.argv[0:3])
     if all(v is None for v in [user_id_list, start_date, end_date]):
@@ -162,7 +162,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list"
     subcommand_help = "予定稼働時間の一覧を出力します。"
 

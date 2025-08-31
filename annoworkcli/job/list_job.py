@@ -1,7 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree
@@ -41,9 +41,9 @@ class ListJob:
     def get_job_list(
         self,
         *,
-        job_id_list: Optional[list[str]] = None,
-        parent_job_id_list: Optional[list[str]] = None,
-        external_linkage_info_url_list: Optional[list[str]] = None,
+        job_id_list: list[str] | None = None,
+        parent_job_id_list: list[str] | None = None,
+        external_linkage_info_url_list: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         job_list = all_job_list
@@ -75,9 +75,9 @@ class ListJob:
         output: Path,
         output_format: OutputFormat,
         *,
-        job_id_list: Optional[list[str]],
-        parent_job_id_list: Optional[list[str]],
-        external_linkage_info_url_list: Optional[list[str]],
+        job_id_list: list[str] | None,
+        parent_job_id_list: list[str] | None,
+        external_linkage_info_url_list: list[str] | None,
     ) -> None:
         job_list = self.get_job_list(
             job_id_list=job_id_list,
@@ -161,7 +161,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list"
     subcommand_help = "ジョブ一覧を出力します。"
     description = "ジョブ一覧を出力します。"

@@ -3,7 +3,6 @@ import copy
 import logging
 import sys
 from collections.abc import Sequence
-from typing import Optional
 
 import pandas
 
@@ -75,7 +74,7 @@ def mask_sensitive_value_in_argv(argv: list[str]) -> list[str]:
     return tmp_argv
 
 
-def main(arguments: Optional[Sequence[str]] = None):  # noqa: ANN201
+def main(arguments: Sequence[str] | None = None):  # noqa: ANN201
     """
     annoworkcli コマンドのメイン処理
 

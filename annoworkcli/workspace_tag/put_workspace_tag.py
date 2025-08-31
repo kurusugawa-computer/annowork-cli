@@ -1,7 +1,6 @@
 import argparse
 import logging
 import uuid
-from typing import Optional
 
 from annoworkapi.resource import Resource as AnnoworkResource
 from more_itertools import first_true
@@ -17,7 +16,7 @@ class PutWorkspaceTag:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def main(self, workspace_tag_name: str, workspace_tag_id: Optional[str]):  # noqa: ANN201
+    def main(self, workspace_tag_name: str, workspace_tag_id: str | None):  # noqa: ANN201
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
 
         if workspace_tag_id is None:
@@ -66,7 +65,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "put"
     subcommand_help = "ワークスペースタグを作成または更新します。"
 

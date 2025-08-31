@@ -1,7 +1,6 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Optional
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -71,7 +70,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list"
     subcommand_help = "ワークスペースタグの一覧を出力します。"
 

@@ -2,7 +2,7 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 
@@ -59,8 +59,8 @@ def get_weekly_expected_working_hours_df(expected_working_times: list[dict[str, 
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
-    start_date: Optional[str] = args.start_date
-    end_date: Optional[str] = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     command = " ".join(sys.argv[0:3])
     if all(v is None for v in [user_id_list, start_date, end_date]):
@@ -118,7 +118,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_weekly"
     subcommand_help = "予定稼働時間の一覧を週ごと（日曜日始まり）に出力します。"
 

@@ -4,7 +4,7 @@ import sys
 from collections import defaultdict
 from collections.abc import Collection
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -25,8 +25,8 @@ class ListExpectedWorkingTimeGroupbyTag:
     def get_expected_working_times_groupby_tag(
         self,
         expected_working_times: list[dict[str, Any]],
-        target_workspace_tag_ids: Optional[Collection[str]] = None,
-        target_workspace_tag_names: Optional[Collection[str]] = None,
+        target_workspace_tag_ids: Collection[str] | None = None,
+        target_workspace_tag_names: Collection[str] | None = None,
     ) -> list[dict[str, Any]]:
         """予定稼働時間のlistから、ワークスペースタグごとに集計したlistを返す。
 
@@ -89,11 +89,11 @@ class ListExpectedWorkingTimeGroupbyTag:
         *,
         output: Path,
         output_format: OutputFormat,
-        user_id_list: Optional[list[str]] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        target_workspace_tag_ids: Optional[Collection[str]] = None,
-        target_workspace_tag_names: Optional[Collection[str]] = None,
+        user_id_list: list[str] | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        target_workspace_tag_ids: Collection[str] | None = None,
+        target_workspace_tag_names: Collection[str] | None = None,
     ):
         list_obj = ListExpectedWorkingTime(self.annowork_service, self.workspace_id)
         if user_id_list is not None:
@@ -133,8 +133,8 @@ class ListExpectedWorkingTimeGroupbyTag:
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
-    start_date: Optional[str] = args.start_date
-    end_date: Optional[str] = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     command = " ".join(sys.argv[0:3])
     if all(v is None for v in [user_id_list, start_date, end_date]):
@@ -198,7 +198,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_groupby_tag"
     subcommand_help = "ワークスペースタグで集計した予定稼働時間の一覧を出力します。"
 

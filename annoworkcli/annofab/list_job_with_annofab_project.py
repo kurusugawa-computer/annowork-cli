@@ -2,7 +2,7 @@ import argparse
 import logging
 import multiprocessing
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annofabapi.resource import Resource as AnnofabResource
@@ -42,7 +42,7 @@ class ListJobWithAnnofabProject:
         annowork_service: AnnoworkResource,
         workspace_id: str,
         annofab_service: AnnofabResource,
-        parallelism: Optional[int] = None,
+        parallelism: int | None = None,
     ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
@@ -77,9 +77,9 @@ class ListJobWithAnnofabProject:
 
     def get_job_list_added_annofab_project(
         self,
-        job_id_list: Optional[list[str]] = None,
-        parent_job_id_list: Optional[list[str]] = None,
-        annofab_project_id_list: Optional[list[str]] = None,
+        job_id_list: list[str] | None = None,
+        parent_job_id_list: list[str] | None = None,
+        annofab_project_id_list: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         job_list = self.list_job_obj.get_job_list(
             job_id_list=job_id_list,
@@ -206,7 +206,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_job"
     subcommand_help = "ジョブとジョブに紐づくAnnofabプロジェクトの情報を一緒に出力します。"
 

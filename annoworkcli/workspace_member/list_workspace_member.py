@@ -3,7 +3,7 @@ import logging
 from collections.abc import Collection
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import more_itertools
 import pandas
@@ -38,7 +38,7 @@ class ListWorkspace:
         指定したタグに所属するメンバーを取得します。
         複数のタグを指定した場合、指定したすべてのタグに所属するメンバー（AND条件）を返します。
         """
-        result_workspace_member_ids: Optional[set[str]] = None
+        result_workspace_member_ids: set[str] | None = None
 
         for tag_id in workspace_tag_ids:
             tmp_members = self.annowork_service.api.get_workspace_tag_members(self.workspace_id, tag_id)
@@ -80,10 +80,10 @@ class ListWorkspace:
         self,
         output: Path,
         output_format: OutputFormat,
-        workspace_tag_ids: Optional[Collection[str]],
-        user_ids: Optional[Collection[str]],
+        workspace_tag_ids: Collection[str] | None,
+        user_ids: Collection[str] | None,
         show_workspace_tag: bool,  # noqa: FBT001
-        status: Optional[WorkspaceMemberStatus] = None,
+        status: WorkspaceMemberStatus | None = None,
     ) -> None:
         # workspace_tag_idsとuser_idsは排他的
         assert workspace_tag_ids is None or user_ids is None
@@ -189,7 +189,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list"
     subcommand_help = "ワークスペースメンバの一覧を出力します。無効化されたメンバも出力します。"
 

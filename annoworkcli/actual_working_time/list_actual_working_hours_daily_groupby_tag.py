@@ -3,7 +3,7 @@ import logging
 from collections import defaultdict
 from collections.abc import Collection, Sequence
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree
@@ -45,8 +45,8 @@ class ListActualWorkingTimeGroupbyTag:
     def get_actual_working_times_groupby_tag(
         self,
         actual_working_hours_daily: list[ActualWorkingHoursDaily],
-        target_workspace_tag_ids: Optional[Collection[str]] = None,
-        target_workspace_tag_names: Optional[Collection[str]] = None,
+        target_workspace_tag_ids: Collection[str] | None = None,
+        target_workspace_tag_names: Collection[str] | None = None,
     ) -> list[dict[str, Any]]:
         """実績作業時間のlistから、ワークスペースタグごとに集計したlistを返す。"""
         workspace_tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
@@ -107,11 +107,11 @@ class ListActualWorkingTimeGroupbyTag:
 
     def get_actual_working_hours_daily(
         self,
-        job_ids: Optional[Collection[str]] = None,
-        parent_job_ids: Optional[Collection[str]] = None,
-        user_ids: Optional[Collection[str]] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        job_ids: Collection[str] | None = None,
+        parent_job_ids: Collection[str] | None = None,
+        user_ids: Collection[str] | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> list[ActualWorkingHoursDaily]:
         list_actual_working_time_obj = ListActualWorkingTime(
             annowork_service=self.annowork_service,
@@ -140,13 +140,13 @@ class ListActualWorkingTimeGroupbyTag:
         *,
         output: Path,
         output_format: OutputFormat,
-        job_ids: Optional[Collection[str]] = None,
-        parent_job_ids: Optional[Collection[str]] = None,
-        user_ids: Optional[Collection[str]] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        target_workspace_tag_ids: Optional[Collection[str]] = None,
-        target_workspace_tag_names: Optional[Collection[str]] = None,
+        job_ids: Collection[str] | None = None,
+        parent_job_ids: Collection[str] | None = None,
+        user_ids: Collection[str] | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        target_workspace_tag_ids: Collection[str] | None = None,
+        target_workspace_tag_names: Collection[str] | None = None,
     ) -> None:
         actual_working_hours_daily_list = self.get_actual_working_hours_daily(
             job_ids=job_ids, parent_job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
@@ -188,8 +188,8 @@ def main(args: argparse.Namespace) -> None:
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
-    start_date: Optional[str] = args.start_date
-    end_date: Optional[str] = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
@@ -272,7 +272,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_daily_groupby_tag"
     subcommand_help = "日ごとの実績作業時間を、ワークスペースタグで集計した値を出力します。"
 

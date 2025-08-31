@@ -1,5 +1,4 @@
 import argparse
-from typing import Optional
 
 import annoworkcli
 import annoworkcli.workspace.list_workspace
@@ -13,7 +12,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     annoworkcli.workspace.put_workspace.add_parser(subparsers)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "workspace"
     subcommand_help = "ワークスペース関係のサブコマンド"
 

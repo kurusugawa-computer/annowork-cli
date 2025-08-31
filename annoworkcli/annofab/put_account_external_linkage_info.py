@@ -1,6 +1,6 @@
 import argparse
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -12,7 +12,7 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 logger = logging.getLogger(__name__)
 
 
-def get_annofab_account_id(external_linkage_info: dict[str, Any]) -> Optional[str]:
+def get_annofab_account_id(external_linkage_info: dict[str, Any]) -> str | None:
     if "annofab" not in external_linkage_info:
         return None
 
@@ -119,7 +119,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "put_account_external_linkage_info"
     subcommand_help = (
         "アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。\nAnnofabのuser_idはAnnoworkのuser_idと一致している必要があります。"

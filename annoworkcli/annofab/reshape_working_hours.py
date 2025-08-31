@@ -7,7 +7,7 @@ import logging
 from collections.abc import Collection
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import numpy
 import pandas
@@ -59,10 +59,10 @@ class ShapeType(Enum):
 def filter_df(
     df: pandas.DataFrame,
     *,
-    job_ids: Optional[Collection[str]] = None,
-    user_ids: Optional[Collection[str]] = None,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    job_ids: Collection[str] | None = None,
+    user_ids: Collection[str] | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
 ) -> pandas.DataFrame:
     if start_date is not None:
         df = df[df["date"] >= start_date]
@@ -87,10 +87,10 @@ class ReshapeDataFrame:
 
     """
 
-    def __init__(self, *, round_decimals: Optional[int] = None) -> None:
+    def __init__(self, *, round_decimals: int | None = None) -> None:
         self.round_decimals = round_decimals
 
-    def format_df(self, df: pandas.DataFrame, value_columns: Optional[list[str]] = None) -> pandas.DataFrame:
+    def format_df(self, df: pandas.DataFrame, value_columns: list[str] | None = None) -> pandas.DataFrame:
         df = df.copy()
         if self.round_decimals is not None:
             if value_columns is not None:
@@ -208,7 +208,7 @@ class ReshapeDataFrame:
     def get_df_total_by_job(
         self,
         df_actual: pandas.DataFrame,
-        df_job_parent_job: Optional[pandas.DataFrame] = None,
+        df_job_parent_job: pandas.DataFrame | None = None,
     ) -> pandas.DataFrame:
         """`--shape_type total_by_job`に対応するDataFrameを生成する。
 
@@ -423,7 +423,7 @@ class ReshapeDataFrame:
         self,
         *,
         df_actual: pandas.DataFrame,
-        df_job_parent_job: Optional[pandas.DataFrame] = None,
+        df_job_parent_job: pandas.DataFrame | None = None,
     ) -> pandas.DataFrame:
         """
         `--shape_type total_by_user_job`に対応するDataFrameを生成する。
@@ -543,7 +543,7 @@ class ReshapeDataFrame:
             ]
         )
 
-    def get_df_list_by_date_user_job(self, df_actual: pandas.DataFrame, *, df_job_parent_job: Optional[pandas.DataFrame] = None) -> pandas.DataFrame:
+    def get_df_list_by_date_user_job(self, df_actual: pandas.DataFrame, *, df_job_parent_job: pandas.DataFrame | None = None) -> pandas.DataFrame:
         """
         `--shape_type list_by_date_user_job`に対応するDataFrameを生成する。
 
@@ -751,7 +751,7 @@ class ReshapeWorkingHours:
         *,
         annowork_service: AnnoworkResource,
         workspace_id: str,
-        parallelism: Optional[int] = None,
+        parallelism: int | None = None,
     ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
@@ -773,11 +773,11 @@ class ReshapeWorkingHours:
         self,
         annofab_service: AnnofabResource,
         *,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        user_ids: Optional[Collection[str]] = None,
-        parent_job_ids: Optional[Collection[str]] = None,
-        job_ids: Optional[Collection[str]] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        user_ids: Collection[str] | None = None,
+        parent_job_ids: Collection[str] | None = None,
+        job_ids: Collection[str] | None = None,
     ) -> pandas.DataFrame:
         """実績作業時間とannofab作業時間を比較したDataFrameを取得する。
 
@@ -801,10 +801,10 @@ class ReshapeWorkingHours:
     def get_df_assigned(
         self,
         *,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
-        parent_job_ids: Optional[Collection[str]] = None,
-        user_ids: Optional[Collection[str]] = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        parent_job_ids: Collection[str] | None = None,
+        user_ids: Collection[str] | None = None,
     ) -> pandas.DataFrame:
         list_assigned_obj = ListAssignedHoursDaily(annowork_service=self.annowork_service, workspace_id=self.workspace_id)
         result = list_assigned_obj.get_assigned_hours_daily_list(
@@ -945,11 +945,11 @@ class ReshapeWorkingHours:
         *,
         df_actual: pandas.DataFrame,
         df_assigned: pandas.DataFrame,
-        parent_job_ids: Optional[Collection[str]] = None,
-        job_ids: Optional[Collection[str]] = None,
-        user_ids: Optional[Collection[str]] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        parent_job_ids: Collection[str] | None = None,
+        job_ids: Collection[str] | None = None,
+        user_ids: Collection[str] | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> tuple[pandas.DataFrame, pandas.DataFrame]:
         """df_actual, df_assigned を絞り込みます。
 
@@ -961,7 +961,7 @@ class ReshapeWorkingHours:
         Returns:
             tuple[pandas.DataFrame, pandas.DataFrame]: 絞り込まれたdf_actual, df_assigned
         """
-        child_job_ids: Optional[Collection] = None
+        child_job_ids: Collection | None = None
 
         if parent_job_ids is not None:
             child_job_ids = {e["job_id"] for e in self.all_jobs if get_parent_job_id_from_job_tree(e["job_tree"]) in set(parent_job_ids)}
@@ -1087,7 +1087,7 @@ def main(args: argparse.Namespace) -> None:
 
     df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type)
 
-    output_path: Optional[Path] = args.output
+    output_path: Path | None = args.output
 
     if len(df_output) == 0:
         logger.warning(f"出力対象のデータは0件なので、'{output_path if output_path is not None else '標準出力'}'に出力しません。")
@@ -1181,7 +1181,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.set_defaults(subcommand_func=main)
 
 
-def add_parser(subparsers: Optional[argparse._SubParsersAction] = None) -> argparse.ArgumentParser:
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "reshape_working_hours"
     subcommand_help = "Annoworkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。"
     description = (
