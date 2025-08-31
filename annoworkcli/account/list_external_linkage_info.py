@@ -28,15 +28,18 @@ class ListExternalLinkageInfo:
             results.append(info)
 
         if len(results) == 0:
-            logger.warning("アカウント外部連携情報は0件なので、出力しません。")
-            return
+            logger.warning("アカウント外部連携情報は0件です。")
 
         logger.info(f"{len(results)} 件のアカウント外部連携情報を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(results, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(results)
+            if len(results) > 0:
+                df = pandas.json_normalize(results)
+            else:
+                # 空のDataFrameを作成（最低限の列を含める）
+                df = pandas.DataFrame(columns=["user_id", "account_id"])
             print_csv(df, output=output)
 
 

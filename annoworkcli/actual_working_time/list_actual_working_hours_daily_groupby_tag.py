@@ -152,22 +152,20 @@ class ListActualWorkingTimeGroupbyTag:
             job_ids=job_ids, parent_job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date
         )
         if len(actual_working_hours_daily_list) == 0:
-            logger.warning("日ごとの実績作業時間情報は0件なので、出力しません。")
-            return
-
-        results = self.get_actual_working_times_groupby_tag(
-            actual_working_hours_daily_list,
-            target_workspace_tag_ids=target_workspace_tag_ids,
-            target_workspace_tag_names=target_workspace_tag_names,
-        )
+            logger.warning("日ごとの実績作業時間情報は0件です。")
+            results = []
+        else:
+            results = self.get_actual_working_times_groupby_tag(
+                actual_working_hours_daily_list,
+                target_workspace_tag_ids=target_workspace_tag_ids,
+                target_workspace_tag_names=target_workspace_tag_names,
+            )
 
         logger.info(f"{len(results)} 件のワークスペースタグで集計した実績作業時間の一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(results, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(results)
-            df.fillna(0, inplace=True)
             required_columns = [
                 "date",
                 "parent_job_id",
@@ -177,8 +175,14 @@ class ListActualWorkingTimeGroupbyTag:
                 "actual_working_hours.total",
             ]
 
-            remaining_columns = list(set(df.columns) - set(required_columns))
-            columns = required_columns + sorted(remaining_columns)
+            if len(results) > 0:
+                df = pandas.json_normalize(results)
+                df.fillna(0, inplace=True)
+                remaining_columns = list(set(df.columns) - set(required_columns))
+                columns = required_columns + sorted(remaining_columns)
+            else:
+                df = pandas.DataFrame(columns=required_columns)
+                columns = required_columns
 
             print_csv(df[columns], output=output)
 

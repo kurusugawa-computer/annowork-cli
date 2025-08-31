@@ -76,7 +76,7 @@ class ListWorkspace:
                 continue
         return result
 
-    def main(
+    def main(  # noqa: PLR0912
         self,
         output: Path,
         output_format: OutputFormat,
@@ -106,20 +106,22 @@ class ListWorkspace:
             workspace_members = [e for e in workspace_members if e["status"] == status.value]
 
         if len(workspace_members) == 0:
-            logger.warning("ワークスペースメンバ情報は0件なので、出力しません。")
-            return
-
-        if show_workspace_tag:
-            self.set_additional_info(workspace_members)
-
-        workspace_members.sort(key=lambda e: e["user_id"].lower())
+            logger.warning("ワークスペースメンバ情報は0件です。")
+        else:
+            if show_workspace_tag:
+                self.set_additional_info(workspace_members)
+            workspace_members.sort(key=lambda e: e["user_id"].lower())
 
         logger.debug(f"{len(workspace_members)} 件のワークスペースメンバ一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(workspace_members, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(workspace_members)
+            if len(workspace_members) > 0:
+                df = pandas.json_normalize(workspace_members)
+            else:
+                # 最低限のカラムを含めた空のデータフレームを作成
+                df = pandas.DataFrame(columns=["workspace_id", "workspace_member_id", "user_id", "username", "status"])
             print_csv(df, output=output)
 
 

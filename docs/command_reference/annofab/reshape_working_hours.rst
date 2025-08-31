@@ -135,6 +135,7 @@ Examples
 ``--shape_type list_by_date_user_job``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 作業時間の一覧を日付、ユーザ、ジョブ単位で出力します。
+ジョブはAnnofabプロジェクトと紐づけることが可能なので、Annofabの作業時間も出力されます。
 
 .. csv-table:: list_by_date_user_job.csv
    :file: reshape_working_hours/list_by_date_user_job.csv

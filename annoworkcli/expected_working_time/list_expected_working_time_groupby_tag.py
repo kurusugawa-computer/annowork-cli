@@ -104,28 +104,32 @@ class ListExpectedWorkingTimeGroupbyTag:
             expected_working_times = list_obj.get_expected_working_times(start_date=start_date, end_date=end_date)
 
         if len(expected_working_times) == 0:
-            logger.warning("予定稼働時間情報0件なので、出力しません。")
-            return
-
-        results = self.get_expected_working_times_groupby_tag(
-            expected_working_times,
-            target_workspace_tag_ids=target_workspace_tag_ids,
-            target_workspace_tag_names=target_workspace_tag_names,
-        )
+            logger.warning("予定稼働時間情報は0件です。")
+            results = []
+        else:
+            results = self.get_expected_working_times_groupby_tag(
+                expected_working_times,
+                target_workspace_tag_ids=target_workspace_tag_ids,
+                target_workspace_tag_names=target_workspace_tag_names,
+            )
 
         logger.info(f"{len(results)} 件のワークスペースタグで集計した予定稼働時間の一覧を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(results, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(results)
-            df.fillna(0, inplace=True)
             required_columns = [
                 "date",
                 "expected_working_hours.total",
             ]
-            remaining_columns = list(set(df.columns) - set(required_columns))
-            columns = required_columns + sorted(remaining_columns)
+            if len(results) > 0:
+                df = pandas.json_normalize(results)
+                df.fillna(0, inplace=True)
+                remaining_columns = list(set(df.columns) - set(required_columns))
+                columns = required_columns + sorted(remaining_columns)
+            else:
+                df = pandas.DataFrame(columns=required_columns)
+                columns = required_columns
 
             print_csv(df[columns], output=output)
 

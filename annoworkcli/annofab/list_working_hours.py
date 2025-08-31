@@ -193,10 +193,11 @@ class ListWorkingHoursWithAnnofab:
 
         df_job = pandas.DataFrame(self.all_jobs)
 
-        df_af_project = pandas.DataFrame({"job_id": list(job_ids)})
+        # dtype="string"を指定する理由: dtypeを指定しないとdtypeがfloatになり、後続のmerge処理でdtypeが一致しないというエラーが発生するため
+        # 参考サイト: https://qiita.com/yuji38kwmt/items/74d1990bc8554f8b81ef
+        df_af_project = pandas.DataFrame({"job_id": list(job_ids)}, dtype="string")
         df_af_project["annofab_project_id"] = df_af_project["job_id"].apply(lambda e: get_annofab_project_id_from_job(all_job_dict[e]))
         df_af_project["annofab_project_title"] = df_af_project["annofab_project_id"].apply(get_project_title)
-
         df = df_job.merge(df_af_project, how="inner", on="job_id")
         return df[["job_id", "job_name", "annofab_project_id", "annofab_project_title"]]
 
@@ -357,6 +358,19 @@ class ListWorkingHoursWithAnnofab:
                 "actual_working_hours",
                 "notes",
             ],
+        ).astype(
+            # astypeを指定する理由：`actual_working_hours_daily_list`が0件だと数値型の`actual_working_hours`のdtypeがobjectになり、
+            # 後続の処理で想定外のエラーが発生する恐れがあるため
+            {
+                "date": "string",
+                "job_id": "string",
+                "job_name": "string",
+                "workspace_member_id": "string",
+                "user_id": "string",
+                "username": "string",
+                "actual_working_hours": "float64",
+                "notes": "string",
+            }
         )
 
         # df_actual_working_hours には含まれていないユーザがAnnofabプロジェクトで作業している可能性があるので、
@@ -375,7 +389,6 @@ class ListWorkingHoursWithAnnofab:
             start_date=_get_start_date(df_actual_working_hours),
             end_date=_get_end_date(df_actual_working_hours),
         )
-        df_af_working_hours.to_csv("out/df_af_working_hours.csv")
 
         df = _get_df_working_hours_from_df(
             df_actual_working_hours=df_actual_working_hours,
@@ -447,14 +460,17 @@ def main(args: argparse.Namespace) -> None:
     )
 
     if len(df) == 0:
-        logger.warning("作業時間情報は0件なので、出力しません。")
-        return
+        logger.warning("作業時間情報は0件です。")
 
     logger.info(f"{len(df)} 件の作業時間情報を出力します。")
 
     if OutputFormat(args.format) == OutputFormat.JSON:
         print_json(df.to_dict("records"), is_pretty=True, output=args.output)
     else:
+        if len(df) == 0:
+            # 空のDataFrameでも列名だけは表示するように
+            required_columns = main_obj._get_required_columns()
+            df = pandas.DataFrame(columns=required_columns)
         print_csv(df, output=args.output)
 
 

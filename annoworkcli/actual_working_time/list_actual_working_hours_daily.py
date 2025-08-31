@@ -276,12 +276,8 @@ def main(args: argparse.Namespace) -> None:
     )
 
     result = filter_actual_daily_list(result, start_date=start_date, end_date=end_date)
-
-    if len(result) == 0:
-        logger.warning("日ごとの実績作業時間情報は0件なので、出力しません。")
-        return
-
     result = main_obj.add_parent_job_info(result)
+    logger.info(f"{len(result)} 件の日ごとの実績作業時間情報を出力します。")
 
     if OutputFormat(args.format) == OutputFormat.JSON:
         # `.schema().dump(many=True)`を使わない理由：使うと警告が発生するから
@@ -292,8 +288,11 @@ def main(args: argparse.Namespace) -> None:
 
         print_json(dict_result, is_pretty=True, output=args.output)
     else:
-        df = pandas.DataFrame(result)
         required_columns = get_required_columns()
+        if len(result) > 0:
+            df = pandas.DataFrame(result)
+        else:
+            df = pandas.DataFrame(columns=required_columns)
         print_csv(df[required_columns], output=args.output)
 
 

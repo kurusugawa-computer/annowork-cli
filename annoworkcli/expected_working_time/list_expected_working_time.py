@@ -76,7 +76,7 @@ class ListExpectedWorkingTime:
                 }
             )
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         *,
         output: Path,
@@ -84,7 +84,7 @@ class ListExpectedWorkingTime:
         user_id_list: list[str] | None = None,
         start_date: str | None = None,
         end_date: str | None = None,
-    ):
+    ) -> None:
         if user_id_list is not None:
             result = self.get_expected_working_times_by_user_id(user_id_list=user_id_list, start_date=start_date, end_date=end_date)
         else:

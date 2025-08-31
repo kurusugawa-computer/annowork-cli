@@ -639,7 +639,16 @@ class ReshapeDataFrame:
             inplace=True,
         )
         if len(df) == 0:
-            return pandas.DataFrame()
+            return pandas.DataFrame(
+                {
+                    ("index", ""): [SUM_ROW_NAME],
+                    (SUM_COLUMN_NAME, "assigned_working_hours"): [0],
+                    (SUM_COLUMN_NAME, "actual_working_hours"): [0],
+                    (SUM_COLUMN_NAME, "monitored_working_hours"): [0],
+                    (SUM_COLUMN_NAME, "activity_rate"): [numpy.nan],
+                    (SUM_COLUMN_NAME, "monitor_rate"): [numpy.nan],
+                }
+            )
 
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
 
@@ -813,7 +822,20 @@ class ReshapeWorkingHours:
             job_ids=parent_job_ids,
             user_ids=user_ids,
         )
-        return pandas.DataFrame(result)
+        return pandas.DataFrame(
+            result,
+            columns=["date", "user_id", "username", "workspace_member_id", "job_id", "job_name", "assigned_working_hours"],
+        ).astype(
+            {
+                "date": "string",
+                "user_id": "string",
+                "username": "string",
+                "workspace_member_id": "string",
+                "job_id": "string",
+                "job_name": "string",
+                "assigned_working_hours": "float64",
+            }
+        )
 
     def get_df_user_company(self) -> pandas.DataFrame:
         tags = self.annowork_service.api.get_workspace_tags(self.workspace_id)
@@ -978,23 +1000,6 @@ class ReshapeWorkingHours:
         return (df_actual, df_assigned)
 
 
-def get_empty_df_actual() -> pandas.DataFrame:
-    return pandas.DataFrame(
-        columns=[
-            "date",
-            "job_id",
-            "job_name",
-            "workspace_member_id",
-            "user_id",
-            "username",
-            "actual_working_hours",
-            "annofab_project_id",
-            "annofab_account_id",
-            "annofab_working_hours",
-        ]
-    )
-
-
 def get_empty_df_assigned() -> pandas.DataFrame:
     return pandas.DataFrame(
         columns=[
@@ -1006,6 +1011,16 @@ def get_empty_df_assigned() -> pandas.DataFrame:
             "username",
             "assigned_working_hours",
         ]
+    ).astype(
+        {
+            "date": "string",
+            "job_id": "string",
+            "job_name": "string",
+            "workspace_member_id": "string",
+            "user_id": "string",
+            "username": "string",
+            "assigned_working_hours": "float64",
+        }
     )
 
 
@@ -1053,8 +1068,6 @@ def main(args: argparse.Namespace) -> None:
             job_ids=job_id_list,
             user_ids=user_id_list,
         )
-        if len(df_actual) == 0:
-            df_actual = get_empty_df_actual()
 
     if args.assigned_file is not None:
         df_assigned = get_dataframe_from_input_file(args.assigned_file)
@@ -1072,8 +1085,6 @@ def main(args: argparse.Namespace) -> None:
         df_assigned = get_empty_df_assigned()
     else:
         df_assigned = main_obj.get_df_assigned(start_date=start_date, end_date=end_date, parent_job_ids=parent_job_id_list, user_ids=user_id_list)
-        if len(df_assigned) == 0:
-            df_assigned = get_empty_df_assigned()
 
     df_actual, df_assigned = main_obj.filter_df(
         df_actual=df_actual,
@@ -1086,13 +1097,7 @@ def main(args: argparse.Namespace) -> None:
     )
 
     df_output = main_obj.get_df_output(df_actual=df_actual, df_assigned=df_assigned, shape_type=shape_type)
-
-    output_path: Path | None = args.output
-
-    if len(df_output) == 0:
-        logger.warning(f"出力対象のデータは0件なので、'{output_path if output_path is not None else '標準出力'}'に出力しません。")
-        return
-
+    logger.info(f"{len(df_output)} 件のデータを出力します。")
     print_csv(df_output, output=args.output)
 
 

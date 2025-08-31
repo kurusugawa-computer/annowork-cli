@@ -173,16 +173,12 @@ class ListSchedule:
             user_ids=user_id_list,
             is_set_additional_info=True,
         )
-        if len(result) == 0:
-            logger.warning("作業計画情報は0件なので、出力しません。")
-            return
 
         logger.info(f"{len(result)} 件の作業計画情報を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(result, is_pretty=True, output=output)
         else:
-            df = pandas.json_normalize(result)
             required_columns = [
                 "workspace_id",
                 "schedule_id",
@@ -197,8 +193,14 @@ class ListSchedule:
                 "value",
                 "assigned_working_hours",
             ]
-            remaining_columns = list(set(df.columns) - set(required_columns))
-            columns = required_columns + remaining_columns
+
+            if len(result) > 0:
+                df = pandas.DataFrame(result)
+                remaining_columns = list(set(df.columns) - set(required_columns))
+                columns = required_columns + remaining_columns
+            else:
+                df = pandas.DataFrame(columns=required_columns)
+                columns = required_columns
 
             print_csv(df[columns], output=output)
 
