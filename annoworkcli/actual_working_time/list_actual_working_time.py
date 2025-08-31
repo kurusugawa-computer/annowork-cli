@@ -219,16 +219,11 @@ class ListActualWorkingTime:
             is_set_additional_info=True,
             is_add_parent_job_info=True,
         )
-        if len(result) == 0:
-            logger.warning("実績作業時間情報は0件なので、出力しません。")
-            return
-
         logger.info(f"{len(result)} 件の実績作業時間情報を出力します。")
 
         if output_format == OutputFormat.JSON:
             print_json(result, is_pretty=True, output=output)
         else:
-            df = pandas.DataFrame(result)
             required_columns = [
                 "workspace_id",
                 "actual_working_time_id",
@@ -244,8 +239,13 @@ class ListActualWorkingTime:
                 "actual_working_hours",
                 "note",
             ]
-            remaining_columns = list(set(df.columns) - set(required_columns))
-            columns = required_columns + remaining_columns
+            if len(result) > 0:
+                df = pandas.DataFrame(result)
+                remaining_columns = list(set(df.columns) - set(required_columns))
+                columns = required_columns + remaining_columns
+            else:
+                df = pandas.DataFrame(columns=required_columns)
+                columns = required_columns
             print_csv(df[columns], output=output)
 
 
