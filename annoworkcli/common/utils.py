@@ -68,11 +68,11 @@ def print_json(target: Any, is_pretty: bool = False, output: Path | None = None)
         output_string(json.dumps(target, ensure_ascii=False), output)
 
 
-def print_csv(  # noqa: ANN201
+def print_csv(
     df: pandas.DataFrame,
     output: Path | None = None,
     to_csv_kwargs: dict[str, Any] | None = None,
-):
+) -> None:
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)
 
@@ -125,7 +125,7 @@ def to_iso8601_string(dt: datetime.datetime) -> str:
     return dt.astimezone(datetime.timezone.utc).strftime(DATETIME_FORMAT)
 
 
-def set_default_logger(is_debug_mode: bool = False):  # noqa: ANN201, FBT001, FBT002
+def set_default_logger(*, is_debug_mode: bool = False) -> None:
     """
     デフォルトのロガーを設定する。パッケージ内のlogging.yamlを読み込む。
     """

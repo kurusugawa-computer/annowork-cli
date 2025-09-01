@@ -63,7 +63,7 @@ def main(args: argparse.Namespace) -> None:
     main_obj.put_job_from_annofab_project(parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id)
 
 
-def parse_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",
