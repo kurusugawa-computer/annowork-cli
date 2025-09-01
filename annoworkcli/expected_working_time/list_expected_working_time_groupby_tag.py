@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class ListExpectedWorkingTimeGroupbyTag:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
@@ -84,7 +84,7 @@ class ListExpectedWorkingTimeGroupbyTag:
         results.sort(key=lambda e: (e["date"]))
         return results
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         *,
         output: Path,
@@ -94,7 +94,7 @@ class ListExpectedWorkingTimeGroupbyTag:
         end_date: str | None = None,
         target_workspace_tag_ids: Collection[str] | None = None,
         target_workspace_tag_names: Collection[str] | None = None,
-    ):
+    ) -> None:
         list_obj = ListExpectedWorkingTime(self.annowork_service, self.workspace_id)
         if user_id_list is not None:
             expected_working_times = list_obj.get_expected_working_times_by_user_id(
@@ -134,7 +134,7 @@ class ListExpectedWorkingTimeGroupbyTag:
             print_csv(df[columns], output=output)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     start_date: str | None = args.start_date
@@ -159,7 +159,7 @@ def main(args):  # noqa: ANN001, ANN201
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",

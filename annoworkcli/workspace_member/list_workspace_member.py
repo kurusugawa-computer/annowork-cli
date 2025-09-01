@@ -22,11 +22,11 @@ class WorkspaceMemberStatus(Enum):
 
 
 class ListWorkspace:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def set_additional_info(self, workspace_members: list[dict[str, Any]]):  # noqa: ANN201
+    def set_additional_info(self, workspace_members: list[dict[str, Any]]) -> None:
         logger.debug(f"{len(workspace_members)} 件のメンバのワークスペースタグ情報を取得します。")
         for member in workspace_members:
             workspace_tags = self.annowork_service.api.get_workspace_member_tags(self.workspace_id, member["workspace_member_id"])
@@ -125,7 +125,7 @@ class ListWorkspace:
             print_csv(df, output=output)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -139,7 +139,7 @@ def main(args):  # noqa: ANN001, ANN201
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",

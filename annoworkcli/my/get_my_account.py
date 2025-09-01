@@ -12,18 +12,18 @@ logger = logging.getLogger(__name__)
 
 
 class GetMyAccount:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         annowork_service: AnnoworkResource,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
 
-    def main(self, output: Path | None):  # noqa: ANN201
+    def main(self, output: Path | None) -> None:
         my_account = self.annowork_service.api.get_my_account()
         print_json(my_account, output=output, is_pretty=True)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
 
     GetMyAccount(
@@ -31,7 +31,7 @@ def main(args):  # noqa: ANN001, ANN201
     ).main(output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("-o", "--output", type=Path, required=False, help="出力先")
 
     parser.set_defaults(subcommand_func=main)

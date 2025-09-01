@@ -13,12 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class ChangeWorkspaceMemberProperties:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         *,
         annowork_service: AnnoworkResource,
         workspace_id: str,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
@@ -43,7 +43,7 @@ class ChangeWorkspaceMemberProperties:
         logger.debug(f"{user_id=}, {workspace_member_id=}: ワークスペースメンバのロールを変更しました。 :: {new_member}")
         return True
 
-    def main(self, user_id_list: list[str], role: str):  # noqa: ANN201
+    def main(self, user_id_list: list[str], role: str) -> None:
         workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
         member_dict: dict[str, dict[str, Any]] = {m["user_id"]: m for m in workspace_members}
         success_count = 0
@@ -71,7 +71,7 @@ class ChangeWorkspaceMemberProperties:
         logger.info(f"{success_count}/{len(user_id_list)} 件のユーザをワークスペースメンバに登録しました。")
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
@@ -81,7 +81,7 @@ def main(args):  # noqa: ANN001, ANN201
     ).main(user_id_list=user_id_list, role=args.role)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",

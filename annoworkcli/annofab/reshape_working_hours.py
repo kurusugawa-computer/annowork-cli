@@ -20,6 +20,7 @@ from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
 from annoworkcli.annofab.utils import build_annofabapi_resource
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
+from annoworkcli.common.type_util import assert_noreturn
 from annoworkcli.common.utils import print_csv
 from annoworkcli.common.workspace_tag import get_company_from_workspace_tag_name, is_company_from_workspace_tag_name
 from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDaily
@@ -959,7 +960,7 @@ class ReshapeWorkingHours:
             )
 
         else:
-            df_output = pandas.DataFrame
+            assert_noreturn(shape_type)
         return df_output
 
     def filter_df(

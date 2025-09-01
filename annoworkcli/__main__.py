@@ -74,7 +74,7 @@ def mask_sensitive_value_in_argv(argv: list[str]) -> list[str]:
     return tmp_argv
 
 
-def main(arguments: Sequence[str] | None = None):  # noqa: ANN201
+def main(arguments: Sequence[str] | None = None) -> None:
     """
     annoworkcli コマンドのメイン処理
 
