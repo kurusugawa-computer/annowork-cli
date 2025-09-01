@@ -23,12 +23,12 @@ logger = logging.getLogger(__name__)
 
 
 class ListActualWorkingTimeGroupbyTag:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, timezone_offset_hours: int):  # noqa: ANN204
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, timezone_offset_hours: int) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.timezone_offset_hours = timezone_offset_hours
 
-    def add_parent_job_info(self, daily_list: list[dict[str, Any]]):  # noqa: ANN201
+    def add_parent_job_info(self, daily_list: list[dict[str, Any]]) -> None:
         """引数daily_listに、parent_job情報を追加する。"""
         all_job_list = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_job_list}
@@ -220,7 +220,7 @@ def main(args: argparse.Namespace) -> None:
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     required_group = parser.add_mutually_exclusive_group(required=True)
 
     required_group.add_argument(

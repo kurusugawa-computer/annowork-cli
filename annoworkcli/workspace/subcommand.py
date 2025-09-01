@@ -6,7 +6,7 @@ import annoworkcli.workspace.put_workspace
 from annoworkcli.common.cli import add_parser as add_root_parser
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="subcommand_name")
     annoworkcli.workspace.list_workspace.add_parser(subparsers)
     annoworkcli.workspace.put_workspace.add_parser(subparsers)

@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class ListActualWorkingTime:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, timezone_offset_hours: float | None):  # noqa: ANN204
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, timezone_offset_hours: float | None) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
@@ -278,7 +278,7 @@ def main(args: argparse.Namespace) -> None:
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",

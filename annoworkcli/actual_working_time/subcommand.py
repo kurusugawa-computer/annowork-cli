@@ -7,7 +7,7 @@ import annoworkcli.actual_working_time.list_actual_working_hours_daily_groupby_t
 import annoworkcli.actual_working_time.list_actual_working_time
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義
