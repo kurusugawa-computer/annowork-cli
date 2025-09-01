@@ -200,7 +200,7 @@ def filter_actual_daily_list(
 
 
 class ListActualWorkingHoursDaily:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 

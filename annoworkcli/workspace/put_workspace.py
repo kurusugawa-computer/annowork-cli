@@ -10,13 +10,13 @@ logger = logging.getLogger(__name__)
 
 
 class PutWorkspace:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         annowork_service: AnnoworkResource,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
 
-    def main(self, workspace_id: str, workspace_name: str, email: str):  # noqa: ANN201
+    def main(self, workspace_id: str, workspace_name: str, email: str) -> None:
         org = self.annowork_service.wrapper.get_workspace_or_none(workspace_id)
 
         request_body = {
@@ -31,7 +31,7 @@ class PutWorkspace:
         logger.info(f"ワークスペース {workspace_id} を作成/更新しました。")
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
 
     PutWorkspace(
@@ -39,7 +39,7 @@ def main(args):  # noqa: ANN001, ANN201
     ).main(workspace_id=args.workspace_id, workspace_name=args.workspace_name, email=args.email)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",

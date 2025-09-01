@@ -18,14 +18,14 @@ logger = logging.getLogger(__name__)
 
 
 class DeleteActualWorkingTime:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         annowork_service: AnnoworkResource,
         workspace_id: str,
         *,
         timezone_offset_hours: float | None,
         all_yes: bool,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
@@ -37,7 +37,7 @@ class DeleteActualWorkingTime:
 
         self.all_yes = all_yes
 
-    def delete_actual_working_times(self, actual_working_times: list[dict[str, Any]]):  # noqa: ANN201
+    def delete_actual_working_times(self, actual_working_times: list[dict[str, Any]]) -> None:
         success_count = 0
         for index, actual in enumerate(actual_working_times):
             try:
@@ -69,7 +69,7 @@ class DeleteActualWorkingTime:
 
         logger.info(f"{success_count} / {len(actual_working_times)} 件の実績作業時間を削除しました。")
 
-    def get_actual_working_times(  # noqa: ANN201
+    def get_actual_working_times(
         self,
         *,
         start_date: str,
@@ -77,7 +77,7 @@ class DeleteActualWorkingTime:
         job_id: str | None,
         user_id: str | None,
         actual_working_time_id_list: list[str] | None,
-    ):
+    ) -> list[dict[str, Any]]:
         get_actual_working_times = self.list_actual_working_time_obj.get_actual_working_times(
             user_ids=[user_id] if user_id is not None else None,
             job_ids=[job_id] if job_id is not None else None,
@@ -91,7 +91,7 @@ class DeleteActualWorkingTime:
 
         return get_actual_working_times
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         *,
         job_id: str | None,
@@ -99,7 +99,7 @@ class DeleteActualWorkingTime:
         start_date: str,
         end_date: str,
         actual_working_time_id_list: list[str] | None,
-    ):
+    ) -> None:
         actual_working_times = self.get_actual_working_times(
             start_date=start_date,
             end_date=end_date,
@@ -129,7 +129,7 @@ class DeleteActualWorkingTime:
         self.delete_actual_working_times(actual_working_times)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
 
     if args.job_id is None and args.user_id is None:
@@ -151,7 +151,7 @@ def main(args):  # noqa: ANN001, ANN201
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",
