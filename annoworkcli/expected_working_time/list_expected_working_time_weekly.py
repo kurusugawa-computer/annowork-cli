@@ -56,7 +56,7 @@ def get_weekly_expected_working_hours_df(expected_working_times: list[dict[str, 
     return df[["workspace_member_id", "user_id", "username", "start_date", "end_date", "expected_working_hours"]]
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     user_id_list = get_list_from_args(args.user_id)
     start_date: str | None = args.start_date
@@ -92,7 +92,7 @@ def main(args):  # noqa: ANN001, ANN201
         logger.error("`--format`が対象外でした。")
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",

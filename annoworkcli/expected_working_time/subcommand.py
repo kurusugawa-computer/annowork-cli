@@ -7,7 +7,7 @@ import annoworkcli.expected_working_time.list_expected_working_time_groupby_tag
 import annoworkcli.expected_working_time.list_expected_working_time_weekly
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義
