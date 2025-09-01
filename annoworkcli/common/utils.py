@@ -24,7 +24,7 @@ def read_lines(filepath: str) -> list[str]:
 
     # BOM付きUTF-8のファイルも読み込めるようにする
     # annoworkが出力するCSVはデフォルトでBOM付きUTF-8。これを加工してannoworkcliに読み込ませる場合もあるので、BOM付きUTF-8に対応させた
-    with open(filepath, encoding="utf-8-sig") as f:
+    with open(filepath, encoding="utf-8-sig") as f:  # noqa: PTH123
         lines = f.readlines()
     return [e.rstrip("\r\n") for e in lines]
 

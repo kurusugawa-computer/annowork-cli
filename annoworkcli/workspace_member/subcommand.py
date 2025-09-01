@@ -9,7 +9,7 @@ import annoworkcli.workspace_member.put_workspace_member
 import annoworkcli.workspace_member.remove_tag_to_workspace_member
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

@@ -24,7 +24,7 @@ dependencies = [
     "more-itertools",
     "pandas",
     "isodate",
-    "annofabcli~=1.90",
+    "annofabcli>=1.90",
 ]
 
 [project.urls]
@@ -40,9 +40,9 @@ test = [
     "pytest-cov",
 ]
 linter = [
-    "mypy>=1,<2 ; python_version >= '3.12'",
-    "pylint>=3,<4 ; python_version >= '3.12'",
-    "ruff>=0.9,<0.10 ; python_version >= '3.12'",
+    "mypy>=1; python_version >= '3.12'",
+    "pylint>=3 ; python_version >= '3.12'",
+    "ruff>=0.12; python_version >= '3.12'",
     "types-requests",
     "types-python-dateutil",
     "types-PyYAML",
@@ -65,7 +65,16 @@ package = true
 
 [tool.mypy]
 ignore_missing_imports = true
+
 check_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+
+show_column_numbers = true
+warn_unused_configs = true
+
+
 
 [tool.ruff]
 target-version = "py310"
@@ -86,9 +95,6 @@ ignore = [
     "FIX", # TODOやFIXMEを使うため無視する
     "TD", # TODOコメントの書き方に気にしていないので無視する
 
-    # いずれ無視しないようにする
-    "FA100", # future-rewritable-type-annotation
-
     # 以下のルールはコードに合っていないので無効化した
     "RSE", # flake8-raise
     "D", # pydocstyle, Docstringを中途半端にしか書いていないので、除外する
@@ -104,7 +110,6 @@ ignore = [
     "RET",#flake8-return
     "SIM",#flake8-simplify
     "TCH", # flake8-type-checking
-    "PTH", #pathlibを使わないコードが多いので、除外する
     "ISC", #flake8-implicit-str-concat
     "PT", # flake8-pytest-style
 ]
@@ -129,6 +134,7 @@ max-args = 10
     "RUF100",  # unused-noqa
     "N", # pep8-naming
     "PLC2401", # non-ascii-name
+    "PTH", # テストコードはpathlibを使わないこともあるため
 ]
 
 [build-system]

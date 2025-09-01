@@ -459,16 +459,12 @@ def main(args: argparse.Namespace) -> None:
         user_ids=user_id_list,
     )
 
-    if len(df) == 0:
-        logger.warning("作業時間情報は0件です。")
-
     logger.info(f"{len(df)} 件の作業時間情報を出力します。")
 
     if OutputFormat(args.format) == OutputFormat.JSON:
         print_json(df.to_dict("records"), is_pretty=True, output=args.output)
     else:
         if len(df) == 0:
-            # 空のDataFrameでも列名だけは表示するように
             required_columns = main_obj._get_required_columns()
             df = pandas.DataFrame(columns=required_columns)
         print_csv(df, output=args.output)
