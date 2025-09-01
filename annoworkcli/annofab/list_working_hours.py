@@ -257,7 +257,9 @@ class ListWorkingHoursWithAnnofab:
                 result.extend(self._get_af_working_hours_from_af_project(af_project_id, start_date=start_date, end_date=end_date))
 
         if len(result) > 0:
-            return pandas.DataFrame(result)
+            return pandas.DataFrame(result).astype(
+                {"date": "string", "annofab_project_id": "string", "annofab_account_id": "string", "annofab_working_hours": "float64"}
+            )
 
         df = pandas.DataFrame(columns=["date", "annofab_project_id", "annofab_account_id", "annofab_working_hours"]).astype(
             {"annofab_working_hours": "float64", "date": "string", "annofab_project_id": "string", "annofab_account_id": "string"}
