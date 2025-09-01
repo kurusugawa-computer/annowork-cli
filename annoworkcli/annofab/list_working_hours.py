@@ -477,7 +477,7 @@ def main(args: argparse.Namespace) -> None:
         print_csv(df, output=args.output)
 
 
-def parse_args(parser: argparse.ArgumentParser) -> None:
+def parse_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     parser.add_argument(
         "-w",
         "--workspace_id",

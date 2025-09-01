@@ -9,7 +9,7 @@ import annoworkcli.annofab.reshape_working_hours
 import annoworkcli.annofab.visualize_statistics
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義

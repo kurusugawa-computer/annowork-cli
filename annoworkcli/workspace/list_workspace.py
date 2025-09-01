@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 class ListWorkspace:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         annowork_service: AnnoworkResource,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
 
     def get_workspace_list(
@@ -36,13 +36,13 @@ class ListWorkspace:
             workspace_list.append(org)
         return workspace_list
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         output: Path,
         output_format: OutputFormat,
         *,
         workspace_id_list: list[str] | None,
-    ):
+    ) -> None:
         workspace_list = self.get_workspace_list(workspace_id_list)
         if len(workspace_list) == 0:
             logger.warning("ワークスペース情報は0件です。")
@@ -60,7 +60,7 @@ class ListWorkspace:
             print_csv(df, output=output)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     workspace_id_list = get_list_from_args(args.workspace_id)
     ListWorkspace(
@@ -68,7 +68,7 @@ def main(args):  # noqa: ANN001, ANN201
     ).main(output=args.output, output_format=OutputFormat(args.format), workspace_id_list=workspace_id_list)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",

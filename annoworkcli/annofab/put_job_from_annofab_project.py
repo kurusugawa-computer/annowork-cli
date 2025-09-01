@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 class PutJobFromAnnofabProject:
-    def __init__(  # noqa: ANN204
+    def __init__(
         self,
         *,
         annowork_service: AnnoworkResource,
         workspace_id: str,
         annofab_service: AnnofabResource,
-    ):
+    ) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.annofab_service = annofab_service
@@ -49,7 +49,7 @@ class PutJobFromAnnofabProject:
         return True
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     main_obj = PutJobFromAnnofabProject(
         annowork_service=annowork_service,
@@ -63,7 +63,7 @@ def main(args):  # noqa: ANN001, ANN201
     main_obj.put_job_from_annofab_project(parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
     parser.add_argument(
         "-w",
         "--workspace_id",

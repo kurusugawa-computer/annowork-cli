@@ -22,7 +22,7 @@ def get_annofab_account_id(external_linkage_info: dict[str, Any]) -> str | None:
 
 
 class PutAnnofabAccountId:
-    def __init__(self, *, annowork_service: AnnoworkResource, annofab_service: AnnofabResource, overwrite: bool):  # noqa: ANN204
+    def __init__(self, *, annowork_service: AnnoworkResource, annofab_service: AnnofabResource, overwrite: bool) -> None:
         self.annowork_service = annowork_service
         self.annofab_service = annofab_service
         self.overwrite = overwrite
@@ -53,7 +53,7 @@ class PutAnnofabAccountId:
         logger.debug(f"{user_id=}: アカウントの外部連携情報に {af_account_id=} を設定しました。")
         return True
 
-    def main(self, af_workspace_name: str, user_id_list: list[str]):  # noqa: ANN201
+    def main(self, af_workspace_name: str, user_id_list: list[str]) -> None:
         af_workspace_member_list = self.annofab_service.wrapper.get_all_organization_members(af_workspace_name)
         af_user_id_account_id_dict: dict[str, str] = {member["user_id"]: member["account_id"] for member in af_workspace_member_list}
 
@@ -74,7 +74,7 @@ class PutAnnofabAccountId:
         logger.info(f"{success_count} / {len(user_id_list)} 件、アカウントの外部連携情報の設定しました。")
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     annofab_service = build_annofabapi_resource(
         annofab_login_user_id=args.annofab_user_id,
@@ -88,7 +88,7 @@ def main(args):  # noqa: ANN001, ANN201
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-u",
         "--user_id",
