@@ -82,8 +82,8 @@ def _get_df_working_hours_from_df(
 
     df_merged.fillna(
         {
-            "actual_working_hours": 0,
-            "annofab_working_hours": 0,
+            "actual_working_hours": 0.0,
+            "annofab_working_hours": 0.0,
         },
         inplace=True,
     )
@@ -164,9 +164,9 @@ class ListWorkingHoursWithAnnofab:
                 logger.warning(f"{user_id=} の外部連携情報にAnnofabのaccount_idは設定されていませんでした。")
             af_account_list.append({"user_id": user_id, "annofab_account_id": annofab_account_id})
 
-        df_af_account = pandas.DataFrame(af_account_list, columns=["user_id", "annofab_account_id"])
+        df_af_account = pandas.DataFrame(af_account_list, columns=["user_id", "annofab_account_id"]).astype("string")
 
-        df_user = pandas.DataFrame(self.all_workspace_members, columns=["user_id", "username", "workspace_member_id"])
+        df_user = pandas.DataFrame(self.all_workspace_members, columns=["user_id", "username", "workspace_member_id"]).astype("string")
 
         df = df_user.merge(df_af_account, how="inner", on="user_id")
         return df
@@ -259,10 +259,11 @@ class ListWorkingHoursWithAnnofab:
         if len(result) > 0:
             return pandas.DataFrame(result)
 
-        df = pandas.DataFrame(columns=["date", "annofab_project_id", "annofab_account_id", "annofab_working_hours"])
+        df = pandas.DataFrame(columns=["date", "annofab_project_id", "annofab_account_id", "annofab_working_hours"]).astype(
+            {"annofab_working_hours": "float64", "date": "string", "annofab_project_id": "string", "annofab_account_id": "string"}
+        )
         # `astype()`を使用する理由：後続の処理で`fillna()`を実行した際に、「Downcasting object dtype arrays ～」というFutureWarningを発生させないようにするため  # noqa: E501
         # https://qiita.com/yuji38kwmt/items/ba07a25924cfda363e42
-        df = df.astype({"annofab_working_hours": "float64"})
         return df
 
     def _get_df_job_parent_job(self) -> pandas.DataFrame:
@@ -398,6 +399,10 @@ class ListWorkingHoursWithAnnofab:
         )
         if user_ids is not None:
             df = df[df["user_id"].isin(set(user_ids))]
+        if start_date is not None:
+            df = df[df["date"] >= start_date]
+        if end_date is not None:
+            df = df[df["date"] <= end_date]
 
         df_job_parent_job = self._get_df_job_parent_job()
         df = df.merge(df_job_parent_job, how="left", on="job_id")
