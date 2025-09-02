@@ -75,9 +75,7 @@ def filter_df(
         df = df[df["user_id"].isin(set(user_ids))]
 
     if job_ids is not None:
-        # job_idが空の行は対象にする。Annoworkに実績はないが、Annofabで作業しているケース（実績の入力漏れ）があるため
-        # numpy.nanだけでなくpandas.NAなどを指定する理由：空セルはpandasのdtypesによって変わるため
-        df = df[df["job_id"].isin(set(job_ids) | {None, numpy.nan, pandas.NA, ""})]
+        df = df[df["job_id"].isin(set(job_ids))]
     return df
 
 
