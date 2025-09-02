@@ -210,9 +210,6 @@ class ReshapeDataFrame:
     ) -> pandas.DataFrame:
         """`--shape_type total_by_job`に対応するDataFrameを生成する。
 
-        Args:
-            df_job_parent_job: job_id, parent_job_id, parent_job_name 列が格納されたDataFrame。
-                指定されなければ、parent_job_id, parent_job_nameは格納しません。
 
         Notes:
             アサイン時間はparent_jobに対して指定するので、アサイン時間情報は参照しない。
