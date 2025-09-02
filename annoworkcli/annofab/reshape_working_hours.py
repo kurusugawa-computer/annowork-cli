@@ -542,7 +542,7 @@ class ReshapeDataFrame:
             ]
         )
 
-    def get_df_list_by_date_user_job(self, df_actual: pandas.DataFrame, *, df_job_parent_job: pandas.DataFrame | None = None) -> pandas.DataFrame:
+    def get_df_list_by_date_user_job(self, df_actual: pandas.DataFrame) -> pandas.DataFrame:
         """
         `--shape_type list_by_date_user_job`に対応するDataFrameを生成する。
 
@@ -552,9 +552,6 @@ class ReshapeDataFrame:
 
         """
         df = df_actual
-        if df_job_parent_job is not None:
-            # `df`に`parent_job_name`などの列が含まれている可能性があるので、`suffixes`を指定して列名を変更する
-            df = df.merge(df_job_parent_job, on="job_id", how="left", suffixes=("_tmp", None))
 
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
         df["monitor_rate"] = df["monitored_working_hours"] / df["actual_working_hours"]
@@ -562,18 +559,12 @@ class ReshapeDataFrame:
         df.reset_index(inplace=True)
         df.sort_values(by=["date", "user_id", "job_name"], key=lambda e: e.str.lower(), inplace=True)
 
-        extension_columns = []
-        if df_job_parent_job is not None:
-            extension_columns = [
-                "parent_job_id",
-                "parent_job_name",
-            ]
-
         columns = [
             "date",
             "user_id",
             "username",
-            *extension_columns,
+            "parent_job_id",
+            "parent_job_name",
             "job_id",
             "job_name",
             "annofab_project_id",
@@ -944,11 +935,7 @@ class ReshapeWorkingHours:
             df_output = reshape_obj.get_df_total(df_actual=df_actual, df_assigned=df_assigned)
 
         elif shape_type == ShapeType.LIST_BY_DATE_USER_JOB:
-            df_job_parent_job = self.get_df_job_parent_job()
-            df_parent_job = self.get_df_parent_job()
-            df_job_parent_job = df_job_parent_job.merge(df_parent_job, on="parent_job_id", how="left")
-
-            df_output = reshape_obj.get_df_list_by_date_user_job(df_actual=df_actual, df_job_parent_job=df_job_parent_job)
+            df_output = reshape_obj.get_df_list_by_date_user_job(df_actual=df_actual)
 
         elif shape_type == ShapeType.LIST_BY_DATE_USER_PARENT_JOB:
             df_job_parent_job = self.get_df_job_parent_job()
