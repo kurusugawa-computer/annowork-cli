@@ -19,7 +19,7 @@ def get_annofab_project_id_from_job(job: dict[str, Any]) -> str | None:
     return get_annofab_project_id_from_url(url)
 
 
-def isoduration_to_hour(duration) -> float:  # noqa: ANN001
+def isoduration_to_hour(duration: str) -> float:
     """
     ISO 8601 duration を 時間に変換する
     Args:

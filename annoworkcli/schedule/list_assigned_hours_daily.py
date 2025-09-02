@@ -54,7 +54,7 @@ def _get_min_max_date_from_schedule_list(schedule_list: list[dict[str, Any]]) ->
 
 
 class ListAssignedHoursDaily:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.list_schedule_obj = ListSchedule(annowork_service, workspace_id)
@@ -128,7 +128,7 @@ class ListAssignedHoursDaily:
 
         return result_list
 
-    def main(  # noqa: ANN201
+    def main(
         self,
         *,
         output: Path,
@@ -137,7 +137,7 @@ class ListAssignedHoursDaily:
         end_date: str | None,
         job_id_list: list[str] | None,
         user_id_list: list[str] | None,
-    ):
+    ) -> None:
         result = self.get_assigned_hours_daily_list(
             start_date=start_date,
             end_date=end_date,
@@ -167,7 +167,7 @@ class ListAssignedHoursDaily:
             print_csv(df, output=output)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -194,7 +194,7 @@ def main(args):  # noqa: ANN001, ANN201
     )
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",
