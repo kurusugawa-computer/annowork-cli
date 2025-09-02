@@ -14,6 +14,8 @@ out_dir.mkdir(exist_ok=True, parents=True)
 
 
 class TestReshapeDataFrame:
+    main_obj: ReshapeDataFrame
+
     @classmethod
     def setup_class(cls):
         cls.main_obj = ReshapeDataFrame()
@@ -42,28 +44,20 @@ class TestReshapeDataFrame:
     def test_get_df_total_by_parent_job(self):
         df_actual = pandas.read_csv(str(data_dir / "actual.csv"))
         df_assigned = pandas.read_csv(str(data_dir / "assigned.csv"))
-        df_job_parent_job = pandas.read_csv(str(data_dir / "job_parent_job.csv"))
-        df_parent_job = pandas.read_csv(str(data_dir / "parent_job.csv"))
 
         df = self.main_obj.get_df_total_by_parent_job(
             df_actual=df_actual,
             df_assigned=df_assigned,
-            df_job_parent_job=df_job_parent_job,
-            df_parent_job=df_parent_job,
         )
         df.to_csv(out_dir / "out-total_by_parent_job.csv", index=False)
 
     def test_get_df_total_by_user_parent_job(self):
         df_actual = pandas.read_csv(str(data_dir / "actual.csv"))
         df_assigned = pandas.read_csv(str(data_dir / "assigned.csv"))
-        df_job_parent_job = pandas.read_csv(str(data_dir / "job_parent_job.csv"))
-        df_parent_job = pandas.read_csv(str(data_dir / "parent_job.csv"))
 
         df = self.main_obj.get_df_total_by_user_parent_job(
             df_actual=df_actual,
             df_assigned=df_assigned,
-            df_job_parent_job=df_job_parent_job,
-            df_parent_job=df_parent_job,
         )
         df.to_csv(out_dir / "out-total_by_user_parent_job.csv", index=False)
 
@@ -82,10 +76,8 @@ class TestReshapeDataFrame:
 
     def test_get_df_list_by_date_user_parent_job(self):
         df_actual = pandas.read_csv(str(data_dir / "actual.csv"))
-        df_job_parent_job = pandas.read_csv(str(data_dir / "job_parent_job.csv"))
-        df_parent_job = pandas.read_csv(str(data_dir / "parent_job.csv"))
 
-        df = self.main_obj.get_df_list_by_date_user_parent_job(df_actual=df_actual, df_job_parent_job=df_job_parent_job, df_parent_job=df_parent_job)
+        df = self.main_obj.get_df_list_by_date_user_parent_job(df_actual=df_actual)
         df.to_csv(out_dir / "list_by_date_user_parent_job.csv")
 
     def test_get_df_list_by_date_user_job(self):

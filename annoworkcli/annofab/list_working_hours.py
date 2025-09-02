@@ -28,6 +28,27 @@ from annoworkcli.common.utils import print_csv, print_json
 logger = logging.getLogger(__name__)
 
 
+def fill_missing_job_id(df: pandas.DataFrame) -> pandas.DataFrame:
+    """
+    以下の列が欠損しないように適切な値を埋めます。
+
+    """
+
+    # job_idからannofab_project_idが一意に決まるように、job_idとjob_nameには、annofab_projectの情報を埋め込む。
+    mask = df["job_id"].isna()
+    df.loc[mask, "job_id"] = "dummy_job_id__" + df.loc[mask, "annofab_project_id"]
+    df.loc[mask, "job_name"] = "dummy_job_name__" + df.loc[mask, "annofab_project_title"]
+
+    df = df.fillna(
+        {
+            "parent_job_id": "dummy_parent_job_id",
+            "parent_job_name": "dummy_parent_job_name",
+        }
+    )
+
+    return df
+
+
 def _get_df_working_hours_from_df(
     *,
     df_actual_working_hours: pandas.DataFrame,
@@ -80,12 +101,11 @@ def _get_df_working_hours_from_df(
     df_af_project = df_job_and_af_project.drop_duplicates(subset=["annofab_project_id"])[["annofab_project_id", "annofab_project_title"]]
     df_merged = df_merged.merge(df_af_project, on="annofab_project_id", how="left")
 
-    df_merged.fillna(
+    df_merged = df_merged.fillna(
         {
             "actual_working_hours": 0.0,
             "annofab_working_hours": 0.0,
         },
-        inplace=True,
     )
 
     return df_merged[
@@ -408,6 +428,11 @@ class ListWorkingHoursWithAnnofab:
 
         df_job_parent_job = self._get_df_job_parent_job()
         df = df.merge(df_job_parent_job, how="left", on="job_id")
+
+        # 1個のAnnofabプロジェクトが複数のジョブに紐づいている場合、job_id, job_name, parent_job_id, parent_job_nameが欠損値になる可能性がある。
+        # （Annofabで作業したがAnnoworkに実績作業時間を入力していない場合）
+        # ユーザーはjobやparent_jobが欠損していないことを期待してCSVを出力するので、ダミーの値を設定する
+        df = fill_missing_job_id(df)
 
         df.sort_values(["date", "job_id", "user_id"], inplace=True)
         required_columns = self._get_required_columns()
