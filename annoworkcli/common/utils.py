@@ -52,7 +52,7 @@ def output_string(target: str, output: Path | None = None) -> None:
             logger.info(f"{output} に出力しました。")
 
 
-def print_json(target: Any, is_pretty: bool = False, output: Path | None = None) -> None:  # noqa: ANN401, FBT001, FBT002
+def print_json(target: Any, is_pretty: bool = False, output: Path | None = None) -> None:
     """
     JSONを出力する。
 
@@ -108,7 +108,7 @@ def get_file_scheme_path(str_value: str) -> str | None:
         return None
 
 
-def isoduration_to_hour(duration) -> float:  # noqa: ANN001
+def isoduration_to_hour(duration: str) -> float:
     """
     ISO 8601 duration を 時間に変換する
     Args:

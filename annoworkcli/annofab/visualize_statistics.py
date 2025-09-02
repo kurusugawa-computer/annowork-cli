@@ -30,7 +30,7 @@ JobIdAnnofabProjectIdDict = dict[str, str]
 
 
 class ListLabor:
-    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str):  # noqa: ANN204
+    def __init__(self, annowork_service: AnnoworkResource, workspace_id: str) -> None:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
@@ -81,7 +81,7 @@ class ListLabor:
 
         return result
 
-    def get_user_id_annofab_account_id_dict(self, user_id_set) -> dict[str, str]:  # noqa: ANN001
+    def get_user_id_annofab_account_id_dict(self, user_id_set: set[str]) -> dict[str, str]:
         result = {}
         for user_id in user_id_set:
             annofab_account_id = self.annowork_service.wrapper.get_annofab_account_id_from_user_id(user_id)
@@ -226,7 +226,7 @@ def visualize_statistics(temp_dir: Path, args: argparse.Namespace) -> None:
     subprocess.run(command, check=True)
 
 
-def main(args):  # noqa: ANN001, ANN201
+def main(args: argparse.Namespace) -> None:
     if args.temp_dir is not None:
         visualize_statistics(args.temp_dir, args)
     else:
@@ -234,7 +234,7 @@ def main(args):  # noqa: ANN001, ANN201
             visualize_statistics(Path(str_temp_dir), args)
 
 
-def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
+def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-w",
         "--workspace_id",
