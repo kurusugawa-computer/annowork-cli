@@ -80,12 +80,11 @@ def _get_df_working_hours_from_df(
     df_af_project = df_job_and_af_project.drop_duplicates(subset=["annofab_project_id"])[["annofab_project_id", "annofab_project_title"]]
     df_merged = df_merged.merge(df_af_project, on="annofab_project_id", how="left")
 
-    df_merged.fillna(
+    df_merged = df_merged.fillna(
         {
             "actual_working_hours": 0.0,
             "annofab_working_hours": 0.0,
         },
-        inplace=True,
     )
 
     return df_merged[
@@ -408,6 +407,18 @@ class ListWorkingHoursWithAnnofab:
 
         df_job_parent_job = self._get_df_job_parent_job()
         df = df.merge(df_job_parent_job, how="left", on="job_id")
+
+        # 1個のジョブが複数のAnnofabプロジェクトに紐づいている場合、job_id, job_name, parent_job_id, parent_job_nameが欠損値になる可能性がある。
+        # （Annofabで作業したがAnnoworkに実績作業時間を入力していない場合）
+        # ユーザーはjobやparent_jobが欠損していないことを期待してCSVを出力するので、ダミーの値を設定する
+        df = df.fillna(
+            {
+                "job_id": "dummy_job_id",
+                "job_name": "dummy_job_name",
+                "parent_job_id": "dummy_parent_job_id",
+                "parent_job_name": "dummy_parent_job_name",
+            }
+        )
 
         df.sort_values(["date", "job_id", "user_id"], inplace=True)
         required_columns = self._get_required_columns()
