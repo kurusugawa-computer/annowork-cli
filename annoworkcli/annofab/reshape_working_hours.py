@@ -61,6 +61,7 @@ def filter_df(
     df: pandas.DataFrame,
     *,
     job_ids: Collection[str] | None = None,
+    parent_job_ids: Collection[str] | None = None,
     user_ids: Collection[str] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
@@ -76,6 +77,10 @@ def filter_df(
 
     if job_ids is not None:
         df = df[df["job_id"].isin(set(job_ids))]
+
+    if parent_job_ids is not None:
+        df = df[df["parent_job_id"].isin(set(parent_job_ids))]
+
     return df
 
 
@@ -888,13 +893,8 @@ class ReshapeWorkingHours:
         Returns:
             tuple[pandas.DataFrame, pandas.DataFrame]: 絞り込まれたdf_actual, df_assigned
         """
-        child_job_ids: Collection[str] | None = None
 
-        if parent_job_ids is not None:
-            child_job_ids = {e["job_id"] for e in self.all_jobs if get_parent_job_id_from_job_tree(e["job_tree"]) in set(parent_job_ids)}
-            df_actual = filter_df(df_actual, job_ids=child_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
-        else:
-            df_actual = filter_df(df_actual, job_ids=job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
+        df_actual = filter_df(df_actual, job_ids=job_ids, parent_job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
 
         if job_ids is not None:
             # アサインは親ジョブに紐付けているため、job_idに対応するアサインはない。したがって、0件にする。
