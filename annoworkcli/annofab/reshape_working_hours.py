@@ -1040,7 +1040,7 @@ def main(args: argparse.Namespace) -> None:
     end_date = args.end_date
 
     if args.actual_file is None or args.assigned_file is None:
-        if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
+        if all(v is None for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]):
             logger.warning(
                 "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
                 "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
