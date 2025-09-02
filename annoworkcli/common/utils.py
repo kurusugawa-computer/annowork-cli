@@ -52,7 +52,7 @@ def output_string(target: str, output: Path | None = None) -> None:
             logger.info(f"{output} に出力しました。")
 
 
-def print_json(target: Any, is_pretty: bool = False, output: Path | None = None) -> None:
+def print_json(target: Any, *, is_pretty: bool = False, output: Path | None = None) -> None:  # noqa: ANN401
     """
     JSONを出力する。
 
