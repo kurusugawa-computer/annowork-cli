@@ -62,6 +62,7 @@ def filter_df(
     *,
     job_ids: Collection[str] | None = None,
     parent_job_ids: Collection[str] | None = None,
+    annofab_project_ids: Collection[str] | None = None,
     user_ids: Collection[str] | None = None,
     start_date: str | None = None,
     end_date: str | None = None,
@@ -80,6 +81,9 @@ def filter_df(
 
     if parent_job_ids is not None:
         df = df[df["parent_job_id"].isin(set(parent_job_ids))]
+
+    if annofab_project_ids is not None:
+        df = df[df["annofab_project_id"].isin(set(annofab_project_ids))]
 
     return df
 
@@ -703,7 +707,7 @@ class ReshapeWorkingHours:
         self.parallelism = parallelism
         self.all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
 
-    def get_job_id_list_from_af_project_id(self, annofab_project_id_list: list[str]) -> list[str]:
+    def get_job_id_list_from_af_project_id(self, annofab_project_id_list: Collection[str]) -> list[str]:
         annofab_project_id_set = set(annofab_project_id_list)
 
         def _match_job(job: dict[str, Any]) -> bool:
@@ -722,6 +726,7 @@ class ReshapeWorkingHours:
         end_date: str | None = None,
         user_ids: Collection[str] | None = None,
         parent_job_ids: Collection[str] | None = None,
+        annofab_project_ids: Collection[str] | None = None,
         job_ids: Collection[str] | None = None,
     ) -> pandas.DataFrame:
         """実績作業時間とannofab作業時間を比較したDataFrameを取得する。
@@ -737,7 +742,14 @@ class ReshapeWorkingHours:
             parallelism=self.parallelism,
         )
 
-        if parent_job_ids is not None:
+        # job_ids, parent_job_ids, annofab_project_ids が排他的であることをassertで確認する
+        assert sum(e is not None for e in [job_ids, parent_job_ids, annofab_project_ids]) <= 1, (
+            "job_ids, parent_job_ids, annofab_project_ids は排他的です。"
+        )
+
+        if annofab_project_ids is not None:
+            job_ids = self.get_job_id_list_from_af_project_id(annofab_project_ids)
+        elif parent_job_ids is not None:
             job_ids = list_actual_obj.get_job_id_list_from_parent_job_id_list(parent_job_ids)
 
         df = list_actual_obj.get_df_working_hours(start_date=start_date, end_date=end_date, job_ids=job_ids, user_ids=user_ids)
@@ -879,6 +891,7 @@ class ReshapeWorkingHours:
         df_assigned: pandas.DataFrame,
         parent_job_ids: Collection[str] | None = None,
         job_ids: Collection[str] | None = None,
+        annofab_project_ids: Collection[str] | None = None,
         user_ids: Collection[str] | None = None,
         start_date: str | None = None,
         end_date: str | None = None,
@@ -894,7 +907,15 @@ class ReshapeWorkingHours:
             tuple[pandas.DataFrame, pandas.DataFrame]: 絞り込まれたdf_actual, df_assigned
         """
 
-        df_actual = filter_df(df_actual, job_ids=job_ids, parent_job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
+        df_actual = filter_df(
+            df_actual,
+            job_ids=job_ids,
+            parent_job_ids=parent_job_ids,
+            annofab_project_ids=annofab_project_ids,
+            user_ids=user_ids,
+            start_date=start_date,
+            end_date=end_date,
+        )
 
         if job_ids is not None:
             # アサインは親ジョブに紐付けているため、job_idに対応するアサインはない。したがって、0件にする。
@@ -950,10 +971,6 @@ def main(args: argparse.Namespace) -> None:
                 "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
             )
 
-    # "--job_id"と"--annofab_project_id"は排他的なので、job_id_listは上書きする
-    if annofab_project_id_list is not None:
-        job_id_list = main_obj.get_job_id_list_from_af_project_id(annofab_project_id_list)
-
     shape_type = ShapeType(args.shape_type)
 
     if args.actual_file is not None:
@@ -971,6 +988,7 @@ def main(args: argparse.Namespace) -> None:
             end_date=end_date,
             parent_job_ids=parent_job_id_list,
             job_ids=job_id_list,
+            annofab_project_ids=annofab_project_id_list,
             user_ids=user_id_list,
         )
 
@@ -998,6 +1016,7 @@ def main(args: argparse.Namespace) -> None:
         end_date=args.end_date,
         user_ids=user_id_list,
         parent_job_ids=parent_job_id_list,
+        annofab_project_ids=annofab_project_id_list,
         job_ids=job_id_list,
     )
 
