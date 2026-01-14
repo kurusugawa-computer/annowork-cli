@@ -42,7 +42,7 @@ test = [
 linter = [
     "mypy>=1; python_version >= '3.12'",
     "pylint>=3 ; python_version >= '3.12'",
-    "ruff>=0.12; python_version >= '3.12'",
+    "ruff>=0.14; python_version >= '3.12'",
     "types-requests",
     "types-python-dateutil",
     "types-PyYAML",
@@ -83,7 +83,6 @@ line-length = 150
 [tool.ruff.lint]
 ignore = [
     "G004", # `logging-f-string` : loggingでf-stringを使いたいので無視する
-    "PD901", #すでに`df`という変数をいろんなところで使っているため
     "PD002", #すでにpandasで`inplace=True`はいろんなところで使っているため
     "RUF001", # 全角記号など`ambiguous unicode character`も使いたいため
     "RUF002",# 全角記号など`ambiguous unicode character`も使いたいため
@@ -109,7 +108,7 @@ ignore = [
     "ICN", # flake8-import-conventions
     "RET",#flake8-return
     "SIM",#flake8-simplify
-    "TCH", # flake8-type-checking
+    # "TCH", # flake8-type-checking
     "ISC", #flake8-implicit-str-concat
     "PT", # flake8-pytest-style
 ]
