@@ -1,6 +1,7 @@
 import argparse
 
 import annoworkcli
+import annoworkcli.common.cli
 import annoworkcli.job.change_job_properties
 import annoworkcli.job.delete_job
 import annoworkcli.job.list_job

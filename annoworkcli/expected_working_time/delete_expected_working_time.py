@@ -6,6 +6,7 @@ import more_itertools
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.common.cli import build_annoworkapi, prompt_yesno
 
 logger = logging.getLogger(__name__)

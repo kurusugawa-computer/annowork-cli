@@ -7,6 +7,7 @@ import annoworkcli.annofab.put_account_external_linkage_info
 import annoworkcli.annofab.put_job_from_annofab_project
 import annoworkcli.annofab.reshape_working_hours
 import annoworkcli.annofab.visualize_statistics
+import annoworkcli.common.cli
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
