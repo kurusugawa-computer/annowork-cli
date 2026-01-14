@@ -108,7 +108,6 @@ ignore = [
     "ICN", # flake8-import-conventions
     "RET",#flake8-return
     "SIM",#flake8-simplify
-    # "TCH", # flake8-type-checking
     "ISC", #flake8-implicit-str-concat
     "PT", # flake8-pytest-style
 ]
