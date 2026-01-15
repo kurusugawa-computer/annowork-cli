@@ -35,7 +35,7 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
         # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
-        df.groupby("workspace_member_id").resample("W", on="date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
+        df.groupby("workspace_member_id").resample("W-SUN", on="date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
     )
     df_weekly.reset_index(inplace=True)
 
