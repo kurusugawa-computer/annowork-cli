@@ -1,6 +1,7 @@
 import argparse
 
 import annoworkcli
+import annoworkcli.common.cli
 import annoworkcli.schedule.delete_schedule
 import annoworkcli.schedule.list_assigned_hours_daily
 import annoworkcli.schedule.list_assigned_hours_daily_groupby_tag

@@ -14,6 +14,7 @@ from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.actual_working_time.list_actual_working_hours_daily import (
     ActualWorkingHoursDaily,
     create_actual_working_hours_daily_list,

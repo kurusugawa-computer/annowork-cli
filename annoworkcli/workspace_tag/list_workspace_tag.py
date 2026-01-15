@@ -6,6 +6,7 @@ import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi
 from annoworkcli.common.utils import print_csv, print_json
 

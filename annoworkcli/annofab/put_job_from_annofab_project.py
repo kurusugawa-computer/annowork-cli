@@ -5,6 +5,7 @@ from annofabapi.resource import Resource as AnnofabResource
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.annofab.utils import build_annofabapi_resource
 from annoworkcli.common.cli import build_annoworkapi
 

@@ -1,6 +1,7 @@
 import argparse
 
 import annoworkcli
+import annoworkcli.common.cli
 import annoworkcli.workspace_member.append_tag_to_workspace_member
 import annoworkcli.workspace_member.change_workspace_member_properties
 import annoworkcli.workspace_member.delete_workspace_member
