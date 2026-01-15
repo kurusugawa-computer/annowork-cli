@@ -26,25 +26,25 @@ Examples
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "user_id": "alice",
          "username": "Alice",
-         "parent_job_id": "12345678-1234-1234-1234-123456789abc",
-         "parent_job_name": "プロジェクトA",
-         "job_id": "87654321-4321-4321-4321-cba987654321",
-         "job_name": "タスク1",
+         "parent_job_id": "parent_job1",
+         "parent_job_name": "Parent Job1",
+         "job_id": "job1",
+         "job_name": "Job1",
          "start_date": "2021-12-26",
          "end_date": "2022-01-01",
-         "actual_working_hours": 20.5,
+         "actual_working_hours": 20.5
       },
       {
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "user_id": "alice",
          "username": "Alice",
-         "parent_job_id": "12345678-1234-1234-1234-123456789abc",
-         "parent_job_name": "プロジェクトA",
-         "job_id": "87654321-4321-4321-4321-cba987654321",
-         "job_name": "タスク1",
+         "parent_job_id": "parent_job1",
+         "parent_job_name": "Parent Job1",
+         "job_id": "job2",
+         "job_name": "Job2",
          "start_date": "2022-01-02",
          "end_date": "2022-01-08",
-         "actual_working_hours": 25.0,
+         "actual_working_hours": 25.0
       }
    ]
 
