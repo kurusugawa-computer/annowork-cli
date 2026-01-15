@@ -19,12 +19,12 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
     """週単位のアサイン時間が格納されたDataFrameを生成します。
 
     Args:
-        assigned_hours_daily_list: 日ごとのアサイン時間情報。date, workspace_member_id, assigned_working_hours を参照します。
+        assigned_hours_daily_list: 日ごとのアサイン時間情報。date, workspace_member_id, job_id, job_name, assigned_working_hours を参照します。
         workspace_members: ワークスペースメンバ情報。workspace_member_id, user_id, username を参照します。
 
     Returns:
         以下の列を返すDataFrame。
-            "workspace_member_id", "user_id","username", "start_date", "end_date", "assigned_working_hours"
+            "workspace_member_id", "user_id","username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"
     """
     df = pandas.DataFrame(assigned_hours_daily_list)
     # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
@@ -35,7 +35,9 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
         # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
-        df.groupby("workspace_member_id").resample("W-SUN", on="dt_date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
+        df.groupby(["workspace_member_id", "job_id", "job_name"])
+        .resample("W-SUN", on="dt_date", label="left", closed="left", include_groups=False)
+        .sum(numeric_only=True)
     )
     df_weekly.reset_index(inplace=True)
 
@@ -52,9 +54,9 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
     df_workspace_member = pandas.DataFrame(workspace_members)
 
     df = df_weekly.merge(df_workspace_member, on="workspace_member_id", how="left")
-    df.sort_values(["user_id", "start_date"], inplace=True)
+    df.sort_values(["user_id", "job_id", "start_date"], inplace=True)
 
-    return df[["workspace_member_id", "user_id", "username", "start_date", "end_date", "assigned_working_hours"]]
+    return df[["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"]]
 
 
 def main(args: argparse.Namespace) -> None:
@@ -83,7 +85,7 @@ def main(args: argparse.Namespace) -> None:
 
     if len(assigned_hours_daily_dict_list) == 0:
         logger.warning("アサイン時間情報は0件です。")
-        required_columns = ["workspace_member_id", "user_id", "username", "start_date", "end_date", "assigned_working_hours"]
+        required_columns = ["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"]
         df = pandas.DataFrame(columns=required_columns)
     else:
         df = get_weekly_assigned_hours_df(assigned_hours_daily_dict_list, main_obj.list_schedule_obj.workspace_members)
