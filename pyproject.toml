@@ -35,7 +35,7 @@ annoworkcli = "annoworkcli.__main__:main"
 
 [dependency-groups]
 test = [
-    "pytest>=8,<9",
+    "pytest>=8,<10",
     "pytest-xdist",
     "pytest-cov",
 ]
