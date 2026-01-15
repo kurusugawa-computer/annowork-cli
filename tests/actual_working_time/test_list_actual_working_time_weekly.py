@@ -20,26 +20,36 @@ out_dir.mkdir(exist_ok=True, parents=True)
 ACTUAL_WORKING_TIMES = [
     {
         "workspace_member_id": "alice",
+        "job_id": "job1",
+        "job_name": "Task1",
         "start_datetime": "2022-03-05T10:00:00+09:00",
         "actual_working_hours": 1.0,
     },
     {
         "workspace_member_id": "alice",
+        "job_id": "job1",
+        "job_name": "Task1",
         "start_datetime": "2022-03-06T10:00:00+09:00",
         "actual_working_hours": 2.0,
     },
     {
         "workspace_member_id": "alice",
+        "job_id": "job1",
+        "job_name": "Task1",
         "start_datetime": "2022-03-12T10:00:00+09:00",
         "actual_working_hours": 3.0,
     },
     {
         "workspace_member_id": "bob",
+        "job_id": "job2",
+        "job_name": "Task2",
         "start_datetime": "2022-02-06T10:00:00+09:00",
         "actual_working_hours": 4.0,
     },
     {
         "workspace_member_id": "bob",
+        "job_id": "job2",
+        "job_name": "Task2",
         "start_datetime": "2022-03-13T10:00:00+09:00",
         "actual_working_hours": 0.0,
     },
