@@ -178,7 +178,7 @@ linter = [
     { name = "types-requests" },
 ]
 test = [
-    { name = "pytest", specifier = ">=8,<9" },
+    { name = "pytest", specifier = ">=8,<10" },
     { name = "pytest-cov" },
     { name = "pytest-xdist" },
 ]

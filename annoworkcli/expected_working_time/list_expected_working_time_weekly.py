@@ -9,6 +9,7 @@ import pandas
 import annoworkcli
 import annoworkcli.common.cli
 from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.type_util import assert_noreturn
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.expected_working_time.list_expected_working_time import ListExpectedWorkingTime
 
@@ -84,13 +85,14 @@ def main(args: argparse.Namespace) -> None:
 
     logger.info(f"{len(df)} 件の週単位の予定稼働時間情報を出力します。")
 
-    if OutputFormat(args.format) == OutputFormat.CSV:
-        print_csv(df, output=args.output)
+    match OutputFormat(args.format):
+        case OutputFormat.CSV:
+            print_csv(df, output=args.output)
 
-    elif OutputFormat(args.format) == OutputFormat.JSON:
-        print_json(df.to_dict("records"), is_pretty=True, output=args.output)
-    else:
-        logger.error("`--format`が対象外でした。")
+        case OutputFormat.JSON:
+            print_json(df.to_dict("records"), is_pretty=True, output=args.output)
+        case _ as unreachable:
+            assert_noreturn(unreachable)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
