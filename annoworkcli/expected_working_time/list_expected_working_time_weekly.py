@@ -76,12 +76,12 @@ def main(args: argparse.Namespace) -> None:
     else:
         expected_working_times = main_obj.get_expected_working_times(start_date=start_date, end_date=end_date)
 
+    required_columns = ["workspace_member_id", "user_id", "username", "start_date", "end_date", "expected_working_hours"]
     if len(expected_working_times) == 0:
-        logger.warning("予定稼働時間情報は0件です。")
-        required_columns = ["workspace_member_id", "user_id", "username", "start_date", "end_date", "expected_working_hours"]
         df = pandas.DataFrame(columns=required_columns)
     else:
         df = get_weekly_expected_working_hours_df(expected_working_times, main_obj.workspace_members)
+        df = df[required_columns]
 
     logger.info(f"{len(df)} 件の週単位の予定稼働時間情報を出力します。")
 

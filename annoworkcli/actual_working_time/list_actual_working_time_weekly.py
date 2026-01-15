@@ -129,7 +129,6 @@ def main(args: argparse.Namespace) -> None:
     ]
 
     if len(actual_working_times) == 0:
-        logger.warning("実績作業時間情報は0件です。")
         df = pandas.DataFrame(columns=required_columns)
     else:
         df = get_weekly_actual_working_hours_df(actual_working_times, main_obj.workspace_members)

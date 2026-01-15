@@ -84,11 +84,11 @@ def main(args: argparse.Namespace) -> None:
     assigned_hours_daily_dict_list = [e.to_dict() for e in assigned_hours_daily_list]
 
     if len(assigned_hours_daily_dict_list) == 0:
-        logger.warning("アサイン時間情報は0件です。")
         required_columns = ["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"]
         df = pandas.DataFrame(columns=required_columns)
     else:
         df = get_weekly_assigned_hours_df(assigned_hours_daily_dict_list, main_obj.list_schedule_obj.workspace_members)
+        df = df[required_columns]
 
     logger.info(f"{len(df)} 件の週単位のアサイン時間情報を出力します。")
 
