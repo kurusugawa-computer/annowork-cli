@@ -47,10 +47,10 @@ def create_parser() -> argparse.ArgumentParser:
     annoworkcli.expected_working_time.subcommand.add_parser(subparsers)
     annoworkcli.job.subcommand.add_parser(subparsers)
     annoworkcli.my.subcommand.add_parser(subparsers)
+    annoworkcli.schedule.subcommand.add_parser(subparsers)
     annoworkcli.workspace.subcommand.add_parser(subparsers)
     annoworkcli.workspace_member.subcommand.add_parser(subparsers)
     annoworkcli.workspace_tag.subcommand.add_parser(subparsers)
-    annoworkcli.schedule.subcommand.add_parser(subparsers)
 
     return parser
 
