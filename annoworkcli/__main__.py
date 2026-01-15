@@ -35,7 +35,9 @@ def warn_pandas_copy_on_write() -> None:
 
 
 def create_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Command Line Interface for Annowork", formatter_class=PrettyHelpFormatter, allow_abbrev=False)
+    parser = argparse.ArgumentParser(
+        prog="annoworkcli", description="Command Line Interface for Annowork", formatter_class=PrettyHelpFormatter, allow_abbrev=False
+    )
     parser.add_argument("--version", action="version", version=f"annoworkcli {annoworkcli.__version__}")
     parser.set_defaults(command_help=parser.print_help)
 
@@ -85,9 +87,25 @@ def main(arguments: Sequence[str] | None = None) -> None:
     warn_pandas_copy_on_write()
     parser = create_parser()
     if arguments is None:
-        args = parser.parse_args()
+        args, unknown_args = parser.parse_known_args()
     else:
-        args = parser.parse_args(arguments)
+        args, unknown_args = parser.parse_known_args(arguments)
+
+    # 不正な引数が指定された場合は、適切なパーサーのエラーメッセージを表示
+    if unknown_args:
+        # subcommand_funcが設定されている場合は、サブコマンドのパーサーでエラーを表示
+        if hasattr(args, "subcommand_func"):
+            # サブコマンドのヘルプを表示してからエラーメッセージを出力
+            # stderrに出力するため、print_helpの出力先をstderrに変更
+            args.command_help(sys.stderr)
+            # エラーメッセージのprog部分を構築
+            prog_parts = ["annoworkcli", args.command_name]
+            if hasattr(args, "subcommand_name") and args.subcommand_name:
+                prog_parts.append(args.subcommand_name)
+            prog = " ".join(prog_parts)
+            parser.exit(2, f"{prog}: error: unrecognized arguments: {' '.join(unknown_args)}\n")
+        else:
+            parser.error(f"unrecognized arguments: {' '.join(unknown_args)}")
 
     if hasattr(args, "subcommand_func"):
         try:
