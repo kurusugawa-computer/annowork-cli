@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas
+from annoworkapi.job import get_parent_job_id_from_job_tree
 
 import annoworkcli
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
@@ -19,12 +20,12 @@ def get_weekly_actual_working_hours_df(actual_working_times: list[dict[str, Any]
     """週単位の実績作業時間が格納されたDataFrameを生成します。
 
     Args:
-        actual_working_times: 実績作業時間情報。start_datetime, workspace_member_id, actual_working_hours を参照します。
+        actual_working_times: 実績作業時間情報。start_datetime, workspace_member_id, job_id, job_name, actual_working_hours を参照します。
         workspace_members: ワークスペースメンバ情報。workspace_member_id, user_id, username を参照します。
 
     Returns:
         以下の列を返すDataFrame。
-            "workspace_member_id", "user_id","username", "start_date", "end_date", "actual_working_hours"
+            "workspace_member_id", "user_id","username", "job_id", "job_name", "start_date", "end_date", "actual_working_hours"
     """
     df = pandas.DataFrame(actual_working_times)
     # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
@@ -35,9 +36,9 @@ def get_weekly_actual_working_hours_df(actual_working_times: list[dict[str, Any]
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
         # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
-        df.groupby("workspace_member_id")
+        df.groupby(["workspace_member_id", "job_id"])
         .resample("W-SUN", on="dt_date", label="left", closed="left", include_groups=False)
-        .agg({"actual_working_hours": "sum"})
+        .agg({"actual_working_hours": "sum", "job_name": "first"})
     )
     df_weekly.reset_index(inplace=True)
 
@@ -54,9 +55,41 @@ def get_weekly_actual_working_hours_df(actual_working_times: list[dict[str, Any]
     df_workspace_member = pandas.DataFrame(workspace_members)
 
     df = df_weekly.merge(df_workspace_member, on="workspace_member_id", how="left")
-    df.sort_values(["user_id", "start_date"], inplace=True)
+    df.sort_values(["user_id", "job_id", "start_date"], inplace=True)
 
-    return df[["workspace_member_id", "user_id", "username", "start_date", "end_date", "actual_working_hours"]]
+    return df[
+        ["workspace_member_id", "user_id", "username", "job_id", "job_name", "job_id", "job_name", "start_date", "end_date", "actual_working_hours"]
+    ]
+
+
+def add_parent_job_info_to_df(df: pandas.DataFrame, all_jobs: list[dict[str, Any]]) -> pandas.DataFrame:
+    """親ジョブ情報をDataFrameに追加します。
+
+    Args:
+        df: 実績作業時間のDataFrame。job_id列が必要です。
+        all_jobs: 全ジョブのリスト。
+
+    Returns:
+        parent_job_idとparent_job_name列が追加されたDataFrame。
+    """
+    all_job_dict = {e["job_id"]: e for e in all_jobs}
+
+    def get_parent_job_id(job_id: str) -> str | None:
+        job = all_job_dict.get(job_id)
+        if job is None:
+            return None
+        return get_parent_job_id_from_job_tree(job["job_tree"])
+
+    def get_parent_job_name(parent_job_id: str | None) -> str | None:
+        if parent_job_id is None:
+            return None
+        parent_job = all_job_dict.get(parent_job_id)
+        return parent_job["job_name"] if parent_job is not None else None
+
+    df["parent_job_id"] = df["job_id"].apply(get_parent_job_id)
+    df["parent_job_name"] = df["parent_job_id"].apply(get_parent_job_name)
+
+    return df
 
 
 def main(args: argparse.Namespace) -> None:
@@ -85,10 +118,24 @@ def main(args: argparse.Namespace) -> None:
 
     if len(actual_working_times) == 0:
         logger.warning("実績作業時間情報は0件です。")
-        required_columns = ["workspace_member_id", "user_id", "username", "start_date", "end_date", "actual_working_hours"]
+        required_columns = [
+            "workspace_member_id",
+            "user_id",
+            "username",
+            "job_id",
+            "job_name",
+            "parent_job_id",
+            "parent_job_name",
+            "start_date",
+            "end_date",
+            "actual_working_hours",
+        ]
         df = pandas.DataFrame(columns=required_columns)
     else:
         df = get_weekly_actual_working_hours_df(actual_working_times, main_obj.workspace_members)
+        # 親ジョブ情報を追加
+        all_jobs = annowork_service.api.get_jobs(args.workspace_id)
+        df = add_parent_job_info_to_df(df, all_jobs)
 
     logger.info(f"{len(df)} 件の週単位の実績作業時間情報を出力します。")
 
