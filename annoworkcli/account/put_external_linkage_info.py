@@ -6,6 +6,7 @@ from typing import Any
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.common.cli import build_annoworkapi, get_json_from_args
 
 logger = logging.getLogger(__name__)

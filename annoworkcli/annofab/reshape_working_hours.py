@@ -16,6 +16,7 @@ from annoworkapi.job import get_parent_job_id_from_job_tree
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
 from annoworkcli.annofab.utils import build_annofabapi_resource
 from annoworkcli.common.annofab import get_annofab_project_id_from_job

@@ -3,6 +3,7 @@ import argparse
 import annoworkcli
 import annoworkcli.account.list_external_linkage_info
 import annoworkcli.account.put_external_linkage_info
+import annoworkcli.common.cli
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:

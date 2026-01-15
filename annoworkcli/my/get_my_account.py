@@ -5,6 +5,7 @@ from pathlib import Path
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.common.cli import build_annoworkapi
 from annoworkcli.common.utils import print_json
 

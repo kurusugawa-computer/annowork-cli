@@ -1,10 +1,12 @@
 import argparse
 
 import annoworkcli
+import annoworkcli.common.cli
 import annoworkcli.schedule.delete_schedule
 import annoworkcli.schedule.list_assigned_hours_daily
 import annoworkcli.schedule.list_assigned_hours_daily_groupby_tag
 import annoworkcli.schedule.list_schedule
+import annoworkcli.schedule.list_schedule_weekly
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
@@ -15,6 +17,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     annoworkcli.schedule.list_schedule.add_parser(subparsers)
     annoworkcli.schedule.list_assigned_hours_daily.add_parser(subparsers)
     annoworkcli.schedule.list_assigned_hours_daily_groupby_tag.add_parser(subparsers)
+    annoworkcli.schedule.list_schedule_weekly.add_parser(subparsers)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
