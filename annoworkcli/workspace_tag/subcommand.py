@@ -1,6 +1,7 @@
 import argparse
 
 import annoworkcli
+import annoworkcli.common.cli
 import annoworkcli.workspace_tag.list_workspace_tag
 import annoworkcli.workspace_tag.put_workspace_tag
 

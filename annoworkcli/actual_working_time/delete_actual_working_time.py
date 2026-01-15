@@ -6,6 +6,7 @@ from typing import Any
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.cli import (
     COMMAND_LINE_ERROR_STATUS_CODE,

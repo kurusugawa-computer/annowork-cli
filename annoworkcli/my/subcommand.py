@@ -1,6 +1,7 @@
 import argparse
 
 import annoworkcli
+import annoworkcli.common.cli
 import annoworkcli.my.get_my_account
 import annoworkcli.my.list_my_workspace_member
 

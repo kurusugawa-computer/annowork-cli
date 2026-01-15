@@ -8,6 +8,7 @@ from annoworkapi.enums import Role
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 
 logger = logging.getLogger(__name__)

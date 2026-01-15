@@ -5,6 +5,7 @@ import annoworkcli.actual_working_time.delete_actual_working_time
 import annoworkcli.actual_working_time.list_actual_working_hours_daily
 import annoworkcli.actual_working_time.list_actual_working_hours_daily_groupby_tag
 import annoworkcli.actual_working_time.list_actual_working_time
+import annoworkcli.common.cli
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
