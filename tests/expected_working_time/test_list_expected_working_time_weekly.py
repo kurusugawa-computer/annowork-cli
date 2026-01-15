@@ -46,10 +46,10 @@ EXPECTED_WORKING_TIMES = [
 ]
 
 
-workspace_MEMBERS = [{"workspace_member_id": "alice", "user_id": "alice", "username": "ALICE"}]
+WORKSPACE_MEMBERS = [{"workspace_member_id": "alice", "user_id": "alice", "username": "ALICE"}]
 
 
 def test_get_weekly_expected_working_hours_df():
-    actual = get_weekly_expected_working_hours_df(EXPECTED_WORKING_TIMES, workspace_MEMBERS)
+    actual = get_weekly_expected_working_hours_df(EXPECTED_WORKING_TIMES, WORKSPACE_MEMBERS)
     assert len(actual) == 3
     assert actual.query("workspace_member_id == 'alice' and start_date == '2022-03-06'").iloc[0]["expected_working_hours"] == 5
