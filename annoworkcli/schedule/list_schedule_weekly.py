@@ -28,23 +28,23 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
     """
     df = pandas.DataFrame(assigned_hours_daily_list)
     # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
-    df["date"] = pandas.to_datetime(df["date"])
+    df["dt_date"] = pandas.to_datetime(df["date"])
 
     df_weekly = (
         # `include_groups=False`を指定する理由：pandas2.2.0で以下の警告が出ないようにするため
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
         # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
-        df.groupby("workspace_member_id").resample("W-SUN", on="date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
+        df.groupby("workspace_member_id").resample("W-SUN", on="dt_date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
     )
     df_weekly.reset_index(inplace=True)
 
     # 1週間の始まり（日曜日）と終わり（土曜日）の日付列を設定
-    df_weekly.rename(columns={"date": "start_date"}, inplace=True)
-    df_weekly["end_date"] = df_weekly["start_date"] + pandas.Timedelta(days=6)
+    df_weekly.rename(columns={"dt_date": "dt_start_date"}, inplace=True)
+    df_weekly["dt_end_date"] = df_weekly["dt_start_date"] + pandas.Timedelta(days=6)
     # pandas.Timestamp型をstr型に変換する
-    df_weekly["start_date"] = df_weekly["start_date"].dt.date.apply(lambda e: e.isoformat())
-    df_weekly["end_date"] = df_weekly["end_date"].dt.date.apply(lambda e: e.isoformat())
+    df_weekly["start_date"] = df_weekly["dt_start_date"].dt.date.apply(lambda e: e.isoformat())
+    df_weekly["end_date"] = df_weekly["dt_end_date"].dt.date.apply(lambda e: e.isoformat())
 
     # アサイン時間が0の行は不要なので、除外する
     df_weekly = df_weekly.query("assigned_working_hours > 0")

@@ -23,7 +23,6 @@ Examples
 
    [
       {
-         "workspace_id": "org",
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "user_id": "alice",
          "username": "Alice",
@@ -32,7 +31,6 @@ Examples
          "assigned_working_hours": 20,
       },
       {
-         "workspace_id": "org",
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "user_id": "alice",
          "username": "Alice",
