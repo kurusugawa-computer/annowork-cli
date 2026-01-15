@@ -114,26 +114,28 @@ def main(args: argparse.Namespace) -> None:
         is_set_additional_info=True,
     )
 
+    required_columns = [
+        "workspace_member_id",
+        "user_id",
+        "username",
+        "parent_job_id",
+        "parent_job_name",
+        "job_id",
+        "job_name",
+        "start_date",
+        "end_date",
+        "actual_working_hours",
+    ]
+
     if len(actual_working_times) == 0:
         logger.warning("実績作業時間情報は0件です。")
-        required_columns = [
-            "workspace_member_id",
-            "user_id",
-            "username",
-            "job_id",
-            "job_name",
-            "parent_job_id",
-            "parent_job_name",
-            "start_date",
-            "end_date",
-            "actual_working_hours",
-        ]
         df = pandas.DataFrame(columns=required_columns)
     else:
         df = get_weekly_actual_working_hours_df(actual_working_times, main_obj.workspace_members)
         # 親ジョブ情報を追加
         all_jobs = annowork_service.api.get_jobs(args.workspace_id)
         df = add_parent_job_info_to_df(df, all_jobs)
+        df = df[required_columns]
 
     logger.info(f"{len(df)} 件の週単位の実績作業時間情報を出力します。")
 
