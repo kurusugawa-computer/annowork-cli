@@ -61,19 +61,26 @@ def get_weekly_actual_working_hours_df(actual_working_times: list[dict[str, Any]
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    job_id_list = get_list_from_args(args.job_id)
+    parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
     start_date: str | None = args.start_date
     end_date: str | None = args.end_date
 
     command = " ".join(sys.argv[0:3])
-    if all(v is None for v in [user_id_list, start_date, end_date]):
+    if all(v is None for v in [job_id_list, parent_job_id_list, user_id_list, start_date, end_date]):
         print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
     main_obj = ListActualWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id, timezone_offset_hours=args.timezone_offset)
 
     actual_working_times = main_obj.get_actual_working_times(
-        start_date=start_date, end_date=end_date, user_ids=user_id_list, is_set_additional_info=True
+        job_ids=job_id_list,
+        parent_job_ids=parent_job_id_list,
+        start_date=start_date,
+        end_date=end_date,
+        user_ids=user_id_list,
+        is_set_additional_info=True,
     )
 
     if len(actual_working_times) == 0:
@@ -105,6 +112,11 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     )
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")
+
+    # parent_job_idとjob_idの両方を指定するユースケースはなさそうなので、exclusiveにする。
+    job_id_group = parser.add_mutually_exclusive_group()
+    job_id_group.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="絞り込み対象のジョブID")
+    job_id_group.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="絞り込み対象の親のジョブID")
 
     parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
     parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
