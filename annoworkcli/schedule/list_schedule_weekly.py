@@ -83,8 +83,8 @@ def main(args: argparse.Namespace) -> None:
     # AssignedHoursDailyオブジェクトのリストをdictのリストに変換
     assigned_hours_daily_dict_list = [e.to_dict() for e in assigned_hours_daily_list]
 
+    required_columns = ["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"]
     if len(assigned_hours_daily_dict_list) == 0:
-        required_columns = ["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"]
         df = pandas.DataFrame(columns=required_columns)
     else:
         df = get_weekly_assigned_hours_df(assigned_hours_daily_dict_list, main_obj.list_schedule_obj.workspace_members)

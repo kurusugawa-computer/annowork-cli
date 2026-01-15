@@ -24,8 +24,6 @@ ACTUAL_WORKING_TIMES = [
         "job_name": "Task1",
         "start_datetime": "2022-03-05T10:00:00+09:00",
         "actual_working_hours": 1.0,
-        "job_id": "job1",
-        "job_name": "Job 1",
     },
     {
         "workspace_member_id": "alice",
@@ -33,8 +31,6 @@ ACTUAL_WORKING_TIMES = [
         "job_name": "Task1",
         "start_datetime": "2022-03-06T10:00:00+09:00",
         "actual_working_hours": 2.0,
-        "job_id": "job1",
-        "job_name": "Job 1",
     },
     {
         "workspace_member_id": "alice",
@@ -42,8 +38,6 @@ ACTUAL_WORKING_TIMES = [
         "job_name": "Task1",
         "start_datetime": "2022-03-12T10:00:00+09:00",
         "actual_working_hours": 3.0,
-        "job_id": "job1",
-        "job_name": "Job 1",
     },
     {
         "workspace_member_id": "bob",
@@ -51,8 +45,6 @@ ACTUAL_WORKING_TIMES = [
         "job_name": "Task2",
         "start_datetime": "2022-02-06T10:00:00+09:00",
         "actual_working_hours": 4.0,
-        "job_id": "job2",
-        "job_name": "Job 2",
     },
     {
         "workspace_member_id": "bob",
@@ -60,8 +52,6 @@ ACTUAL_WORKING_TIMES = [
         "job_name": "Task2",
         "start_datetime": "2022-03-13T10:00:00+09:00",
         "actual_working_hours": 0.0,
-        "job_id": "job2",
-        "job_name": "Job 2",
     },
 ]
 
