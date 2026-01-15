@@ -36,7 +36,9 @@ def get_weekly_expected_working_hours_df(expected_working_times: list[dict[str, 
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
         # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
-        df.groupby("workspace_member_id").resample("W-SUN", on="date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
+        df.groupby("workspace_member_id")
+        .resample("W-SUN", on="date", label="left", closed="left", include_groups=False)
+        .agg({"expected_working_hours": "sum"})
     )
     df_weekly.reset_index(inplace=True)
 
