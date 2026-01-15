@@ -37,7 +37,7 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
         df.groupby(["workspace_member_id", "job_id", "job_name"])
         .resample("W-SUN", on="dt_date", label="left", closed="left", include_groups=False)
-        .sum(numeric_only=True)
+        .agg({"assigned_working_hours": "sum"})
     )
     df_weekly.reset_index(inplace=True)
 
