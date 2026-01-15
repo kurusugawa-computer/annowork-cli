@@ -9,6 +9,7 @@ import pandas
 import annoworkcli
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.type_util import assert_noreturn
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -27,23 +28,23 @@ def get_weekly_actual_working_hours_df(actual_working_times: list[dict[str, Any]
     """
     df = pandas.DataFrame(actual_working_times)
     # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
-    df["date"] = pandas.to_datetime(df["start_datetime"])
+    df["dt_date"] = pandas.to_datetime(df["start_datetime"])
 
     df_weekly = (
         # `include_groups=False`を指定する理由：pandas2.2.0で以下の警告が出ないようにするため
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
         # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
-        df.groupby("workspace_member_id").resample("W", on="date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
+        df.groupby("workspace_member_id").resample("W-SUN", on="dt_date", label="left", closed="left", include_groups=False).sum(numeric_only=True)
     )
     df_weekly.reset_index(inplace=True)
 
     # 1週間の始まり（日曜日）と終わり（土曜日）の日付列を設定
-    df_weekly.rename(columns={"date": "start_date"}, inplace=True)
-    df_weekly["end_date"] = df_weekly["start_date"] + pandas.Timedelta(days=6)
+    df_weekly.rename(columns={"dt_date": "dt_start_date"}, inplace=True)
+    df_weekly["dt_end_date"] = df_weekly["dt_start_date"] + pandas.Timedelta(days=6)
     # pandas.Timestamp型をstr型に変換する
-    df_weekly["start_date"] = df_weekly["start_date"].dt.date.apply(lambda e: e.isoformat())
-    df_weekly["end_date"] = df_weekly["end_date"].dt.date.apply(lambda e: e.isoformat())
+    df_weekly["start_date"] = df_weekly["dt_start_date"].dt.date.apply(lambda e: e.isoformat())
+    df_weekly["end_date"] = df_weekly["dt_end_date"].dt.date.apply(lambda e: e.isoformat())
 
     # 実績作業時間が0の行は不要なので、除外する
     df_weekly = df_weekly.query("actual_working_hours > 0")
@@ -82,13 +83,14 @@ def main(args: argparse.Namespace) -> None:
 
     logger.info(f"{len(df)} 件の週単位の実績作業時間情報を出力します。")
 
-    if OutputFormat(args.format) == OutputFormat.CSV:
-        print_csv(df, output=args.output)
+    match OutputFormat(args.format):
+        case OutputFormat.CSV:
+            print_csv(df, output=args.output)
 
-    elif OutputFormat(args.format) == OutputFormat.JSON:
-        print_json(df.to_dict("records"), is_pretty=True, output=args.output)
-    else:
-        logger.error("`--format`が対象外でした。")
+        case OutputFormat.JSON:
+            print_json(df.to_dict("records"), is_pretty=True, output=args.output)
+        case _ as unreachable:
+            assert_noreturn(unreachable)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
