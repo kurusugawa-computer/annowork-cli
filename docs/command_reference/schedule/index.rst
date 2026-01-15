@@ -18,6 +18,7 @@ Available Commands
    list
    list_daily
    list_daily_groupby_tag
+   list_weekly
 
 Usage Details
 =================================
