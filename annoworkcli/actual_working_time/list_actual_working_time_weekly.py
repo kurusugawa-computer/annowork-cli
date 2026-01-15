@@ -57,9 +57,7 @@ def get_weekly_actual_working_hours_df(actual_working_times: list[dict[str, Any]
     df = df_weekly.merge(df_workspace_member, on="workspace_member_id", how="left")
     df.sort_values(["user_id", "job_id", "start_date"], inplace=True)
 
-    return df[
-        ["workspace_member_id", "user_id", "username", "job_id", "job_name", "job_id", "job_name", "start_date", "end_date", "actual_working_hours"]
-    ]
+    return df[["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "actual_working_hours"]]
 
 
 def add_parent_job_info_to_df(df: pandas.DataFrame, all_jobs: list[dict[str, Any]]) -> pandas.DataFrame:
@@ -86,8 +84,8 @@ def add_parent_job_info_to_df(df: pandas.DataFrame, all_jobs: list[dict[str, Any
         parent_job = all_job_dict.get(parent_job_id)
         return parent_job["job_name"] if parent_job is not None else None
 
-    df["parent_job_id"] = df["job_id"].apply(get_parent_job_id)
-    df["parent_job_name"] = df["parent_job_id"].apply(get_parent_job_name)
+    df["parent_job_id"] = df["job_id"].map(get_parent_job_id)
+    df["parent_job_name"] = df["parent_job_id"].map(get_parent_job_name)
 
     return df
 
