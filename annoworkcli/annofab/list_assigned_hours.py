@@ -89,7 +89,8 @@ class ListAssignedHoursMain:
         Returns:
             ジョブIDのリスト
         """
-        return [e["job_id"] for e in self.all_jobs if get_parent_job_id_from_job_tree(e["job_tree"]) in set(parent_job_id_list)]
+        parent_job_id_set = set(parent_job_id_list)
+        return [e["job_id"] for e in self.all_jobs if get_parent_job_id_from_job_tree(e["job_tree"]) in parent_job_id_set]
 
     def list_assigned_hours(
         self,
