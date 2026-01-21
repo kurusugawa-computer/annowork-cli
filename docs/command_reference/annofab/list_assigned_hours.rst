@@ -6,9 +6,6 @@ Description
 =================================
 Annofabプロジェクトに紐づくジョブのアサイン時間を日ごとに出力します。
 
-現状では、Annofabプロジェクトに紐づくジョブのアサイン時間を取得するには、``annofab list_job`` コマンドでジョブを取得してから、``schedule list_daily`` コマンドを実行する必要があります。
-このコマンドを使うと、Annofabプロジェクトを指定するだけで、1回のコマンドで紐づくジョブのアサイン時間を取得できます。
-
 
 
 Examples
@@ -37,7 +34,6 @@ Examples
          "user_id": "alice",
          "username": "Alice",
          "assigned_working_hours": 1.5,
-         "annofab_account_id": "4f275f74-5c58-4d35-a700-2475de20d2da"
       }
    ]
 
