@@ -91,8 +91,8 @@ class ListAssignedHoursMain:
         self,
         *,
         annofab_project_id_list: list[str],
-        start_date: str,
-        end_date: str,
+        start_date: str | None,
+        end_date: str | None,
         user_id_list: list[str] | None,
     ) -> list[AssignedHours]:
         """
@@ -100,8 +100,8 @@ class ListAssignedHoursMain:
 
         Args:
             annofab_project_id_list: AnnofabプロジェクトIDのリスト
-            start_date: 集計開始日
-            end_date: 集計終了日
+            start_date: 集計開始日（省略可）
+            end_date: 集計終了日（省略可）
             user_id_list: 絞り込み対象のユーザIDリスト
 
         Returns:
@@ -123,19 +123,18 @@ class ListAssignedHoursMain:
         )
 
         # 結果リストを作成
-        result_list: list[AssignedHours] = []
-        for obj in assigned_hours_daily_list:
-            result_list.append(
-                AssignedHours(
-                    date=obj.date,
-                    parent_job_id=obj.job_id,
-                    parent_job_name=obj.job_name,
-                    workspace_member_id=obj.workspace_member_id,
-                    user_id=obj.user_id,
-                    username=obj.username,
-                    assigned_working_hours=obj.assigned_working_hours,
-                )
+        result_list: list[AssignedHours] = [
+            AssignedHours(
+                date=obj.date,
+                parent_job_id=obj.job_id,
+                parent_job_name=obj.job_name,
+                workspace_member_id=obj.workspace_member_id,
+                user_id=obj.user_id,
+                username=obj.username,
+                assigned_working_hours=obj.assigned_working_hours,
             )
+            for obj in assigned_hours_daily_list
+        ]
 
         return result_list
 
@@ -145,8 +144,8 @@ class ListAssignedHoursMain:
         output: Path,
         output_format: OutputFormat,
         annofab_project_id_list: list[str],
-        start_date: str,
-        end_date: str,
+        start_date: str | None,
+        end_date: str | None,
         user_id_list: list[str] | None,
     ) -> None:
         result = self.list_assigned_hours(
@@ -191,8 +190,8 @@ class ListAssignedHoursMain:
 def main(args: argparse.Namespace) -> None:
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
     user_id_list = get_list_from_args(args.user_id)
-    start_date: str = args.start_date
-    end_date: str = args.end_date
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
 
     if annofab_project_id_list is None:
         raise ValueError("--annofab_project_id は必須です。")
@@ -232,8 +231,8 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 
-    parser.add_argument("--start_date", type=str, required=True, help="集計開始日(YYYY-mm-dd)")
-    parser.add_argument("--end_date", type=str, required=True, help="集計終了日(YYYY-mm-dd)")
+    parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
+    parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 
