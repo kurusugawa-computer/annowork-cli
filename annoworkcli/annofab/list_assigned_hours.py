@@ -1,6 +1,5 @@
 import argparse
 import logging
-from collections import defaultdict
 from collections.abc import Collection
 from dataclasses import dataclass
 from pathlib import Path
@@ -26,19 +25,15 @@ class AssignedHours(DataClassJsonMixin):
     """
     Annofabプロジェクトに紐づくジョブのアサイン時間情報を格納するクラス
 
-    Notes:
-        parent_job_name, user_id, usernameがOptional型である理由
-            存在しないparent_job_id, workspace_member_idである可能性があるため。
     """
 
     date: str
     parent_job_id: str
-    parent_job_name: str | None
+    parent_job_name: str
     workspace_member_id: str
-    user_id: str | None
-    username: str | None
+    user_id: str
+    username: str
     assigned_working_hours: float
-    annofab_account_id: str | None
 
 
 class ListAssignedHoursMain:
@@ -116,51 +111,29 @@ class ListAssignedHoursMain:
         parent_job_id_list = self.get_parent_job_id_list_from_annofab_project_id_list(annofab_project_id_list)
 
         if len(parent_job_id_list) == 0:
-            logger.warning(f"指定されたAnnofabプロジェクトID {annofab_project_id_list} に紐づくジョブが見つかりませんでした。")
+            logger.warning(f"指定されたAnnofabプロジェクトID {annofab_project_id_list} に紐づく親ジョブが見つかりませんでした。")
             return []
-
-        # 親ジョブIDから子ジョブIDを取得
-        job_id_list = self.get_job_id_list_from_parent_job_id_list(parent_job_id_list)
 
         # 日次アサイン時間を取得
         assigned_hours_daily_list = self.list_assigned_hours_daily_obj.get_assigned_hours_daily_list(
             start_date=start_date,
             end_date=end_date,
-            job_ids=job_id_list,
+            job_ids=parent_job_id_list,  # parent_job_idを指定しているのは間違っていない
             user_ids=user_id_list,
         )
 
-        # 親ジョブ単位で集計
-        parent_job_dict = {job["job_id"]: get_parent_job_id_from_job_tree(job["job_tree"]) for job in self.all_jobs}
-        parent_job_name_dict = {job["job_id"]: job["job_name"] for job in self.all_jobs}
-        workspace_member_dict = {member["workspace_member_id"]: member for member in self.all_workspace_members}
-
-        # (date, parent_job_id, workspace_member_id) ごとに集計
-        aggregated_dict: dict[tuple[str, str, str], float] = defaultdict(float)
-        for daily in assigned_hours_daily_list:
-            parent_job_id = parent_job_dict.get(daily.job_id)
-            if parent_job_id is None:
-                logger.warning(f"job_id={daily.job_id} の親ジョブIDが見つかりませんでした。")
-                continue
-            key = (daily.date, parent_job_id, daily.workspace_member_id)
-            aggregated_dict[key] += daily.assigned_working_hours
-
         # 結果リストを作成
         result_list: list[AssignedHours] = []
-        for (date, parent_job_id, workspace_member_id), assigned_hours in aggregated_dict.items():
-            parent_job_name = parent_job_name_dict.get(parent_job_id)
-            member = workspace_member_dict.get(workspace_member_id)
-
+        for obj in assigned_hours_daily_list:
             result_list.append(
                 AssignedHours(
-                    date=date,
-                    parent_job_id=parent_job_id,
-                    parent_job_name=parent_job_name,
-                    workspace_member_id=workspace_member_id,
-                    user_id=member["user_id"] if member is not None else None,
-                    username=member["username"] if member is not None else None,
-                    assigned_working_hours=assigned_hours,
-                    annofab_account_id=member.get("annofab_account_id") if member is not None else None,
+                    date=obj.date,
+                    parent_job_id=obj.job_id,
+                    parent_job_name=obj.job_name,
+                    workspace_member_id=obj.workspace_member_id,
+                    user_id=obj.user_id,
+                    username=obj.username,
+                    assigned_working_hours=obj.assigned_working_hours,
                 )
             )
 
