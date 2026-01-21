@@ -123,18 +123,22 @@ class ListAssignedHoursMain:
         )
 
         # 結果リストを作成
-        result_list: list[AssignedHours] = [
-            AssignedHours(
-                date=obj.date,
-                parent_job_id=obj.job_id,
-                parent_job_name=obj.job_name,
-                workspace_member_id=obj.workspace_member_id,
-                user_id=obj.user_id,
-                username=obj.username,
-                assigned_working_hours=obj.assigned_working_hours,
+        result_list: list[AssignedHours] = []
+        for obj in assigned_hours_daily_list:
+            assert obj.job_name is not None
+            assert obj.user_id is not None
+            assert obj.username is not None
+            result_list.append(
+                AssignedHours(
+                    date=obj.date,
+                    parent_job_id=obj.job_id,
+                    parent_job_name=obj.job_name,
+                    workspace_member_id=obj.workspace_member_id,
+                    user_id=obj.user_id,
+                    username=obj.username,
+                    assigned_working_hours=obj.assigned_working_hours,
+                )
             )
-            for obj in assigned_hours_daily_list
-        ]
 
         return result_list
 
