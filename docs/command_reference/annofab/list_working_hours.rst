@@ -27,6 +27,8 @@ Examples
    [
       {
          "date": "2021-11-05",
+         "parent_job_id": "parent_job",
+         "parent_job_name": "親ジョブ",
          "job_id": "job",
          "job_name": "MOON",
          "workspace_member_id": "58005ead-f85b-45d8-931b-54ba2837d7b1",
@@ -34,6 +36,7 @@ Examples
          "username": "Alice",
          "actual_working_hours": 1.1666666666666667,
          "annofab_project_id": "af_project",
+         "annofab_project_title": "Annofabプロジェクト",
          "annofab_account_id": "4f275f74-5c58-4d35-a700-2475de20d2da",
          "annofab_working_hours": 0.5,
          "notes": null

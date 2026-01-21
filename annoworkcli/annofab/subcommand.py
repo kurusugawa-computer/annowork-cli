@@ -1,6 +1,7 @@
 import argparse
 
 import annoworkcli
+import annoworkcli.annofab.list_assigned_hours
 import annoworkcli.annofab.list_job_with_annofab_project
 import annoworkcli.annofab.list_working_hours
 import annoworkcli.annofab.put_account_external_linkage_info
@@ -14,6 +15,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義
+    annoworkcli.annofab.list_assigned_hours.add_parser(subparsers)
     annoworkcli.annofab.list_job_with_annofab_project.add_parser(subparsers)
     annoworkcli.annofab.list_working_hours.add_parser(subparsers)
     annoworkcli.annofab.visualize_statistics.add_parser(subparsers)
