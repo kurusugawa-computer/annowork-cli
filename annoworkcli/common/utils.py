@@ -122,7 +122,7 @@ def isoduration_to_hour(duration: str) -> float:
 
 
 def to_iso8601_string(dt: datetime.datetime) -> str:
-    return dt.astimezone(datetime.timezone.utc).strftime(DATETIME_FORMAT)
+    return dt.astimezone(datetime.UTC).strftime(DATETIME_FORMAT)
 
 
 def set_default_logger(*, is_debug_mode: bool = False) -> None:
