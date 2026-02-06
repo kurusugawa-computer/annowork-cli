@@ -61,7 +61,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "list_workspace_member"
-    subcommand_help = "自身のワークスペースメンバの一覧を出力します。"
+    subcommand_help = "所属しているワークスペースでの自分自身のメンバー情報を出力します。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
