@@ -21,26 +21,36 @@ ASSIGNED_HOURS_DAILY_LIST = [
     {
         "workspace_member_id": "alice",
         "date": "2022-03-05",
+        "job_id": "job1",
+        "job_name": "Job 1",
         "assigned_working_hours": 1,
     },
     {
         "workspace_member_id": "alice",
         "date": "2022-03-06",
+        "job_id": "job1",
+        "job_name": "Job 1",
         "assigned_working_hours": 2,
     },
     {
         "workspace_member_id": "alice",
         "date": "2022-03-12",
+        "job_id": "job1",
+        "job_name": "Job 1",
         "assigned_working_hours": 3,
     },
     {
         "workspace_member_id": "bob",
         "date": "2022-02-06",
+        "job_id": "job2",
+        "job_name": "Job 2",
         "assigned_working_hours": 4,
     },
     {
         "workspace_member_id": "bob",
         "date": "2022-03-13",
+        "job_id": "job2",
+        "job_name": "Job 2",
         "assigned_working_hours": 0,
     },
 ]
