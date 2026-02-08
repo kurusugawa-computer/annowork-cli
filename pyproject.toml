@@ -16,13 +16,19 @@ classifiers = [
     "Environment :: Console",
     "Topic :: Utilities",
     "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14"
+    
 ]
 dependencies = [
     "pyyaml",
     "annoworkapi>=3.2.1,<4",
     "annofabapi>=1,<2",
     "more-itertools",
-    "pandas",
+    "pandas>=2.0",
     "isodate",
     "annofabcli>=1.90",
 ]
@@ -35,19 +41,19 @@ annoworkcli = "annoworkcli.__main__:main"
 
 [dependency-groups]
 test = [
-    "pytest>=8,<10",
+    "pytest>=8",
     "pytest-xdist",
     "pytest-cov",
 ]
 linter = [
     "mypy>=1; python_version >= '3.12'",
-    "ruff>=0.14; python_version >= '3.12'",
+    "ruff>=0.15; python_version >= '3.12'",
     "types-requests",
     "types-python-dateutil",
     "types-PyYAML",
 ]
 documentation = [
-    "sphinx>=8,<9 ; python_version >= '3.12'",
+    "sphinx>=9 ; python_version >= '3.12'",
     "pydata-sphinx-theme>=0.13 ; python_version >= '3.12'",
     "sphinx-last-updated-by-git ; python_version >= '3.12'",
     "sphinx-argparse ; python_version >= '3.12'",

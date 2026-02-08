@@ -82,7 +82,7 @@ class ListExpectedWorkingTimeGroupbyTag:
             elm = {"date": date, "expected_working_hours": value}
             results.append(elm)
 
-        results.sort(key=lambda e: (e["date"]))
+        results.sort(key=lambda e: e["date"])
         return results
 
     def main(
