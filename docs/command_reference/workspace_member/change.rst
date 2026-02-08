@@ -14,7 +14,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli my list_workspace_member change --workspace_id org \
+    $ annoworkcli workspace_member change --workspace_id org \
      --user_id alice bob --role worker
 
 

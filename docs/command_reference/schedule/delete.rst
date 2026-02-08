@@ -11,7 +11,7 @@ Description
 Examples
 =================================
 
-``--schedul_id`` に削除したい作業計画のschedule_idを指定します。
+``--schedule_id`` に削除したい作業計画のschedule_idを指定します。
 
 .. code-block::
 

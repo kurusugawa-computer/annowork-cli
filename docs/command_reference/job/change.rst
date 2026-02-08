@@ -16,7 +16,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli job change --workspace_id org --job_id job --status archived
+    $ annoworkcli job change --workspace_id org --job_id job1 job2 --status archived
 
 
 
