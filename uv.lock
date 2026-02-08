@@ -156,7 +156,7 @@ requires-dist = [
     { name = "annoworkapi", specifier = ">=3.2.1,<4" },
     { name = "isodate" },
     { name = "more-itertools" },
-    { name = "pandas" },
+    { name = "pandas", specifier = ">=2.0" },
     { name = "pyyaml" },
 ]
 

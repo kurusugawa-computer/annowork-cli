@@ -22,7 +22,7 @@ dependencies = [
     "annoworkapi>=3.2.1,<4",
     "annofabapi>=1,<2",
     "more-itertools",
-    "pandas",
+    "pandas>=2.0",
     "isodate",
     "annofabcli>=1.90",
 ]

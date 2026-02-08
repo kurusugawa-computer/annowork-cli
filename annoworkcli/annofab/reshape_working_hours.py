@@ -776,12 +776,12 @@ class ReshapeWorkingHours:
             columns=["date", "user_id", "username", "workspace_member_id", "job_id", "job_name", "assigned_working_hours"],
         ).astype(
             {
-                "date": "str",
-                "user_id": "str",
-                "username": "str",
-                "workspace_member_id": "str",
-                "job_id": "str",
-                "job_name": "str",
+                "date": "string",
+                "user_id": "string",
+                "username": "string",
+                "workspace_member_id": "string",
+                "job_id": "string",
+                "job_name": "string",
                 "assigned_working_hours": "float64",
             }
         )
@@ -940,12 +940,12 @@ def get_empty_df_assigned() -> pandas.DataFrame:
         ]
     ).astype(
         {
-            "date": "str",
-            "job_id": "str",
-            "job_name": "str",
-            "workspace_member_id": "str",
-            "user_id": "str",
-            "username": "str",
+            "date": "string",
+            "job_id": "string",
+            "job_name": "string",
+            "workspace_member_id": "string",
+            "user_id": "string",
+            "username": "string",
             "assigned_working_hours": "float64",
         }
     )

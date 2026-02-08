@@ -185,9 +185,9 @@ class ListWorkingHoursWithAnnofab:
                 logger.warning(f"{user_id=} の外部連携情報にAnnofabのaccount_idは設定されていませんでした。")
             af_account_list.append({"user_id": user_id, "annofab_account_id": annofab_account_id})
 
-        df_af_account = pandas.DataFrame(af_account_list, columns=["user_id", "annofab_account_id"]).astype("str")
+        df_af_account = pandas.DataFrame(af_account_list, columns=["user_id", "annofab_account_id"]).astype("string")
 
-        df_user = pandas.DataFrame(self.all_workspace_members, columns=["user_id", "username", "workspace_member_id"]).astype("str")
+        df_user = pandas.DataFrame(self.all_workspace_members, columns=["user_id", "username", "workspace_member_id"]).astype("string")
 
         df = df_user.merge(df_af_account, how="inner", on="user_id")
         return df
@@ -279,11 +279,11 @@ class ListWorkingHoursWithAnnofab:
 
         if len(result) > 0:
             return pandas.DataFrame(result).astype(
-                {"date": "str", "annofab_project_id": "str", "annofab_account_id": "str", "annofab_working_hours": "float64"}
+                {"date": "string", "annofab_project_id": "string", "annofab_account_id": "string", "annofab_working_hours": "float64"}
             )
 
         df = pandas.DataFrame(columns=["date", "annofab_project_id", "annofab_account_id", "annofab_working_hours"]).astype(
-            {"annofab_working_hours": "float64", "date": "str", "annofab_project_id": "str", "annofab_account_id": "str"}
+            {"annofab_working_hours": "float64", "date": "string", "annofab_project_id": "string", "annofab_account_id": "string"}
         )
         # `astype()`を使用する理由：後続の処理で`fillna()`を実行した際に、「Downcasting object dtype arrays ～」というFutureWarningを発生させないようにするため  # noqa: E501
         # https://qiita.com/yuji38kwmt/items/ba07a25924cfda363e42
@@ -386,12 +386,12 @@ class ListWorkingHoursWithAnnofab:
             # astypeを指定する理由：`actual_working_hours_daily_list`が0件だと数値型の`actual_working_hours`のdtypeがobjectになり、
             # 後続の処理で想定外のエラーが発生する恐れがあるため
             {
-                "date": "str",
-                "job_id": "str",
-                "job_name": "str",
-                "workspace_member_id": "str",
-                "user_id": "str",
-                "username": "str",
+                "date": "string",
+                "job_id": "string",
+                "job_name": "string",
+                "workspace_member_id": "string",
+                "user_id": "string",
+                "username": "string",
                 "actual_working_hours": "float64",
                 "notes": "string",
             }
