@@ -35,19 +35,19 @@ annoworkcli = "annoworkcli.__main__:main"
 
 [dependency-groups]
 test = [
-    "pytest>=8,<10",
+    "pytest>=8",
     "pytest-xdist",
     "pytest-cov",
 ]
 linter = [
     "mypy>=1; python_version >= '3.12'",
-    "ruff>=0.14; python_version >= '3.12'",
+    "ruff>=0.15; python_version >= '3.12'",
     "types-requests",
     "types-python-dateutil",
     "types-PyYAML",
 ]
 documentation = [
-    "sphinx>=8,<9 ; python_version >= '3.12'",
+    "sphinx>=9 ; python_version >= '3.12'",
     "pydata-sphinx-theme>=0.13 ; python_version >= '3.12'",
     "sphinx-last-updated-by-git ; python_version >= '3.12'",
     "sphinx-argparse ; python_version >= '3.12'",
