@@ -16,7 +16,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli my list_workspace_member append_tag --workspace_id org \
+    $ annoworkcli workspace_member append_tag --workspace_id org \
      --user_id alice bob --workspace_tag_id tag1 tag2
 
 

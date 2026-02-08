@@ -16,7 +16,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli my list_workspace_member delete --workspace_id org \
+    $ annoworkcli workspace_member delete --workspace_id org \
      --user_id alice bob
 
 
