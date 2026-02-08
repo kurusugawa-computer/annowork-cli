@@ -18,6 +18,7 @@
         "annowork",
         "annoworkapi",
         "annoworkcli",
+        "argparse",
         "astimezone",
         "astype",
         "asyncio",
