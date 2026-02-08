@@ -15,11 +15,11 @@ jobs:
     
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
         
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v7
         with:
@@ -43,13 +43,13 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: 3.13
           # Install a specific version of uv.
-          version: "0.8.14"
+          version: "0.10.0"
       - name: Install the project
         run: uv sync --only-group linter
       - name: Lint
