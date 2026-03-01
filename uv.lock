@@ -69,7 +69,7 @@ wheels = [
 
 [[package]]
 name = "annofabcli"
-version = "1.114.8"
+version = "1.114.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annofabapi" },
@@ -92,9 +92,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "ulid-py" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d8/63/54b2491822312a860578fc98b81042fe2809b4329f80da1fdcf25d7bf180/annofabcli-1.114.8.tar.gz", hash = "sha256:3c1f5cabfa2412609af59cf0d307ecd7056e299984e51ed84fc7da4dbf70872b", size = 2175620, upload-time = "2026-02-05T10:52:53.704Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b3/c9/580718d6a690df645c53629e8c528aa443004feba927ac56496dfcb88fac/annofabcli-1.114.9.tar.gz", hash = "sha256:4048531c59a73849ae7adeed4e8f1c1e971f39e2e083f2db6f9c32aa2ce94074", size = 2178439, upload-time = "2026-02-09T06:44:39.704Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a7/50/225eac1d8393d52ef987312d5bfc86ed70f2edfb1c2d6bfec822fea232fe/annofabcli-1.114.8-py3-none-any.whl", hash = "sha256:1472860ddffd92ff2499d8a8ed1de3aa6cc2b4b8f6ba40f2d2427e2db6e3fdf7", size = 587558, upload-time = "2026-02-05T10:52:55.798Z" },
+    { url = "https://files.pythonhosted.org/packages/b5/3c/1913e49ed6ff1d9f8a55fb05dbb43439c16cb8f4b45a1915545b53668d12/annofabcli-1.114.9-py3-none-any.whl", hash = "sha256:e45d8aad36bfd3115d504f0021cf4fcc774b49ac9d0a4d174574a964f8d98ebf", size = 589416, upload-time = "2026-02-09T06:44:37.694Z" },
 ]
 
 [[package]]
