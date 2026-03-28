@@ -127,6 +127,7 @@ def add_parser(
         help=command_help,
         epilog=epilog,
         formatter_class=PrettyHelpFormatter,
+        allow_abbrev=False,
     )
     parser.set_defaults(command_help=parser.print_help)
 
