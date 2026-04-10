@@ -15,18 +15,30 @@ from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDail
 logger = logging.getLogger(__name__)
 
 
-def get_daily_total_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]) -> pandas.DataFrame:
+def get_daily_assigned_hours_by_job_df(assigned_hours_daily_list: list[dict[str, Any]]) -> pandas.DataFrame:
+    required_columns = ["date", "job_id", "job_name", "assigned_working_hours", "active_user_count"]
+
     df = pandas.DataFrame(assigned_hours_daily_list)
     if len(df) == 0:
-        return pandas.DataFrame(columns=["date", "assigned_working_hours"])
+        return pandas.DataFrame(columns=required_columns)
 
-    df_total = (
-        df.groupby("date", as_index=False)
-        .agg({"assigned_working_hours": "sum"})
-        .query("assigned_working_hours > 0")
-        .sort_values("date")
+    df_positive = df.query("assigned_working_hours > 0")
+    if len(df_positive) == 0:
+        return pandas.DataFrame(columns=required_columns)
+
+    df_hours = (
+        df_positive.groupby(["date", "job_id"], as_index=False)
+        .agg({"assigned_working_hours": "sum", "job_name": "first"})
+        .sort_values(["date", "job_id"])
     )
-    return df_total[["date", "assigned_working_hours"]]
+    df_active_user = (
+        df_positive.groupby(["date", "job_id"], as_index=False)
+        .agg({"workspace_member_id": "nunique"})
+        .rename(columns={"workspace_member_id": "active_user_count"})
+    )
+    df_total = df_hours.merge(df_active_user, on=["date", "job_id"], how="inner")
+
+    return df_total[required_columns]
 
 
 def main(args: argparse.Namespace) -> None:
@@ -49,9 +61,9 @@ def main(args: argparse.Namespace) -> None:
         user_ids=None,
     )
 
-    df = get_daily_total_assigned_hours_df([e.to_dict() for e in assigned_hours_daily_list])
+    df = get_daily_assigned_hours_by_job_df([e.to_dict() for e in assigned_hours_daily_list])
 
-    logger.info(f"{len(df)} 件の日ごとのアサイン時間情報（合計）を出力します。")
+    logger.info(f"{len(df)} 件の日ごとのアサイン時間情報（ジョブごと）を出力します。")
 
     match OutputFormat(args.format):
         case OutputFormat.CSV:
@@ -91,8 +103,8 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
-    subcommand_name = "list_daily_total"
-    subcommand_help = "作業計画から求めたアサイン時間を日ごとに合計して出力します。"
+    subcommand_name = "list_daily_by_job"
+    subcommand_help = "作業計画から求めたアサイン時間を日ごと・ジョブごとに集計して出力します。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)

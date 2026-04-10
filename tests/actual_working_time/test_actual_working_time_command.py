@@ -62,11 +62,11 @@ def test_list_daily():
     )
 
 
-def test_list_daily_total():
+def test_list_daily_by_job():
     main(
         [
             COMMAND_NAME,
-            "list_daily_total",
+            "list_daily_by_job",
             "--workspace_id",
             workspace_id,
             "--start_date",
@@ -76,7 +76,7 @@ def test_list_daily_total():
             "--format",
             "json",
             "--output",
-            str(out_dir / "list_daily_total.csv"),
+            str(out_dir / "list_daily_by_job.csv"),
         ]
     )
 
