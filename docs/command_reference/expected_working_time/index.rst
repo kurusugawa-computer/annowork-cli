@@ -16,6 +16,7 @@ Available Commands
 
    delete
    list
+   list_daily_total
    list_groupby_tag
    list_weekly
 

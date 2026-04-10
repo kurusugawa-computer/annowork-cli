@@ -48,7 +48,7 @@ def test_list_weekly():
     main(
         [
             COMMAND_NAME,
-            "list",
+            "list_weekly",
             "--workspace_id",
             workspace_id,
             "--start_date",
@@ -57,6 +57,23 @@ def test_list_weekly():
             "2022-01-31",
             "--output",
             str(out_dir / "list_weekly.csv"),
+        ]
+    )
+
+
+def test_list_daily_total():
+    main(
+        [
+            COMMAND_NAME,
+            "list_daily_total",
+            "--workspace_id",
+            workspace_id,
+            "--start_date",
+            "2022-01-01",
+            "--end_date",
+            "2022-01-31",
+            "--output",
+            str(out_dir / "list_daily_total.csv"),
         ]
     )
 

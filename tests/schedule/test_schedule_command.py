@@ -61,6 +61,23 @@ def test_list_daily():
     )
 
 
+def test_list_daily_total():
+    main(
+        [
+            COMMAND_NAME,
+            "list_daily_total",
+            "--workspace_id",
+            workspace_id,
+            "--start_date",
+            "2022-01-01",
+            "--end_date",
+            "2022-01-31",
+            "--output",
+            str(out_dir / "list_daily_total.csv"),
+        ]
+    )
+
+
 def test_list_groupby_tag():
     main(
         [

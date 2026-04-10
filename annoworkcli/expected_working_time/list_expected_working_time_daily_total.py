@@ -1,0 +1,93 @@
+import argparse
+import logging
+import sys
+from pathlib import Path
+from typing import Any
+
+import pandas
+
+import annoworkcli
+import annoworkcli.common.cli
+from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi
+from annoworkcli.common.type_util import assert_noreturn
+from annoworkcli.common.utils import print_csv, print_json
+from annoworkcli.expected_working_time.list_expected_working_time import ListExpectedWorkingTime
+
+logger = logging.getLogger(__name__)
+
+
+def get_daily_total_expected_working_hours_df(expected_working_times: list[dict[str, Any]]) -> pandas.DataFrame:
+    df = pandas.DataFrame(expected_working_times)
+    if len(df) == 0:
+        return pandas.DataFrame(columns=["date", "expected_working_hours"])
+
+    df_total = (
+        df.groupby("date", as_index=False)
+        .agg({"expected_working_hours": "sum"})
+        .query("expected_working_hours > 0")
+        .sort_values("date")
+    )
+
+    return df_total[["date", "expected_working_hours"]]
+
+
+def main(args: argparse.Namespace) -> None:
+    annowork_service = build_annoworkapi(args)
+    start_date: str | None = args.start_date
+    end_date: str | None = args.end_date
+
+    command = " ".join(sys.argv[0:3])
+    if all(v is None for v in [start_date, end_date]):
+        print(f"{command}: error: '--start_date'や'--end_date'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
+        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
+
+    main_obj = ListExpectedWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id)
+
+    expected_working_times = main_obj.get_expected_working_times(start_date=start_date, end_date=end_date)
+
+    df = get_daily_total_expected_working_hours_df(expected_working_times)
+
+    logger.info(f"{len(df)} 件の日ごとの予定稼働時間情報（合計）を出力します。")
+
+    match OutputFormat(args.format):
+        case OutputFormat.CSV:
+            print_csv(df, output=args.output)
+
+        case OutputFormat.JSON:
+            print_json(df.to_dict("records"), is_pretty=True, output=args.output)
+        case _ as unreachable:
+            assert_noreturn(unreachable)
+
+
+def parse_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "-w",
+        "--workspace_id",
+        type=str,
+        required=True,
+        help="対象のワークスペースID",
+    )
+
+    parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
+    parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
+
+    parser.add_argument("-o", "--output", type=Path, help="出力先")
+    parser.add_argument(
+        "-f",
+        "--format",
+        type=str,
+        choices=[e.value for e in OutputFormat],
+        help="出力先のフォーマット",
+        default=OutputFormat.CSV.value,
+    )
+
+    parser.set_defaults(subcommand_func=main)
+
+
+def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
+    subcommand_name = "list_daily_total"
+    subcommand_help = "予定稼働時間を日ごとに合計して出力します。"
+
+    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
+    parse_args(parser)
+    return parser

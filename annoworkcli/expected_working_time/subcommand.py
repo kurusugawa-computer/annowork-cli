@@ -4,6 +4,7 @@ import annoworkcli
 import annoworkcli.common.cli
 import annoworkcli.expected_working_time.delete_expected_working_time
 import annoworkcli.expected_working_time.list_expected_working_time
+import annoworkcli.expected_working_time.list_expected_working_time_daily_total
 import annoworkcli.expected_working_time.list_expected_working_time_groupby_tag
 import annoworkcli.expected_working_time.list_expected_working_time_weekly
 
@@ -14,6 +15,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     # サブコマンドの定義
     annoworkcli.expected_working_time.delete_expected_working_time.add_parser(subparsers)
     annoworkcli.expected_working_time.list_expected_working_time.add_parser(subparsers)
+    annoworkcli.expected_working_time.list_expected_working_time_daily_total.add_parser(subparsers)
     annoworkcli.expected_working_time.list_expected_working_time_groupby_tag.add_parser(subparsers)
     annoworkcli.expected_working_time.list_expected_working_time_weekly.add_parser(subparsers)
 
