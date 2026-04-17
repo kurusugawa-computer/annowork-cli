@@ -76,7 +76,7 @@ def test_list_daily_by_job():
             "--format",
             "json",
             "--output",
-            str(out_dir / "list_daily_by_job.csv"),
+            str(out_dir / "list_daily_by_job.json"),
         ]
     )
 
