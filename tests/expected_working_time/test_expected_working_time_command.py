@@ -48,7 +48,7 @@ def test_list_weekly():
     main(
         [
             COMMAND_NAME,
-            "list",
+            "list_weekly",
             "--workspace_id",
             workspace_id,
             "--start_date",
