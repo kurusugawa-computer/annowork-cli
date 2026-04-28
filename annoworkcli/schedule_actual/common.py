@@ -89,7 +89,9 @@ def _sum_working_hours_by_date(df: pandas.DataFrame, hours_column: str) -> dict[
     return df.groupby("date", as_index=True)[hours_column].sum().to_dict()
 
 
-def _clamp_range(*, start_date: str | None, end_date: str | None, lower: str | None = None, upper: str | None = None) -> tuple[str | None, str | None]:
+def _clamp_range(
+    *, start_date: str | None, end_date: str | None, lower: str | None = None, upper: str | None = None
+) -> tuple[str | None, str | None]:
     result_start = start_date
     result_end = end_date
     if lower is not None:

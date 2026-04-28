@@ -20,4 +20,3 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help, is_subcommand=False)
     parse_args(parser)
     return parser
-

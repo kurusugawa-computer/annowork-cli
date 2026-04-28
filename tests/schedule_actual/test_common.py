@@ -82,4 +82,3 @@ def test_build_weekly_schedule_actual_df():
             "cumulative_working_hours": 10.0,
         },
     ]
-
