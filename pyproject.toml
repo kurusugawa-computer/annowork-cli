@@ -34,7 +34,9 @@ dependencies = [
 ]
 
 [project.urls]
+Homepage = "https://github.com/kurusugawa-computer/annowork-cli"
 Repository = "https://github.com/kurusugawa-computer/annowork-cli"
+Documentation = "https://annowork-cli.readthedocs.io"
 
 [project.scripts]
 annoworkcli = "annoworkcli.__main__:main"
