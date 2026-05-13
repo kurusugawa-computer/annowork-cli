@@ -14,6 +14,7 @@ import annoworkcli.expected_working_time.subcommand
 import annoworkcli.job.subcommand
 import annoworkcli.my.subcommand
 import annoworkcli.schedule.subcommand
+import annoworkcli.schedule_actual.subcommand
 import annoworkcli.workspace.subcommand
 import annoworkcli.workspace_member.subcommand
 import annoworkcli.workspace_tag.subcommand
@@ -48,6 +49,7 @@ def create_parser() -> argparse.ArgumentParser:
     annoworkcli.job.subcommand.add_parser(subparsers)
     annoworkcli.my.subcommand.add_parser(subparsers)
     annoworkcli.schedule.subcommand.add_parser(subparsers)
+    annoworkcli.schedule_actual.subcommand.add_parser(subparsers)
     annoworkcli.workspace.subcommand.add_parser(subparsers)
     annoworkcli.workspace_member.subcommand.add_parser(subparsers)
     annoworkcli.workspace_tag.subcommand.add_parser(subparsers)

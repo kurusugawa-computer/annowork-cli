@@ -15,6 +15,7 @@ Command Reference
    job/index
    my/index
    schedule/index
+   schedule_actual/index
    workspace/index
    workspace_member/index
    workspace_tag/index
