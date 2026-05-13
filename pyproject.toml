@@ -3,7 +3,7 @@ name = "annoworkcli"
 dynamic = ["version"]
 description = "AnnoworkのCLI(Command Line Interface)"
 authors = [{ name = "Kurusugawa Computer Inc." }]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = "README.md"
 license = "MIT"
 keywords = [
@@ -16,7 +16,6 @@ classifiers = [
     "Environment :: Console",
     "Topic :: Utilities",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -84,7 +83,7 @@ warn_unused_configs = true
 
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 line-length = 150
 
 [tool.ruff.lint]
@@ -149,5 +148,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
-
 

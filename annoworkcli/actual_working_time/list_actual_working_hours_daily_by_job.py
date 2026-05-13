@@ -1,7 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, assert_never
 
 import pandas
 from annoworkapi.job import get_parent_job_id_from_job_tree
@@ -11,7 +11,6 @@ import annoworkcli.common.cli
 from annoworkcli.actual_working_time.list_actual_working_hours_daily import create_actual_working_hours_daily_list, filter_actual_daily_list
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
-from annoworkcli.common.type_util import assert_noreturn
 from annoworkcli.common.utils import print_csv, print_json
 
 logger = logging.getLogger(__name__)
@@ -118,7 +117,7 @@ def main(args: argparse.Namespace) -> None:
         case OutputFormat.JSON:
             print_json(df.to_dict("records"), is_pretty=True, output=args.output)
         case _ as unreachable:
-            assert_noreturn(unreachable)
+            assert_never(unreachable)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:

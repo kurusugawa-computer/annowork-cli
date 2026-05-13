@@ -7,7 +7,7 @@ import logging
 from collections.abc import Collection
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, assert_never
 
 import numpy
 import pandas
@@ -21,7 +21,6 @@ from annoworkcli.annofab.list_working_hours import ListWorkingHoursWithAnnofab
 from annoworkcli.annofab.utils import build_annofabapi_resource
 from annoworkcli.common.annofab import get_annofab_project_id_from_job
 from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
-from annoworkcli.common.type_util import assert_noreturn
 from annoworkcli.common.utils import print_csv
 from annoworkcli.common.workspace_tag import get_company_from_workspace_tag_name, is_company_from_workspace_tag_name
 from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDaily
@@ -882,7 +881,7 @@ class ReshapeWorkingHours:
             df_output = reshape_obj.get_df_list_by_date_user_parent_job(df_actual=df_actual)
 
         else:
-            assert_noreturn(shape_type)
+            assert_never(shape_type)
         return df_output
 
     def filter_df(
