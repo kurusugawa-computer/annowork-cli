@@ -165,11 +165,11 @@ def mask_credential_in_command(command: list[str]) -> list[str]:
     return tmp_command
 
 
-def visualize_statistics(temp_dir: Path, args: argparse.Namespace) -> None:
+def visualize_statistics(temp_dir: Path, args: argparse.Namespace, workspace_id: str) -> None:
     annowork_service = build_annoworkapi(args)
     job_id_list = get_list_from_args(args.job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
-    main_obj = ListLabor(annowork_service, args.workspace_id)
+    main_obj = ListLabor(annowork_service, workspace_id)
     annofab_labor_dict = main_obj.get_annofab_labor_dict(
         job_id_list=job_id_list,
         annofab_project_id_list=annofab_project_id_list,
@@ -228,21 +228,16 @@ def visualize_statistics(temp_dir: Path, args: argparse.Namespace) -> None:
 
 
 def main(args: argparse.Namespace) -> None:
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     if args.temp_dir is not None:
-        visualize_statistics(args.temp_dir, args)
+        visualize_statistics(args.temp_dir, args, workspace_id)
     else:
         with tempfile.TemporaryDirectory() as str_temp_dir:
-            visualize_statistics(Path(str_temp_dir), args)
+            visualize_statistics(Path(str_temp_dir), args, workspace_id)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     job_id_group = parser.add_mutually_exclusive_group(required=True)
     job_id_group.add_argument("-j", "--job_id", type=str, nargs="+", help="絞り込み対象のジョブID")

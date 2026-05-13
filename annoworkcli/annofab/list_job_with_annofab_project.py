@@ -127,13 +127,14 @@ class ListJobWithAnnofabProject:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     annofab_project_id_list = get_list_from_args(args.annofab_project_id)
 
     main_obj = ListJobWithAnnofabProject(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         annofab_service=build_annofabapi_resource(
             annofab_login_user_id=args.annofab_user_id,
             annofab_login_password=args.annofab_password,
@@ -166,13 +167,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     job_id_group = parser.add_mutually_exclusive_group()
     job_id_group.add_argument(

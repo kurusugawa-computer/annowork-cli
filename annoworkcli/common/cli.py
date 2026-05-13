@@ -21,6 +21,7 @@ from annoworkcli.common.utils import get_file_scheme_path, read_lines_except_bla
 logger = logging.getLogger(__name__)
 
 COMMAND_LINE_ERROR_STATUS_CODE = 2
+WORKSPACE_ID_ENVVAR = "ANNOWORK_WORKSPACE_ID"
 
 
 class OutputFormat(Enum):
@@ -141,6 +142,30 @@ def add_parser(
         global_optional_argument_group._group_actions.insert(0, help_action)
 
     return parser
+
+
+def add_required_workspace_id_argument(parser: argparse.ArgumentParser) -> None:
+    """必須のworkspace_id引数を追加します。"""
+    parser.add_argument(
+        "-w",
+        "--workspace_id",
+        type=str,
+        required=False,
+        help=f"対象のワークスペースID。未指定の場合は環境変数`{WORKSPACE_ID_ENVVAR}`を使用します。",
+    )
+
+
+def resolve_required_workspace_id(args: argparse.Namespace) -> str:
+    """必須のworkspace_idをコマンドライン引数または環境変数から取得します。"""
+    workspace_id = getattr(args, "workspace_id", None)
+    if isinstance(workspace_id, str) and workspace_id != "":
+        return workspace_id
+
+    workspace_id = os.environ.get(WORKSPACE_ID_ENVVAR)
+    if isinstance(workspace_id, str) and workspace_id != "":
+        return workspace_id
+
+    raise CommandLineArgumentError(f"`--workspace_id` または環境変数 `{WORKSPACE_ID_ENVVAR}` を指定してください。")
 
 
 def get_list_from_args(str_list: list[str] | None = None) -> list[str] | None:

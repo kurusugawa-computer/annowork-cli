@@ -58,7 +58,8 @@ class DeleteExpectedWorkingTime:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
-    DeleteExpectedWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
+    DeleteExpectedWorkingTime(annowork_service=annowork_service, workspace_id=workspace_id).main(
         user_id=args.user_id,
         start_date=args.start_date,
         end_date=args.end_date,
@@ -66,13 +67,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     parser.add_argument("-u", "--user_id", type=str, required=True, help="削除対象のユーザID")
     parser.add_argument("--start_date", type=str, required=True, help="削除対象の開始日(YYYY-mm-dd)")

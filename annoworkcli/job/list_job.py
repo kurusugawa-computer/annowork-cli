@@ -103,12 +103,13 @@ class ListJob:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
 
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     external_linkage_info_url_list = get_list_from_args(args.external_linkage_info_url)
 
-    ListJob(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
+    ListJob(annowork_service=annowork_service, workspace_id=workspace_id).main(
         output=args.output,
         output_format=OutputFormat(args.format),
         job_id_list=job_id_list,
@@ -118,13 +119,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     job_id_group = parser.add_mutually_exclusive_group()
     job_id_group.add_argument(

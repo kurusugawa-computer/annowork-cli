@@ -190,6 +190,7 @@ class ListActualWorkingTimeGroupbyTag:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -206,7 +207,7 @@ def main(args: argparse.Namespace) -> None:
 
     ListActualWorkingTimeGroupbyTag(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         timezone_offset_hours=args.timezone_offset,
     ).main(
         job_ids=job_id_list,
@@ -222,14 +223,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    required_group = parser.add_mutually_exclusive_group(required=True)
-
-    required_group.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 

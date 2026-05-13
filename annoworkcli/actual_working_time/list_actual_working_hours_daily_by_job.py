@@ -72,6 +72,7 @@ def get_daily_actual_working_hours_by_job_df(
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     start_date: str | None = args.start_date
@@ -85,7 +86,7 @@ def main(args: argparse.Namespace) -> None:
 
     list_actual_working_time_obj = ListActualWorkingTime(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         timezone_offset_hours=args.timezone_offset,
     )
     actual_working_time_list = list_actual_working_time_obj.get_actual_working_times(
@@ -106,7 +107,7 @@ def main(args: argparse.Namespace) -> None:
     )
     actual_daily_list = filter_actual_daily_list(actual_daily_list, start_date=start_date, end_date=end_date)
 
-    all_jobs = annowork_service.api.get_jobs(args.workspace_id)
+    all_jobs = annowork_service.api.get_jobs(workspace_id)
     df = get_daily_actual_working_hours_by_job_df([e.to_dict() for e in actual_daily_list], all_jobs)
 
     logger.info(f"{len(df)} 件の日ごとの実績作業時間情報（ジョブごと）を出力します。")
@@ -121,14 +122,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    required_group = parser.add_mutually_exclusive_group(required=True)
-
-    required_group.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
     job_id_group = parser.add_mutually_exclusive_group()
     job_id_group.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="絞り込み対象のジョブID")
     job_id_group.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="絞り込み対象の親のジョブID")

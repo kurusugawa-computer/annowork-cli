@@ -132,6 +132,7 @@ class DeleteActualWorkingTime:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
 
     if args.job_id is None and args.user_id is None:
         print("--job_id または --user_id を指定してください。", file=sys.stderr)  # noqa: T201
@@ -140,7 +141,7 @@ def main(args: argparse.Namespace) -> None:
     actual_working_time_id_list = get_list_from_args(args.actual_working_time_id)
     DeleteActualWorkingTime(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         timezone_offset_hours=args.timezone_offset,
         all_yes=args.yes,
     ).main(
@@ -153,13 +154,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     parser.add_argument("--start_date", type=str, required=True, help="削除したい実績作業時間情報の開始日(YYYY-mm-dd)を指定してください。")
     parser.add_argument("--end_date", type=str, required=True, help="削除したい実績作業時間情報の終了日(YYYY-mm-dd)を指定してください。")

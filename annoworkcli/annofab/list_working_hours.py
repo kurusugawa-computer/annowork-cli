@@ -461,6 +461,7 @@ def main(args: argparse.Namespace) -> None:
     user_id_list = get_list_from_args(args.user_id)
     start_date: str | None = args.start_date
     end_date: str | None = args.end_date
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
 
     if all(v is None for v in [job_id_list, parent_job_id_list, annofab_project_id_list, user_id_list, start_date, end_date]):
         logger.warning(
@@ -470,7 +471,7 @@ def main(args: argparse.Namespace) -> None:
 
     main_obj = ListWorkingHoursWithAnnofab(
         annowork_service=build_annoworkapi(args),
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         annofab_service=build_annofabapi_resource(
             annofab_login_user_id=args.annofab_user_id,
             annofab_login_password=args.annofab_password,
@@ -504,13 +505,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 

@@ -46,19 +46,12 @@ class ListWorkspaceTag:
 
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
-    ListWorkspaceTag(annowork_service=annowork_service, workspace_id=args.workspace_id).main(
-        output=args.output, output_format=OutputFormat(args.format)
-    )
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
+    ListWorkspaceTag(annowork_service=annowork_service, workspace_id=workspace_id).main(output=args.output, output_format=OutputFormat(args.format))
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 

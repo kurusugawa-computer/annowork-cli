@@ -92,6 +92,7 @@ def add_parent_job_info_to_df(df: pandas.DataFrame, all_jobs: list[dict[str, Any
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -103,7 +104,7 @@ def main(args: argparse.Namespace) -> None:
         print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
-    main_obj = ListActualWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id, timezone_offset_hours=args.timezone_offset)
+    main_obj = ListActualWorkingTime(annowork_service=annowork_service, workspace_id=workspace_id, timezone_offset_hours=args.timezone_offset)
 
     actual_working_times = main_obj.get_actual_working_times(
         job_ids=job_id_list,
@@ -132,7 +133,7 @@ def main(args: argparse.Namespace) -> None:
     else:
         df = get_weekly_actual_working_hours_df(actual_working_times, main_obj.workspace_members)
         # 親ジョブ情報を追加
-        all_jobs = annowork_service.api.get_jobs(args.workspace_id)
+        all_jobs = annowork_service.api.get_jobs(workspace_id)
         df = add_parent_job_info_to_df(df, all_jobs)
         df = df[required_columns]
 
@@ -149,13 +150,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")
 

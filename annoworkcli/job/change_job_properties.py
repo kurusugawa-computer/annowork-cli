@@ -57,22 +57,17 @@ class ChangeJobProperties:
 
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     job_id_list = get_list_from_args(args.job_id)
     assert job_id_list is not None
 
-    ChangeJobProperties(annowork_service=annowork_service, workspace_id=args.workspace_id, all_yes=args.yes).main(
+    ChangeJobProperties(annowork_service=annowork_service, workspace_id=workspace_id, all_yes=args.yes).main(
         job_id_list=job_id_list, status=args.status
     )
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
 
     parser.add_argument(
         "-j",
