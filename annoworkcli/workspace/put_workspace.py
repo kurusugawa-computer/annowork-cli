@@ -34,20 +34,15 @@ class PutWorkspace:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
 
     PutWorkspace(
         annowork_service=annowork_service,
-    ).main(workspace_id=args.workspace_id, workspace_name=args.workspace_name, email=args.email)
+    ).main(workspace_id=workspace_id, workspace_name=args.workspace_name, email=args.email)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument(
         "--workspace_name",

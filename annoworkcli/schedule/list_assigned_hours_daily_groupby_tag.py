@@ -139,6 +139,7 @@ class ListAssignedHoursDailyGroupbyTag:
 
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     job_id_list = get_list_from_args(args.job_id)
     user_id_list = get_list_from_args(args.user_id)
 
@@ -156,7 +157,7 @@ def main(args):  # noqa: ANN001, ANN201
 
     ListAssignedHoursDailyGroupbyTag(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
     ).main(
         job_id_list=job_id_list,
         user_id_list=user_id_list,
@@ -170,13 +171,7 @@ def main(args):  # noqa: ANN001, ANN201
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 

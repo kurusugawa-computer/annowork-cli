@@ -61,6 +61,7 @@ def get_weekly_expected_working_hours_df(expected_working_times: list[dict[str, 
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     user_id_list = get_list_from_args(args.user_id)
     start_date: str | None = args.start_date
     end_date: str | None = args.end_date
@@ -70,7 +71,7 @@ def main(args: argparse.Namespace) -> None:
         print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
-    main_obj = ListExpectedWorkingTime(annowork_service=annowork_service, workspace_id=args.workspace_id)
+    main_obj = ListExpectedWorkingTime(annowork_service=annowork_service, workspace_id=workspace_id)
 
     if user_id_list is not None:
         expected_working_times = main_obj.get_expected_working_times_by_user_id(user_id_list=user_id_list, start_date=start_date, end_date=end_date)
@@ -97,13 +98,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")
 

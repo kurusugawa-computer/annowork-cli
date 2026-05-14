@@ -242,6 +242,7 @@ def get_required_columns() -> list[str]:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     job_id_list = get_list_from_args(args.job_id)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
@@ -254,11 +255,11 @@ def main(args: argparse.Namespace) -> None:
             "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
-    main_obj = ListActualWorkingHoursDaily(annowork_service, args.workspace_id)
+    main_obj = ListActualWorkingHoursDaily(annowork_service, workspace_id)
 
     list_actual_working_time_obj = ListActualWorkingTime(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         timezone_offset_hours=args.timezone_offset,
     )
     actual_working_time_list = list_actual_working_time_obj.get_actual_working_times(
@@ -298,14 +299,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    required_group = parser.add_mutually_exclusive_group(required=True)
-
-    required_group.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 
     # parent_job_idとjob_idの両方を指定するユースケースはなさそうなので、exclusiveにする。

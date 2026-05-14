@@ -79,6 +79,7 @@ class RemoveTagToWorkspaceMember:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     user_id_list = get_list_from_args(args.user_id)
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
     assert user_id_list is not None
@@ -86,18 +87,12 @@ def main(args: argparse.Namespace) -> None:
 
     RemoveTagToWorkspaceMember(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
     ).main(user_id_list=user_id_list, workspace_tag_ids=workspace_tag_id_list)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument(
         "-u",

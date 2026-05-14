@@ -7,6 +7,7 @@ from typing import Any, assert_never
 import pandas
 
 import annoworkcli
+import annoworkcli.common.cli
 from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDaily
@@ -42,6 +43,7 @@ def get_daily_assigned_hours_by_job_df(assigned_hours_daily_list: list[dict[str,
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     job_id_list = get_list_from_args(args.job_id)
     start_date: str | None = args.start_date
     end_date: str | None = args.end_date
@@ -51,7 +53,7 @@ def main(args: argparse.Namespace) -> None:
         print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
-    main_obj = ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=args.workspace_id)
+    main_obj = ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=workspace_id)
 
     assigned_hours_daily_list = main_obj.get_assigned_hours_daily_list(
         start_date=start_date,
@@ -75,13 +77,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="集計対象のジョブID")
 

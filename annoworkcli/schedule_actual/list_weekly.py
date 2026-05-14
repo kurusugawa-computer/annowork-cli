@@ -12,9 +12,10 @@ logger = logging.getLogger(__name__)
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     daily_df = get_daily_schedule_actual_df(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         parent_job_id=args.parent_job_id,
         start_date=args.start_date,
         end_date=args.end_date,
@@ -26,13 +27,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
     parser.add_argument(
         "-pj",
         "--parent_job_id",

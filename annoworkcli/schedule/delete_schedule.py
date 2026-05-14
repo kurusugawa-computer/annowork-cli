@@ -96,6 +96,7 @@ class DeleteSchedule:
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
 
     schedule_id_list = get_list_from_args(args.schedule_id)
     assert schedule_id_list is not None
@@ -103,19 +104,13 @@ def main(args: argparse.Namespace) -> None:
     job_id_list = get_list_from_args(args.job_id)
     DeleteSchedule(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         all_yes=args.yes,
     ).delete_schedule(schedule_ids=schedule_id_list, target_job_ids=job_id_list, target_user_ids=user_id_list)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument(
         "--schedule_id",

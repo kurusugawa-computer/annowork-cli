@@ -37,6 +37,8 @@ password annowork_password
 
 ### 環境変数
 * 環境変数`ANNOWORK_USER_ID` , `ANNOWORK_PASSWORD`
+* 環境変数`ANNOWORK_WORKSPACE_ID`
+  * `--workspace_id` が必須のコマンドで未指定時に使用されます。
 
 ### `annoworkcli annofab`コマンドを利用する場合
 `annoworkcli annofab`コマンドはannofabのwebapiにアクセスするため、annofabのwebapiの認証情報を指定する必要があります。
@@ -56,6 +58,11 @@ $ cat out.csv
 date,job_id,job_name,workspace_member_id,user_id,username,actual_working_hours,notes
 2022-05-02,5c39a2e8-90dd-4f20-b0a6-39d7f5129e3d,MOON,52ff73fb-c1d6-4ad6-a185-64386ee7169f,alice,Alice,11.233333333333334,
 2022-05-02,5c39a2e8-90dd-4f20-b0a6-39d7f5129e3d,MARS,c66acd58-c893-4908-bdcc-1414978bf06b,bob,Bob,8.0,
+
+# workspace_idを環境変数で省略する
+$ export ANNOWORK_WORKSPACE_ID=foo
+$ annoworkcli actual_working_time list_daily \
+ --start_date 2022-05-01 --end_date 2022-05-10 --output out.csv
 
 ```
 

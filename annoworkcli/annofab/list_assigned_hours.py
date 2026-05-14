@@ -201,10 +201,11 @@ def main(args: argparse.Namespace) -> None:
         raise ValueError("--annofab_project_id は必須です。")
 
     annowork_service = build_annoworkapi(args)
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
 
     ListAssignedHoursMain(
         annowork_service=annowork_service,
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
     ).main(
         annofab_project_id_list=annofab_project_id_list,
         start_date=start_date,
@@ -216,13 +217,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument(
         "-af_p",

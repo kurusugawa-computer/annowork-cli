@@ -951,9 +951,10 @@ def get_empty_df_assigned() -> pandas.DataFrame:
 
 
 def main(args: argparse.Namespace) -> None:
+    workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     main_obj = ReshapeWorkingHours(
         annowork_service=build_annoworkapi(args),
-        workspace_id=args.workspace_id,
+        workspace_id=workspace_id,
         parallelism=args.parallelism,
     )
 
@@ -1026,13 +1027,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument(
-        "-w",
-        "--workspace_id",
-        type=str,
-        required=True,
-        help="対象のワークスペースID",
-    )
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument(
         "--actual_file",
