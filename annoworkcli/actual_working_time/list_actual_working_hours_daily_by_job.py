@@ -122,7 +122,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
     job_id_group = parser.add_mutually_exclusive_group()
     job_id_group.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="絞り込み対象のジョブID")
     job_id_group.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="絞り込み対象の親のジョブID")

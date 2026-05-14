@@ -217,7 +217,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument(
         "-af_p",

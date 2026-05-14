@@ -64,7 +64,7 @@ def main(args):  # noqa: ANN001, ANN201
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
-    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     # 間違えてたくさんのジョブを削除してしまわないようにするため、1つのjob_idしか指定できないようにする
     parser.add_argument(

@@ -3,7 +3,7 @@ import argparse
 import pandas
 import pytest
 
-from annoworkcli.common.cli import add_required_workspace_id_argument, resolve_required_workspace_id
+from annoworkcli.common.cli import add_workspace_id_argument_with_env_fallback, resolve_required_workspace_id
 from annoworkcli.common.exeptions import CommandLineArgumentError
 from annoworkcli.schedule_actual.common import DAILY_COLUMNS
 from annoworkcli.schedule_actual.list_daily import main as schedule_actual_list_daily_main
@@ -39,10 +39,10 @@ class TestResolveRequiredWorkspaceId:
             resolve_required_workspace_id(argparse.Namespace(workspace_id=None))
 
 
-def test_add_required_workspace_id_argument():
+def test_add_workspace_id_argument_with_env_fallback():
     parser = argparse.ArgumentParser()
 
-    add_required_workspace_id_argument(parser)
+    add_workspace_id_argument_with_env_fallback(parser)
 
     help_text = parser.format_help()
     assert "--workspace_id" in help_text

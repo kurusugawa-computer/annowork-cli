@@ -67,7 +67,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument("-u", "--user_id", type=str, required=True, help="削除対象のユーザID")
     parser.add_argument("--start_date", type=str, required=True, help="削除対象の開始日(YYYY-mm-dd)")

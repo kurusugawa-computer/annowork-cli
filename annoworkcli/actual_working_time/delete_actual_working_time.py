@@ -154,7 +154,7 @@ def main(args: argparse.Namespace) -> None:
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
-    annoworkcli.common.cli.add_required_workspace_id_argument(parser)
+    annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
     parser.add_argument("--start_date", type=str, required=True, help="削除したい実績作業時間情報の開始日(YYYY-mm-dd)を指定してください。")
     parser.add_argument("--end_date", type=str, required=True, help="削除したい実績作業時間情報の終了日(YYYY-mm-dd)を指定してください。")

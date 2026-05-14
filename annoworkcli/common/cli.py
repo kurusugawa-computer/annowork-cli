@@ -144,8 +144,8 @@ def add_parser(
     return parser
 
 
-def add_required_workspace_id_argument(parser: argparse.ArgumentParser) -> None:
-    """必須のworkspace_id引数を追加します。"""
+def add_workspace_id_argument_with_env_fallback(parser: argparse.ArgumentParser) -> None:
+    """workspace_id引数を追加します。未指定時は環境変数を参照します。"""
     parser.add_argument(
         "-w",
         "--workspace_id",
