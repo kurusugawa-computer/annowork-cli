@@ -139,16 +139,15 @@ def get_daily_schedule_actual_df(
         actual_daily_df = pandas.DataFrame([e.to_dict() for e in actual_daily_list])
         actual_hours_by_date = _sum_working_hours_by_date(actual_daily_df, "actual_working_hours")
 
-    child_job_ids = list_actual_working_time_obj.get_child_job_id_list([parent_job_id])
     assigned_hours_by_date: dict[str, float] = {}
-    if len(child_job_ids) > 0 and (assigned_start_date is None or assigned_end_date is None or assigned_start_date <= assigned_end_date):
+    if assigned_start_date is None or assigned_end_date is None or assigned_start_date <= assigned_end_date:
         assigned_daily_list = ListAssignedHoursDaily(
             annowork_service=annowork_service,
             workspace_id=workspace_id,
         ).get_assigned_hours_daily_list(
             start_date=assigned_start_date,
             end_date=assigned_end_date,
-            job_ids=child_job_ids,
+            job_ids=[parent_job_id],
             user_ids=None,
         )
         assigned_daily_df = pandas.DataFrame([e.to_dict() for e in assigned_daily_list])
