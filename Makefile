@@ -15,7 +15,6 @@ format:
 
 lint:
 	uv run ruff check ${SOURCE_FILES} ${TEST_FILES}
-	# テストコードはチェックを緩和するためmypy, pylintは実行しない
 	uv run mypy ${SOURCE_FILES} ${TEST_FILES}
 
 test:
