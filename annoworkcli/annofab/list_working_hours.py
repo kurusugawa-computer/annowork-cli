@@ -297,7 +297,7 @@ class ListWorkingHoursWithAnnofab:
         df_job["parent_job_id"] = df_job["job_tree"].apply(get_parent_job_id_from_job_tree)
 
         df_parent_job = pandas.DataFrame({"parent_job_id": df_job["parent_job_id"].unique()})
-        df_parent_job["parent_job_name"] = df_parent_job["parent_job_id"].apply(lambda e: all_job_dict[e]["job_name"] if e is not None else None)
+        df_parent_job["parent_job_name"] = df_parent_job["parent_job_id"].apply(lambda e: all_job_dict[e]["job_name"] if pandas.notna(e) else None)
 
         df = df_job.merge(df_parent_job, how="left", on="parent_job_id")
         return df[["job_id", "parent_job_id", "parent_job_name"]]
