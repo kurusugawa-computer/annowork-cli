@@ -222,8 +222,7 @@ def visualize_statistics(temp_dir: Path, args: argparse.Namespace, workspace_id:
     if args.annofabcli_options is not None:
         command.extend(args.annofabcli_options)
 
-    str_command = " ".join(mask_credential_in_command(command))
-    logger.debug(f"run command: {str_command}")
+    logger.debug("annofabcli statistics visualizeを実行します。")
     subprocess.run(command, check=True)
 
 
