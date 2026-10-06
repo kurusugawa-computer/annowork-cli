@@ -9,7 +9,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.completion.subcommand_completion.add_parser
+   :ref: annoworkcli.completion.subcommand.add_parser
    :prog: annoworkcli completion
    :nosubcommands:
    :nodefaultconst:

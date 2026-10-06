@@ -6,7 +6,7 @@ import sys
 import pytest
 
 from annoworkcli.__main__ import main
-from annoworkcli.completion.subcommand_completion import SHELL_CHOICES
+from annoworkcli.completion.subcommand import SHELL_CHOICES
 
 
 @pytest.mark.parametrize("shell", SHELL_CHOICES)

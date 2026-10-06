@@ -10,7 +10,7 @@ import annoworkcli
 import annoworkcli.account.subcommand
 import annoworkcli.actual_working_time.subcommand
 import annoworkcli.annofab.subcommand
-import annoworkcli.completion.subcommand_completion
+import annoworkcli.completion.subcommand
 import annoworkcli.expected_working_time.subcommand
 import annoworkcli.job.subcommand
 import annoworkcli.my.subcommand
@@ -48,7 +48,7 @@ def create_parser() -> argparse.ArgumentParser:
     annoworkcli.account.subcommand.add_parser(subparsers)
     annoworkcli.actual_working_time.subcommand.add_parser(subparsers)
     annoworkcli.annofab.subcommand.add_parser(subparsers)
-    completion_parser = annoworkcli.completion.subcommand_completion.add_parser(subparsers)
+    completion_parser = annoworkcli.completion.subcommand.add_parser(subparsers)
     completion_parser.set_defaults(root_parser=parser)
     annoworkcli.expected_working_time.subcommand.add_parser(subparsers)
     annoworkcli.job.subcommand.add_parser(subparsers)
