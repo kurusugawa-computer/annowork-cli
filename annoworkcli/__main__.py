@@ -38,7 +38,7 @@ def warn_pandas_copy_on_write() -> None:
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Command Line Interface for Annowork", formatter_class=PrettyHelpFormatter, allow_abbrev=False)
     parser.add_argument("--version", action="version", version=f"annoworkcli {annoworkcli.__version__}")
-    parser.set_defaults(command_help=parser.print_help)
+    parser.set_defaults(command_help=parser.print_help, command_error=parser.error)
 
     subparsers = parser.add_subparsers(dest="command_name")
 
@@ -86,10 +86,10 @@ def main(arguments: Sequence[str] | None = None) -> None:
     """
     warn_pandas_copy_on_write()
     parser = create_parser()
-    if arguments is None:
-        args = parser.parse_args()
-    else:
-        args = parser.parse_args(arguments)
+    args, unknown_arguments = parser.parse_known_args(arguments)
+    if unknown_arguments:
+        # 未知の引数は、選択されたコマンドのusageとともに表示する。
+        args.command_error(f"unrecognized arguments: {' '.join(unknown_arguments)}")
 
     if hasattr(args, "subcommand_func"):
         try:
