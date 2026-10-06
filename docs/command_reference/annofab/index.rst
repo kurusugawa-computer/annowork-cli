@@ -11,6 +11,9 @@ Annofabの認証情報を事前に設定しておく必要があります。
 Available Commands
 =================================
 
+Annofab APIにアクセスするコマンドには、AnnoworkとAnnofabの認証情報が必要です。
+設定方法は :doc:`../../user_guide/configurations` を参照してください。
+
 .. toctree::
    :maxdepth: 1
    :titlesonly:
