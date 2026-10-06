@@ -29,6 +29,7 @@ dependencies = [
     "pandas>=2.2,<4",
     "isodate",
     "annofabcli>=1.90",
+    "shtab>=1.12.1,<2",
 ]
 
 [project.urls]

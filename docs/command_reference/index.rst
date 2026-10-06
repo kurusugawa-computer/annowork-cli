@@ -11,6 +11,7 @@ Command Reference
    account/index
    actual_working_time/index
    annofab/index
+   completion
    expected_working_time/index
    job/index
    my/index
