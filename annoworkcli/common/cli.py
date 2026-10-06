@@ -129,7 +129,7 @@ def add_parser(
         epilog=epilog,
         formatter_class=PrettyHelpFormatter,
     )
-    parser.set_defaults(command_help=parser.print_help)
+    parser.set_defaults(command_help=parser.print_help, command_error=parser.error)
 
     # 引数グループに"global optional group"がある場合は、"--help"オプションをデフォルトの"optional"グループから、"global optional arguments"グループに移動する  # noqa: E501
     # https://ja.stackoverflow.com/a/57313/19524
