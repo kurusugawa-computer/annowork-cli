@@ -28,7 +28,7 @@ dependencies = [
     "more-itertools",
     "pandas>=2.2,<4",
     "isodate",
-    "annofabcli>=1.90",
+    "annofabcli>=1.136.0",
     "shtab>=1.12.1,<2",
 ]
 
@@ -47,8 +47,8 @@ test = [
     "pytest-cov",
 ]
 linter = [
-    "mypy>=1",
-    "ruff>=0.15",
+    "mypy>=2.4.0",
+    "ruff>=0.16.10",
     "types-requests",
     "types-python-dateutil",
     "types-PyYAML",
@@ -88,6 +88,7 @@ line-length = 150
 
 [tool.ruff.lint]
 ignore = [
+    "CPY001", # ファイルごとの著作権ヘッダーは付けていないため
     "G004", # `logging-f-string` : loggingでf-stringを使いたいので無視する
     "PD002", #すでにpandasで`inplace=True`はいろんなところで使っているため
     "RUF001", # 全角記号など`ambiguous unicode character`も使いたいため
@@ -148,4 +149,3 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
-

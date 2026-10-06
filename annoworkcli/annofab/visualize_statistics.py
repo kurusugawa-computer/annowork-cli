@@ -181,15 +181,15 @@ def visualize_statistics(temp_dir: Path, args: argparse.Namespace, workspace_id:
         for (date, account_id, project_id), actual_worktime_hour in annofab_labor_dict.items()
     ]
     df = pandas.DataFrame(tmp_data, columns=["date", "account_id", "project_id", "actual_worktime_hour"])
-    annofab_labor_csv = temp_dir / "annofab_labor.csv"
-    print_csv(df, output=annofab_labor_csv)
+    annofab_actual_worktime_csv = temp_dir / "annofab_actual_worktime.csv"
+    print_csv(df, output=annofab_actual_worktime_csv)
 
     command = [
         "annofabcli",
         "statistics",
         "visualize",
-        "--labor_csv",
-        str(annofab_labor_csv),
+        "--actual_worktime_csv",
+        str(annofab_actual_worktime_csv),
     ]
 
     if annofab_project_id_list is not None:
