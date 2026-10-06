@@ -21,7 +21,7 @@ GitHubのReleasesからリリースしてください。
 バージョンはSemantic Versioningに従います。
 リリースすると、以下の状態になります。
 
-* ソース内のバージョン情報（`pyproject.toml`, `__version__.py`）は、uv-dynamic-versioning でGitHubのバージョンタグから生成されます。
+* パッケージのバージョンは、uv-dynamic-versioningでGitHubのバージョンタグから生成されます。実行時の`annoworkcli.__version__`は、インストールされたパッケージのメタデータから取得します。
 * 自動でPyPIに公開されます。
 
 
@@ -34,5 +34,4 @@ $ make docs
 
 ドキュメントはReadTheDocsにデプロイしています。
 GitHubのmainブランチが更新されると、ReadTheDocsに自動でデプロイされます。
-
 

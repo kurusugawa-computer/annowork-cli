@@ -33,7 +33,7 @@ Examples
          "workspace_member_id": "58005ead-f85b-45d8-931b-54ba2837d7b1",
          "user_id": "alice",
          "username": "Alice",
-         "assigned_working_hours": 1.5,
+         "assigned_working_hours": 1.5
       }
    ]
 

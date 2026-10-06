@@ -14,7 +14,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli workspace put --workspace_id org --email "alice@example.com" 
+    $ annoworkcli workspace put --workspace_id org --workspace_name "SANDBOX" --email "alice@example.com"
 
 
 

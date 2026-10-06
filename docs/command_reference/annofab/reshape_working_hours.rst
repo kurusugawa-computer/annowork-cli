@@ -20,7 +20,7 @@ Examples
      --start_date 2022-01-01 --end_date 2022-01-31 --output total_by_user.csv
 
 
-``annoworkcli annofab list_working_hours`` コマンドと ``annoworkcli schedule list_daily`` コマンドの出力結果を用いて、``annoworkcli annofab reshape_working_hours`` コマンドを実行することもとできます。
+``annoworkcli annofab list_working_hours`` コマンドと ``annoworkcli schedule list_daily`` コマンドの出力結果を用いて、``annoworkcli annofab reshape_working_hours`` コマンドを実行することもできます。
 
 
 .. code-block:: 
@@ -31,8 +31,11 @@ Examples
     $ annoworkcli  schedule list_daily --workspace_id org \
      --start_date 2022-01-01 --end_date 2022-01-31 --output assigned.csv
 
-    $ annoworkcli annofab reshape_working_hours --workspace_id org \ 
+    $ annoworkcli annofab reshape_working_hours --workspace_id org \
      --actual_file actual.csv --assigned_file assigned.csv --shape_type total_by_user --output total_by_user.csv
+
+``--job_id`` または ``--annofab_project_id`` で絞り込む場合は、アサイン時間を参照しません。
+アサイン時間と比較する場合は ``--parent_job_id`` で親ジョブを指定してください。
 
 
 

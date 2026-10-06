@@ -30,6 +30,7 @@ Examples
             "type:monitored": 5.0,
             "total": 8.0
          }
+      }
    ]
 
 

@@ -4,7 +4,7 @@ schedule list_weekly
 
 Description
 =================================
-作業計画から求めたアサイン時間を週ごと（日曜日始まり）に出力します。
+作業計画から求めたアサイン時間をメンバー・ジョブ・週ごと（日曜日始まり）に出力します。
 
 
 Examples
@@ -26,17 +26,21 @@ Examples
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "user_id": "alice",
          "username": "Alice",
+         "job_id": "job1",
+         "job_name": "MOON",
          "start_date": "2021-12-26",
          "end_date": "2022-01-01",
-         "assigned_working_hours": 20,
+         "assigned_working_hours": 20
       },
       {
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "user_id": "alice",
          "username": "Alice",
+         "job_id": "job1",
+         "job_name": "MOON",
          "start_date": "2022-01-02",
          "end_date": "2022-01-08",
-         "assigned_working_hours": 25,
+         "assigned_working_hours": 25
       }
    ]
 

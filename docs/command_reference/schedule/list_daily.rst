@@ -31,7 +31,7 @@ Examples
          "user_id": "alice",
          "username": "Alice",
          "assigned_working_hours": 5.0
-      },
+      }
    ]
 
 

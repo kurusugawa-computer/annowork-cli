@@ -28,7 +28,7 @@ Examples
          "username": "Alice",
          "start_date": "2021-12-26",
          "end_date": "2022-01-01",
-         "expected_working_hours": 20,
+         "expected_working_hours": 20
       },
       {
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
@@ -36,7 +36,7 @@ Examples
          "username": "Alice",
          "start_date": "2022-01-02",
          "end_date": "2022-01-08",
-         "expected_working_hours": 25,
+         "expected_working_hours": 25
       }
    ]
 
