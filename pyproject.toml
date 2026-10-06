@@ -3,7 +3,7 @@ name = "annoworkcli"
 dynamic = ["version"]
 description = "AnnoworkのCLI(Command Line Interface)"
 authors = [{ name = "Kurusugawa Computer Inc." }]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 readme = "README.md"
 license = "MIT"
 keywords = [
@@ -16,7 +16,6 @@ classifiers = [
     "Environment :: Console",
     "Topic :: Utilities",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14"
@@ -47,17 +46,17 @@ test = [
     "pytest-cov",
 ]
 linter = [
-    "mypy>=1; python_version >= '3.12'",
-    "ruff>=0.15; python_version >= '3.12'",
+    "mypy>=1",
+    "ruff>=0.15",
     "types-requests",
     "types-python-dateutil",
     "types-PyYAML",
 ]
 documentation = [
-    "sphinx>=9 ; python_version >= '3.12'",
-    "pydata-sphinx-theme>=0.13 ; python_version >= '3.12'",
-    "sphinx-last-updated-by-git ; python_version >= '3.12'",
-    "sphinx-argparse ; python_version >= '3.12'",
+    "sphinx>=9",
+    "pydata-sphinx-theme>=0.13",
+    "sphinx-last-updated-by-git",
+    "sphinx-argparse",
 ]
 dev = ["ipython"]
 
@@ -83,7 +82,7 @@ warn_unused_configs = true
 
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 line-length = 150
 
 [tool.ruff.lint]
