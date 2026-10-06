@@ -68,6 +68,9 @@ AnnofabプロジェクトのIDは、``--annofab_project_id`` で指定できま�
 
 
 
+実績作業時間は、内部で日・Annofabアカウント・Annofabプロジェクトごとに集計し、``--actual_worktime_csv`` でannofabcliに渡します。
+``--temp_dir`` を指定すると、このCSVを ``annofab_actual_worktime.csv`` として指定したディレクトリに保存します。
+
 このコマンドは、内部で ``annofabcli statistics visualize`` コマンドを実行しています。``annofabcli statistics visualize`` に渡すオプションは ``--annofabcli_options`` 以降に指定してください。
 
 .. code-block:: 
