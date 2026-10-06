@@ -60,7 +60,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "put_external_linkage_info"
-    subcommand_help = "アカウント外部連携情報取得を更新します。"
+    subcommand_help = "アカウントの外部連携情報を更新します。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)

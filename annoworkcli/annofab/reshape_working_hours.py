@@ -118,7 +118,7 @@ class ReshapeDataFrame:
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
 
         df["activity_rate"] = df["actual_working_hours"] / df["assigned_working_hours"]
-        df["activity_diff"] = df["assigned_working_hours"] / df["actual_working_hours"]
+        df["activity_diff"] = df["assigned_working_hours"] - df["actual_working_hours"]
         df["monitor_rate"] = df["monitored_working_hours"] / df["actual_working_hours"]
         df["monitor_diff"] = df["actual_working_hours"] - df["monitored_working_hours"]
 
@@ -188,7 +188,7 @@ class ReshapeDataFrame:
 
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
         df["activity_rate"] = df["actual_working_hours"] / df["assigned_working_hours"]
-        df["activity_diff"] = df["assigned_working_hours"] / df["actual_working_hours"]
+        df["activity_diff"] = df["assigned_working_hours"] - df["actual_working_hours"]
         df["monitor_rate"] = df["monitored_working_hours"] / df["actual_working_hours"]
         df["monitor_diff"] = df["actual_working_hours"] - df["monitored_working_hours"]
 
@@ -302,7 +302,7 @@ class ReshapeDataFrame:
         )
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
         df["activity_rate"] = df["actual_working_hours"] / df["assigned_working_hours"]
-        df["activity_diff"] = df["assigned_working_hours"] / df["actual_working_hours"]
+        df["activity_diff"] = df["assigned_working_hours"] - df["actual_working_hours"]
         df["monitor_rate"] = df["monitored_working_hours"] / df["actual_working_hours"]
         df["monitor_diff"] = df["actual_working_hours"] - df["monitored_working_hours"]
 
@@ -371,7 +371,7 @@ class ReshapeDataFrame:
 
         df.rename(columns={"annofab_working_hours": "monitored_working_hours"}, inplace=True)
         df["activity_rate"] = df["actual_working_hours"] / df["assigned_working_hours"]
-        df["activity_diff"] = df["assigned_working_hours"] / df["actual_working_hours"]
+        df["activity_diff"] = df["assigned_working_hours"] - df["actual_working_hours"]
         df["monitor_rate"] = df["monitored_working_hours"] / df["actual_working_hours"]
         df["monitor_diff"] = df["actual_working_hours"] - df["monitored_working_hours"]
 
@@ -902,6 +902,7 @@ class ReshapeWorkingHours:
         Args:
             parent_job_ids: df_actualのjob_idの親ジョブのjob_id, df_assignedのjob_idで絞り込みます。
             job_ids: df_actualのjob_idで絞り込みます。df_assignedは絞り込まず0件のDataFrameになります。
+            annofab_project_ids: df_actualのAnnofabプロジェクトIDで絞り込みます。df_assignedは0件のDataFrameになります。
 
         Returns:
             tuple[pandas.DataFrame, pandas.DataFrame]: 絞り込まれたdf_actual, df_assigned
@@ -917,9 +918,9 @@ class ReshapeWorkingHours:
             end_date=end_date,
         )
 
-        if job_ids is not None:
-            # アサインは親ジョブに紐付けているため、job_idに対応するアサインはない。したがって、0件にする。
-            df_assigned = pandas.DataFrame(columns=df_assigned.columns)
+        if job_ids is not None or annofab_project_ids is not None:
+            # アサインは親ジョブに紐付けているため、子ジョブやAnnofabプロジェクト単位では比較できない。
+            df_assigned = df_assigned.iloc[:0].copy()
         else:
             # df_assignedのjob_idがparent_job_idになるので、job_ids にはparent_job_idsを渡している
             df_assigned = filter_df(df_assigned, job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
@@ -993,9 +994,7 @@ def main(args: argparse.Namespace) -> None:
             user_ids=user_id_list,
         )
 
-    if args.assigned_file is not None:
-        df_assigned = get_dataframe_from_input_file(args.assigned_file)
-    elif (
+    if (
         shape_type
         in {
             ShapeType.TOTAL_BY_JOB,
@@ -1003,10 +1002,13 @@ def main(args: argparse.Namespace) -> None:
             ShapeType.LIST_BY_DATE_USER_PARENT_JOB,
         }
         or job_id_list is not None
+        or annofab_project_id_list is not None
     ):
         # このshape_typeのときは、df_assignedが不要なので、空のDataFrameを生成する
-        # job_idが指定されたときも、アサインを取得できないので、空のDataFrameを生成する
+        # 子ジョブやAnnofabプロジェクト指定時も、アサイン時間と比較できないので参照しない。
         df_assigned = get_empty_df_assigned()
+    elif args.assigned_file is not None:
+        df_assigned = get_dataframe_from_input_file(args.assigned_file)
     else:
         df_assigned = main_obj.get_df_assigned(start_date=start_date, end_date=end_date, parent_job_ids=parent_job_id_list, user_ids=user_id_list)
 

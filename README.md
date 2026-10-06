@@ -55,9 +55,9 @@ $ annoworkcli actual_working_time list_daily --workspace_id foo \
  --start_date 2022-05-01 --end_date 2022-05-10 --output out.csv
 
 $ cat out.csv
-date,job_id,job_name,workspace_member_id,user_id,username,actual_working_hours,notes
-2022-05-02,5c39a2e8-90dd-4f20-b0a6-39d7f5129e3d,MOON,52ff73fb-c1d6-4ad6-a185-64386ee7169f,alice,Alice,11.233333333333334,
-2022-05-02,5c39a2e8-90dd-4f20-b0a6-39d7f5129e3d,MARS,c66acd58-c893-4908-bdcc-1414978bf06b,bob,Bob,8.0,
+date,parent_job_id,parent_job_name,job_id,job_name,workspace_member_id,user_id,username,actual_working_hours,notes
+2022-05-02,parent_job,PLANET,5c39a2e8-90dd-4f20-b0a6-39d7f5129e3d,MOON,52ff73fb-c1d6-4ad6-a185-64386ee7169f,alice,Alice,11.233333333333334,
+2022-05-02,parent_job,PLANET,0fd0eff3-1945-4d7d-ae3a-9ff866fc8394,MARS,c66acd58-c893-4908-bdcc-1414978bf06b,bob,Bob,8.0,
 
 # workspace_idを環境変数で省略する
 $ export ANNOWORK_WORKSPACE_ID=foo

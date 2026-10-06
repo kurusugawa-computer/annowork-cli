@@ -25,8 +25,7 @@ Examples
 
     $ annoworkcli workspace_member put --workspace_id org \
      --user_id alice bob --role owner \
-     --workspace_tag_id tag1 tag2 
-     --user_id alice bob 
+     --workspace_tag_id tag1 tag2
 
 
 

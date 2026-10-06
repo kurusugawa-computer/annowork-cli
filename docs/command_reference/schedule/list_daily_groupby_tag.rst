@@ -28,9 +28,10 @@ Examples
          "job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
          "job_name": "MOON",
          "assigned_working_hours": {
-            "type_acceptor": 6.0,
+            "type:acceptor": 6.0,
             "type:monitored": 8.0,
             "total": 8.0
+         }
       }
    ]
 

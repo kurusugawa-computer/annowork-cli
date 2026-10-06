@@ -1,3 +1,3 @@
-user_id,username,company,assigned_working_hours,actual_working_hours,monitored_working_hours,activity_rate,activity_diff,monitor_rate,monitor_diff
-alice,Alice,U.S.,44.0,81.0,76.8,1.84,0.54,0.95,4.2
-bob,Bob,Japan,0.0,77.0,73.82,inf,0.0,0.96,3.18
+﻿user_id,username,company,assigned_working_hours,actual_working_hours,monitored_working_hours,activity_rate,activity_diff,monitor_rate,monitor_diff
+alice,Alice,TOKYO,14,8.75,3.97,0.62,5.25,0.45,4.78
+bob,Bob,TOKYO,6,5.17,4.38,0.86,0.83,0.85,0.79

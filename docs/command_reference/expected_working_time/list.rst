@@ -32,7 +32,7 @@ Examples
          "updated_datetime": "2021-11-24T22:14:31.030Z",
          "user_id": "alice",
          "username": "Alice"
-      },
+      }
    ]
 
 
