@@ -14,7 +14,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli workspace_member list --workspace_id ws \
+    $ annoworkcli workspace_member list --workspace_id org \
      --format json --output out.json
 
 
@@ -40,7 +40,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli workspace_member list --show_workspace_tag \
+    $ annoworkcli workspace_member list --workspace_id org --show_workspace_tag \
      --format json --output out.json
 
 

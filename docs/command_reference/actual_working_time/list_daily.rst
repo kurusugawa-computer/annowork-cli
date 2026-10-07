@@ -29,7 +29,7 @@ Examples
          "job_id": "caa0da6f-34aa-40cb-abc0-976c9aab3b40",
          "job_name": "MOON",
          "workspace_member_id": "50c5587a-219a-47d6-9641-0eb273996966",
-         "user_id": "alic3",
+         "user_id": "alice",
          "username": "Alice",
          "actual_working_hours": 2.716666666666667,
          "notes": null,

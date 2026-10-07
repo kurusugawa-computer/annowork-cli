@@ -38,7 +38,7 @@ Examples
          },
          "created_datetime": "2021-10-27T14:51:20.196Z",
          "updated_datetime": "2021-10-27T14:51:20.196Z",
-         "parent_job_id": "5a144b2a-3db0-4086-aa4e-1620109c72e3",
+         "parent_job_id": "parent_job",
          "parent_job_name": "PLANET",         
          "annofab": {
             "project_id": "af_project_id",

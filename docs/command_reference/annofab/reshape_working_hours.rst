@@ -13,6 +13,7 @@ Examples
 
 以下のコマンドは、2022-01-01から2022-01-31までの期間で、Annoworkの実績作業時間とアサイン時間、Annofabの作業時間を、ユーザごとに比較したCSVを出力します。
 出力結果詳細は後述を参照してください。
+出力はCSVのみで、数値は小数点以下2桁に丸めます。
 
 .. code-block:: 
 
@@ -33,6 +34,9 @@ Examples
 
     $ annoworkcli annofab reshape_working_hours --workspace_id org \
      --actual_file actual.csv --assigned_file assigned.csv --shape_type total_by_user --output total_by_user.csv
+
+``--actual_file`` と ``--assigned_file`` はCSVまたはJSONに対応し、拡張子（ ``.csv`` / ``.json`` ）で読み込み方法を判定します。
+これらのファイルを指定しても、ジョブやメンバーなどの情報をAnnowork APIから取得するため、Annoworkの認証が必要です。
 
 ``--job_id`` または ``--annofab_project_id`` で絞り込む場合は、アサイン時間を参照しません。
 アサイン時間と比較する場合は ``--parent_job_id`` で親ジョブを指定してください。
@@ -116,6 +120,7 @@ Examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ユーザごとジョブごとに作業時間を集計します。
+アサイン時間に関連する列は出力されません。
 
 .. csv-table:: total_by_user_job.csv
    :file: reshape_working_hours/total_by_user_job.csv
@@ -139,6 +144,7 @@ Examples
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 作業時間の一覧を日付、ユーザ、ジョブ単位で出力します。
 ジョブはAnnofabプロジェクトと紐づけることが可能なので、Annofabの作業時間も出力されます。
+アサイン時間に関連する列は出力されません。
 
 .. csv-table:: list_by_date_user_job.csv
    :file: reshape_working_hours/list_by_date_user_job.csv
@@ -148,8 +154,8 @@ Examples
 
 ``--shape_type list_by_date_user_parent_job``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-作業時間の一覧を日付、ユーザ、親ジョブ単位で出力します。
-ジョブにはアサイン時間が紐付いていないので、アサイン時間に関連する列は出力されません。
+実績作業時間とAnnofabの作業時間を日付、ユーザ、親ジョブ単位で集計して出力します。
+この出力形式ではアサイン時間を参照しないため、アサイン時間に関連する列は出力されません。
 
 
 .. csv-table:: list_by_date_user_parent_job.csv
