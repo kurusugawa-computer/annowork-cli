@@ -13,3 +13,4 @@ User Guide
    user_guide
    command_line_options
    cli_usage_output
+   codex_skill
