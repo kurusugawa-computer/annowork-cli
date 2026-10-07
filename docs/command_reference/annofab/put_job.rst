@@ -16,7 +16,7 @@ Examples
 具体的には、以下の通りジョブの情報が追加されます。
 
 * job_name: Annofabプロジェクトの名前
-* url: AnnofabプロジェクトのURL
+* external_linkage_info.url: AnnofabプロジェクトのURL
 * job_id: ``--job_id`` に指定した値。未指定の場合はAnnofabプロジェクトのプロジェクトID
 
 
