@@ -26,7 +26,15 @@ def validate_dates(start_date: str, end_date: str) -> None:
         raise ValueError("開始日は終了日以前にしてください。")
 
 
+def validate_start_date(start_date: str, *, allow_past_start_date: bool = False) -> None:
+    """昨日より前の開始日を、明示的に許可された場合だけ受け付ける。"""
+    yesterday = datetime.datetime.now().astimezone().date() - datetime.timedelta(days=1)
+    if not allow_past_start_date and datetime.date.fromisoformat(start_date) < yesterday:
+        raise ValueError("開始日は昨日以降にしてください。昨日より前を指定する場合は--allow_past_start_dateを指定してください。")
+
+
 def add_write_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--allow_past_start_date", action="store_true", help="昨日より前の開始日の指定を許可します。")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--hours", type=float, help="1人あたり・1日あたりの割当時間（0.01〜24時間）")
     group.add_argument("--percentage", type=float, help="各人の予定稼働時間に対する割当割合（0.01〜100%%）")
