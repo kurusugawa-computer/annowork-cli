@@ -1070,8 +1070,12 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         help="指定すると、actual_fileのjob_idに紐づくAnnofabのproject_idで絞り込まれます。assigned_fileに対応するジョブはないので、assigned_fileは参照されません。",
     )
 
-    parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
-    parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
+    parser.add_argument(
+        "--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)。APIから取得する実績作業時間の日付は日本時間（UTC+9）で扱います。"
+    )
+    parser.add_argument(
+        "--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)。APIから取得する実績作業時間の日付は日本時間（UTC+9）で扱います。"
+    )
 
     shape_type_choices = [e.value for e in ShapeType]
     parser.add_argument(

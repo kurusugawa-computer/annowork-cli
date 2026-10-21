@@ -290,8 +290,12 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     job_id_group.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="絞り込み対象のジョブID")
     job_id_group.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="絞り込み対象の親のジョブID")
 
-    parser.add_argument("--start_date", type=str, required=False, help="取得する範囲の開始日（システムのローカルな日付）")
-    parser.add_argument("--end_date", type=str, required=False, help="取得する範囲の終了日（システムのローカルな日付）")
+    parser.add_argument(
+        "--start_date", type=str, required=False, help="取得する範囲の開始日（--timezone_offsetで指定したタイムゾーンの日付。未指定時はローカル日付）"
+    )
+    parser.add_argument(
+        "--end_date", type=str, required=False, help="取得する範囲の終了日（--timezone_offsetで指定したタイムゾーンの日付。未指定時はローカル日付）"
+    )
 
     parser.add_argument(
         "--timezone_offset",

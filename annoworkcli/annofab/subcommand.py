@@ -26,8 +26,12 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
     subcommand_name = "annofab"
-    subcommand_help = "Annofabにアクセスするサブコマンド"
-    description = "Annofabにアクセスするサブコマンド\nAnnofabの認証情報を事前に設定しておく必要があります。"
+    subcommand_help = "Annofab連携に関するサブコマンド"
+    description = (
+        "Annofab連携に関するサブコマンド\n"
+        "Annofab APIにアクセスする操作ではAnnofabの認証情報が必要です。\n"
+        "list_assigned_hours、および--actual_file指定時のreshape_working_hoursではAnnofabの認証は不要です。"
+    )
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=description, is_subcommand=False)
     parse_args(parser)

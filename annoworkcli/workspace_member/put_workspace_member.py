@@ -101,7 +101,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         type=str,
         nargs="+",
         required=True,
-        help="ワークスペースメンバに追加するuser_id",
+        help="登録・更新対象のuser_id。既存メンバも更新します。",
     )
 
     parser.add_argument(
@@ -118,7 +118,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         type=str,
         nargs="+",
         required=False,
-        help="メンバに付与するワークスペースタグID",
+        help="設定するワークスペースタグID。既存のタグ一覧を置き換えます。未指定の場合はタグをすべて解除します。",
     )
 
     parser.set_defaults(subcommand_func=main)
@@ -128,6 +128,12 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
     subcommand_name = "put"
     subcommand_help = "ワークスペースメンバを登録します。"
 
-    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
+    parser = annoworkcli.common.cli.add_parser(
+        subparsers,
+        subcommand_name,
+        subcommand_help,
+        description=subcommand_help
+        + "\n既存メンバの権限とタグも更新します。タグの追加だけを行う場合はworkspace_member append_tagを使用してください。",
+    )
     parse_args(parser)
     return parser

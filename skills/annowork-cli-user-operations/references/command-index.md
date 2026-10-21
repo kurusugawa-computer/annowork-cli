@@ -24,7 +24,7 @@
 
 ## annofab
 
-Annofabにアクセスするサブコマンド
+Annofab連携に関するサブコマンド
 
 - `annoworkcli annofab list_assigned_hours`: Annofabプロジェクトに紐づくジョブのアサイン時間を日ごとに出力します。
 - `annoworkcli annofab list_job`: ジョブとジョブに紐づくAnnofabプロジェクトの情報を一緒に出力します。

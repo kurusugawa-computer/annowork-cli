@@ -4,8 +4,9 @@ annofab
 
 Description
 =================================
-Annofabにアクセスするサブコマンドです。
-Annofabの認証情報を事前に設定しておく必要があります。
+Annofab連携に関するサブコマンドです。
+``list_assigned_hours`` と、``--actual_file`` を指定した ``reshape_working_hours`` は、Annofab APIにアクセスしないためAnnofabの認証は不要です。
+これらの操作にもAnnoworkの認証は必要です。
 
 
 Available Commands

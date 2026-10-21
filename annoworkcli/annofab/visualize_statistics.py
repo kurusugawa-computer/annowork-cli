@@ -245,8 +245,12 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
     parser.add_argument("-o", "--output_dir", type=Path, required=True, help="出力先ディレクトリ")
 
-    parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
-    parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
+    parser.add_argument(
+        "--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)。APIから取得する実績作業時間の日付は日本時間（UTC+9）で扱います。"
+    )
+    parser.add_argument(
+        "--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)。APIから取得する実績作業時間の日付は日本時間（UTC+9）で扱います。"
+    )
 
     parser.add_argument("--temp_dir", type=Path, required=False, help="テンポラリディレクトリ")
 
