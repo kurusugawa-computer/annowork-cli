@@ -1,0 +1,4 @@
+title = "annowork-cli gitleaks config"
+
+[extend]
+useDefault = true

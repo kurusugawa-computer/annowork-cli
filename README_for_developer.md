@@ -16,6 +16,24 @@ https://code.visualstudio.com/docs/remote/containers
 # 開発フロー
 * mainブランチを元にしてブランチを作成して、プルリクを作成してください。mainブランチへの直接pushすることはGitHub上で禁止しています。
 
+# シークレットの検査
+開発環境のセットアップ時に、コミット対象のシークレットを検査するpre-commit hookをインストールしてください。
+
+```bash
+uv sync
+uv run pre-commit install
+```
+
+以後、コミット時にgitleaksでステージ済みの変更を検査し、シークレットを検出した場合はコミットを中止します。初回実行時にはフックの実行環境がダウンロードされます。
+
+Git履歴全体を検査するには、以下を実行してください。gitleaksがインストールされていない場合はDockerを使用します。
+
+```bash
+make gitleaks
+```
+
+GitHub Actionsでも、mainへのpushとmain向けのプルリクエストでGit履歴全体を検査します。検出結果のシークレットはマスクされます。
+
 # Release
 GitHubのReleasesからリリースしてください。
 バージョンはSemantic Versioningに従います。
