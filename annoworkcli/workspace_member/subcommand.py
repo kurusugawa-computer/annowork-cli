@@ -3,11 +3,11 @@ import argparse
 import annoworkcli
 import annoworkcli.common.cli
 import annoworkcli.workspace_member.append_tag_to_workspace_member
-import annoworkcli.workspace_member.change_workspace_member_properties
 import annoworkcli.workspace_member.delete_workspace_member
 import annoworkcli.workspace_member.list_workspace_member
 import annoworkcli.workspace_member.put_workspace_member
 import annoworkcli.workspace_member.remove_tag_to_workspace_member
+import annoworkcli.workspace_member.update_workspace_member_role
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
@@ -15,12 +15,12 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
     # サブコマンドの定義
     annoworkcli.workspace_member.append_tag_to_workspace_member.add_parser(subparsers)
-    annoworkcli.workspace_member.change_workspace_member_properties.add_parser(subparsers)
     annoworkcli.workspace_member.delete_workspace_member.add_parser(subparsers)
     annoworkcli.workspace_member.list_workspace_member.add_parser(subparsers)
 
     annoworkcli.workspace_member.put_workspace_member.add_parser(subparsers)
     annoworkcli.workspace_member.remove_tag_to_workspace_member.add_parser(subparsers)
+    annoworkcli.workspace_member.update_workspace_member_role.add_parser(subparsers)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:

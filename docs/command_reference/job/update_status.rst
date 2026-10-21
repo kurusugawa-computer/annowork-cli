@@ -1,5 +1,5 @@
 =======================================
-job change
+job update_status
 =======================================
 
 Description
@@ -16,7 +16,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli job change --workspace_id org --job_id job1 job2 --status archived
+    $ annoworkcli job update_status --workspace_id org --job_id job1 job2 --status archived
 
 
 
@@ -25,7 +25,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.job.change_job_properties.add_parser
-   :prog: annoworkcli job change
+   :ref: annoworkcli.job.update_job_status.add_parser
+   :prog: annoworkcli job update_status
    :nosubcommands:
    :nodefaultconst:

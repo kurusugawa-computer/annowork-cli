@@ -2,18 +2,18 @@ import argparse
 
 import annoworkcli
 import annoworkcli.common.cli
-import annoworkcli.job.change_job_properties
 import annoworkcli.job.delete_job
 import annoworkcli.job.list_job
+import annoworkcli.job.update_job_status
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義
-    annoworkcli.job.change_job_properties.add_parser(subparsers)
     annoworkcli.job.delete_job.add_parser(subparsers)
     annoworkcli.job.list_job.add_parser(subparsers)
+    annoworkcli.job.update_job_status.add_parser(subparsers)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:

@@ -53,9 +53,9 @@ Annofabにアクセスするサブコマンド
 
 ジョブ関係のサブコマンド
 
-- `annoworkcli job change`: ジョブの情報（ステータスなど）を変更します。
 - `annoworkcli job delete`: ジョブを削除します。
 - `annoworkcli job list`: ジョブ一覧を出力します。
+- `annoworkcli job update_status`: ジョブのステータスを変更します。
 
 ## my
 
@@ -94,11 +94,11 @@ Annofabにアクセスするサブコマンド
 ワークスペースメンバ関係のサブコマンド
 
 - `annoworkcli workspace_member append_tag`: ワークスペースメンバにワークスペースタグを追加します。
-- `annoworkcli workspace_member change`: ワークスペースメンバの情報（ロールなど）を変更します。
 - `annoworkcli workspace_member delete`: ワークスペースメンバを削除します。
 - `annoworkcli workspace_member list`: ワークスペースメンバの一覧を出力します。無効化されたメンバも出力します。
 - `annoworkcli workspace_member put`: ワークスペースメンバを登録します。
 - `annoworkcli workspace_member remove_tag`: ワークスペースメンバからワークスペースタグを削除します。
+- `annoworkcli workspace_member update_role`: ワークスペースメンバのロールを変更します。
 
 ## workspace_tag
 

@@ -10,13 +10,13 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args, prompt
 logger = logging.getLogger(__name__)
 
 
-class ChangeJobProperties:
+class UpdateJobStatus:
     def __init__(self, annowork_service: AnnoworkResource, workspace_id: str, *, all_yes: bool):  # noqa: ANN204
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
         self.all_yes = all_yes
 
-    def change_job_status(self, job_id: str, status: str) -> bool:
+    def update_job_status(self, job_id: str, status: str) -> bool:
         job = self.annowork_service.wrapper.get_job_or_none(self.workspace_id, job_id)
         if job is None:
             logger.warning(f"{job_id=} のジョブは存在しませんでした。")
@@ -46,7 +46,7 @@ class ChangeJobProperties:
         success_count = 0
         for job_id in job_id_list:
             try:
-                result = self.change_job_status(job_id, status=status)
+                result = self.update_job_status(job_id, status=status)
                 if result:
                     success_count += 1
             except Exception as e:
@@ -61,9 +61,7 @@ def main(args):  # noqa: ANN001, ANN201
     job_id_list = get_list_from_args(args.job_id)
     assert job_id_list is not None
 
-    ChangeJobProperties(annowork_service=annowork_service, workspace_id=workspace_id, all_yes=args.yes).main(
-        job_id_list=job_id_list, status=args.status
-    )
+    UpdateJobStatus(annowork_service=annowork_service, workspace_id=workspace_id, all_yes=args.yes).main(job_id_list=job_id_list, status=args.status)
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
@@ -92,8 +90,8 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
-    subcommand_name = "change"
-    subcommand_help = "ジョブの情報（ステータスなど）を変更します。"
+    subcommand_name = "update_status"
+    subcommand_help = "ジョブのステータスを変更します。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)

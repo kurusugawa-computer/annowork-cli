@@ -1,10 +1,10 @@
 =========================================
-workspace_member change
+workspace_member update_role
 =========================================
 
 Description
 =================================
-メンバの情報（ロールなど）を変更します。
+ワークスペースメンバのロールを変更します。
 
 
 Examples
@@ -14,7 +14,7 @@ Examples
 
 .. code-block:: 
 
-    $ annoworkcli workspace_member change --workspace_id org \
+    $ annoworkcli workspace_member update_role --workspace_id org \
      --user_id alice bob --role worker
 
 
@@ -23,7 +23,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.workspace_member.change_workspace_member_properties.add_parser
-   :prog: annoworkcli workspace_member change
+   :ref: annoworkcli.workspace_member.update_workspace_member_role.add_parser
+   :prog: annoworkcli workspace_member update_role
    :nosubcommands:
    :nodefaultconst:
