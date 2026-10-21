@@ -44,6 +44,12 @@ class UpdateSchedule:
             raise ValueError("更新対象のschedule_idを1件以上指定してください。")
         logger.info(f"{len(schedule_ids)} 件の作業計画を更新します。")
         result = WriteResult()
+        if not self.all_yes and not cli.prompt_yesno(
+            f"{len(schedule_ids)} 件の作業計画を更新しますか？ :: {schedule_ids=}, {start_date=}, {end_date=}, {hours=}, {percentage=}"
+        ):
+            result.skipped = len(schedule_ids)
+            result.finish()
+            return
         for index, schedule_id in enumerate(schedule_ids, 1):
             result.log_progress(index, len(schedule_ids))
             try:
@@ -67,11 +73,6 @@ class UpdateSchedule:
                 message = (
                     f"{index} 件目: {schedule_id=}, parent_job_id='{old['job_id']}', workspace_member_id='{old['workspace_member_id']}', {changes=}"
                 )
-                if not self.all_yes:
-                    is_yes, self.all_yes = cli.prompt_yesnoall(f"作業計画を更新しますか？ :: {message}")
-                    if not is_yes:
-                        result.skipped += 1
-                        continue
                 body["last_updated_datetime"] = old["updated_datetime"]
                 self.service.api.put_schedule(self.workspace_id, schedule_id, request_body=body)
             except (requests.exceptions.RequestException, ValueError):

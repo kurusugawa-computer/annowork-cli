@@ -107,8 +107,13 @@ def test_不正な更新条件では書き込まない(update_service, options):
     update_service.api.put_schedule.assert_not_called()
 
 
-def test_確認でALLを選択すると残りも更新する(update_service, monkeypatch):
-    answers = iter(["ALL"])
+@pytest.mark.parametrize("answer", ["y", "N"])
+def test_複数計画の更新確認は一回だけ行う(update_service, monkeypatch, caplog, answer):
+    caplog.set_level("INFO")
+    answers = iter([answer])
     monkeypatch.setattr("builtins.input", lambda _: next(answers))
-    UpdateSchedule(update_service, "workspace").main(schedule_ids=["first", "second"], percentage=50)
-    assert update_service.api.put_schedule.call_count == 2
+    UpdateSchedule(update_service, "workspace").main(schedule_ids=["first", "second", "first"], percentage=50)
+    assert next(answers, None) is None
+    assert update_service.api.put_schedule.call_count == (2 if answer == "y" else 0)
+    expected_summary = "成功: 2 件、スキップ: 0 件、失敗: 0 件" if answer == "y" else "成功: 0 件、スキップ: 2 件、失敗: 0 件"
+    assert caplog.records[-1].getMessage() == expected_summary
