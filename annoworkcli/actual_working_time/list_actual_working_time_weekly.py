@@ -165,7 +165,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--timezone_offset",
         type=float,
-        help="日付に対するタイムゾーンのオフセット時間を指定します。例えばJSTなら '9' です。指定しない場合はローカルのタイムゾーンを参照します。",
+        help="取得期間の日付に対するUTCからの時差。例えばJSTなら9です。未指定時はローカルのタイムゾーンを使用します。週の区切りは変更されず、UTCの開始日時で集計します。",
     )
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
@@ -185,6 +185,11 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
     subcommand_name = "list_weekly"
     subcommand_help = "実績作業時間の一覧を週ごと（日曜日始まり）に出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
+    parser = annoworkcli.common.cli.add_parser(
+        subparsers,
+        subcommand_name,
+        subcommand_help,
+        description=subcommand_help + "\n--user_id、--job_id、--parent_job_id、--start_date、--end_dateのいずれかを1つ以上指定してください。",
+    )
     parse_args(parser)
     return parser

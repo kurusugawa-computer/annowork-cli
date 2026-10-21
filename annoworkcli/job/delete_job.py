@@ -84,6 +84,11 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
     subcommand_name = "delete"
     subcommand_help = "ジョブを削除します。"
 
-    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
+    parser = annoworkcli.common.cli.add_parser(
+        subparsers,
+        subcommand_name,
+        subcommand_help,
+        description=subcommand_help + "\n削除できるのはstatusがarchivedのジョブだけです。それ以外のジョブはスキップします。",
+    )
     parse_args(parser)
     return parser

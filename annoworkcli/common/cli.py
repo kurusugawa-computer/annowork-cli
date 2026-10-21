@@ -111,7 +111,10 @@ def add_parser(
         group.add_argument(
             "--endpoint_url",
             type=str,
-            help=f"Annowork WebAPIのエンドポイントを指定します。指定しない場合は ``{DEFAULT_ENDPOINT_URL}`` です。",
+            help=(
+                "Annowork WebAPIのエンドポイントを指定します。未指定の場合は環境変数 "
+                f"``ANNOWORK_ENDPOINT_URL`` を使用し、環境変数も未設定の場合は ``{DEFAULT_ENDPOINT_URL}`` です。"
+            ),
         )
 
         return parent_parser

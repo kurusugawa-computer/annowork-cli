@@ -41,7 +41,8 @@ password annowork_password
   * `--workspace_id` が必須のコマンドで未指定時に使用されます。
 
 ### `annoworkcli annofab`コマンドを利用する場合
-`annoworkcli annofab`コマンドはannofabのwebapiにアクセスするため、annofabのwebapiの認証情報を指定する必要があります。
+Annofab WebAPIにアクセスする操作では、Annofabの認証情報が必要です。
+`list_assigned_hours` と、`--actual_file` を指定した `reshape_working_hours` ではAnnofabの認証は不要です。
 * 環境変数`ANNOFAB_USER_ID` , `ANNOFAB_PASSWORD`または`ANNOFAB_PAT`
 
 

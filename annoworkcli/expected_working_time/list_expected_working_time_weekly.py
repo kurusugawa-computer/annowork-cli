@@ -122,6 +122,11 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
     subcommand_name = "list_weekly"
     subcommand_help = "予定稼働時間の一覧を週ごと（日曜日始まり）に出力します。"
 
-    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
+    parser = annoworkcli.common.cli.add_parser(
+        subparsers,
+        subcommand_name,
+        subcommand_help,
+        description=subcommand_help + "\n--user_id、--start_date、--end_dateのいずれかを1つ以上指定してください。",
+    )
     parse_args(parser)
     return parser

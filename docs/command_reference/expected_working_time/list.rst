@@ -8,6 +8,8 @@ Description
 
 
 
+``--user_id``、``--start_date``、``--end_date`` のいずれかを1つ以上指定してください。
+
 Examples
 =================================
 

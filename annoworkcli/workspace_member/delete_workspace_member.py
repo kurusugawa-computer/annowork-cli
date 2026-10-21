@@ -64,7 +64,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         type=str,
         nargs="+",
         required=True,
-        help="ワークスペースメンバに追加するuser_id",
+        help="削除対象のワークスペースメンバのuser_id",
     )
 
     parser.set_defaults(subcommand_func=main)

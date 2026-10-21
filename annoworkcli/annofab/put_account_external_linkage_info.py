@@ -111,7 +111,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         "--overwrite",
         action="store_true",
         default=False,
-        help="上書きする",
+        help="Annofabのaccount_idが設定済みの場合も更新します。未指定時は設定済みユーザーをスキップします。",
     )
     parser.add_argument("--annofab_user_id", type=str, help="Annofabにログインする際のユーザID")
     parser.add_argument("--annofab_password", type=str, help="Annofabにログインする際のパスワード")
@@ -126,6 +126,11 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
         "アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。\nAnnofabのuser_idはAnnoworkのuser_idと一致している必要があります。"
     )
 
-    parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
+    parser = annoworkcli.common.cli.add_parser(
+        subparsers,
+        subcommand_name,
+        subcommand_help,
+        description=subcommand_help + "\n更新時はexternal_linkage_infoにannofab.account_idだけを送信し、既存の他の項目を引き継ぎません。",
+    )
     parse_args(parser)
     return parser
