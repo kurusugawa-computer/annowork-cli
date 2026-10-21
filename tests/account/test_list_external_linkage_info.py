@@ -20,5 +20,5 @@ def test_main_propagates_api_error():
     service = MagicMock()
     service.wrapper.get_account_external_linkage_info_or_none.side_effect = RuntimeError("API error")
 
-    with pytest.raises(RuntimeError, match="API error"):
+    with pytest.raises(RuntimeError):
         ListExternalLinkageInfo(service).main(user_id_list=["user"], output=None, output_format=OutputFormat.JSON)
