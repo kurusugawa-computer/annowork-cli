@@ -1,4 +1,5 @@
 import datetime
+import logging
 from unittest.mock import patch
 from uuid import UUID
 
@@ -6,6 +7,34 @@ import pytest
 import requests
 
 from annoworkcli.schedule.create_schedule import CreateSchedule
+
+
+@pytest.mark.parametrize(
+    ("answer", "api_results", "expected_summary", "has_failure"),
+    [
+        ("y", [{}, {}], "成功: 2 件、スキップ: 0 件、失敗: 0 件", False),
+        ("y", [requests.exceptions.HTTPError(), requests.exceptions.HTTPError()], "成功: 0 件、スキップ: 0 件、失敗: 2 件", True),
+        ("N", [], "成功: 0 件、スキップ: 2 件、失敗: 0 件", False),
+        ("y", [requests.exceptions.HTTPError(), {}], "成功: 1 件、スキップ: 0 件、失敗: 1 件", True),
+    ],
+)
+def test_処理の最後に成功スキップ失敗件数をINFOログに出力する(service, monkeypatch, caplog, answer, api_results, expected_summary, has_failure):
+    user_ids = ["alice", "bob"]
+    service.api.get_workspace_members.return_value.append({"user_id": "bob", "workspace_member_id": "member-bob"})
+    service.api.put_schedule.side_effect = api_results
+    inputs = iter([answer])
+    monkeypatch.setattr("builtins.input", lambda _: next(inputs))
+    caplog.set_level(logging.INFO)
+    command = CreateSchedule(service, "workspace")
+    if has_failure:
+        with pytest.raises(RuntimeError):
+            command.main(parent_job_id="parent", user_ids=user_ids, start_date="2026-11-02", end_date="2026-11-06")
+    else:
+        command.main(parent_job_id="parent", user_ids=user_ids, start_date="2026-11-02", end_date="2026-11-06")
+
+    assert caplog.records[-1].levelno == logging.INFO
+    assert caplog.records[-1].getMessage() == expected_summary
+    assert sum(record.getMessage() == expected_summary for record in caplog.records) == 1
 
 
 def test_複数人を重複なく親ジョブへ100パーセントで作成する(service):
@@ -65,19 +94,19 @@ def test_APIの失敗後も残りのメンバーを処理する(service):
     assert service.api.put_schedule.call_count == 2
 
 
-def test_確認で拒否したユーザーは作成せずALL以降は確認を省略する(service, monkeypatch):
+@pytest.mark.parametrize("answer", ["y", "N"])
+def test_複数人の作成確認は一回だけ行う(service, monkeypatch, answer):
     service.api.get_workspace_members.return_value.extend(
         [{"user_id": "bob", "workspace_member_id": "member-bob"}, {"user_id": "charlie", "workspace_member_id": "member-charlie"}]
     )
-    answers = iter(["N", "ALL"])
+    answers = iter([answer])
     monkeypatch.setattr("builtins.input", lambda _: next(answers))
     CreateSchedule(service, "workspace").main(
-        parent_job_id="parent", user_ids=["alice", "bob", "charlie"], start_date="2026-11-02", end_date="2026-11-06"
+        parent_job_id="parent", user_ids=["alice", "bob", "charlie", "alice"], start_date="2026-11-02", end_date="2026-11-06"
     )
-    assert [call.kwargs["request_body"]["workspace_member_id"] for call in service.api.put_schedule.call_args_list] == [
-        "member-bob",
-        "member-charlie",
-    ]
+    assert next(answers, None) is None
+    expected_members = ["member", "member-bob", "member-charlie"] if answer == "y" else []
+    assert [call.kwargs["request_body"]["workspace_member_id"] for call in service.api.put_schedule.call_args_list] == expected_members
 
 
 @pytest.mark.parametrize(

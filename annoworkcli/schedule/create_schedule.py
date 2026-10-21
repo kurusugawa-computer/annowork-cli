@@ -41,6 +41,12 @@ class CreateSchedule:
         member_ids = {member["user_id"]: member["workspace_member_id"] for member in members}
         logger.info(f"{len(user_ids)} 人の作業計画を作成します。 :: {parent_job_id=}, {start_date=}, {end_date=}, {schedule_type=}, {value=}")
         result = WriteResult()
+        if not self.all_yes and not cli.prompt_yesno(
+            f"{len(user_ids)} 人の作業計画を作成しますか？ :: {parent_job_id=}, {user_ids=}, {start_date=}, {end_date=}, {schedule_type=}, {value=}"
+        ):
+            result.skipped = len(user_ids)
+            result.finish()
+            return
         for index, user_id in enumerate(user_ids, 1):
             result.log_progress(index, len(user_ids))
             member_id = member_ids.get(user_id)
@@ -58,11 +64,6 @@ class CreateSchedule:
                 "value": value,
             }
             message = f"{index} 件目: {user_id=}, {parent_job_id=}, {start_date=}, {end_date=}, {schedule_type=}, {value=}"
-            if not self.all_yes:
-                is_yes, self.all_yes = cli.prompt_yesnoall(f"作業計画を作成しますか？ :: {message}")
-                if not is_yes:
-                    result.skipped += 1
-                    continue
             schedule_id = str(uuid.uuid4())
             try:
                 self.service.api.put_schedule(self.workspace_id, schedule_id, request_body=request_body)
