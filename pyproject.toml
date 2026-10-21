@@ -60,7 +60,7 @@ documentation = [
     "sphinx-last-updated-by-git",
     "sphinx-argparse",
 ]
-dev = ["ipython"]
+dev = ["ipython", "pre-commit>=4"]
 
 
 [tool.uv]
