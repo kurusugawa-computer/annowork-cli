@@ -1,14 +1,58 @@
 import argparse
+import io
 
 import pandas
 import pytest
 
-from annoworkcli.common.cli import add_workspace_id_argument_with_env_fallback, resolve_required_workspace_id
+from annoworkcli.common.cli import add_workspace_id_argument_with_env_fallback, prompt_yesno, prompt_yesnoall, resolve_required_workspace_id
 from annoworkcli.common.exeptions import CommandLineArgumentError
 from annoworkcli.schedule_actual.common import DAILY_COLUMNS
 from annoworkcli.schedule_actual.list_daily import main as schedule_actual_list_daily_main
 from annoworkcli.schedule_actual.list_daily import parse_args as parse_schedule_actual_list_daily_args
 from annoworkcli.workspace.list_workspace import parse_args as parse_workspace_list_args
+
+
+@pytest.mark.parametrize(("choice", "expected"), [("y", True), ("Y", True), ("n", False), ("N", False)])
+def test_prompt_yesno(choice, expected, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", io.StringIO(f"{choice}\n"))
+
+    assert prompt_yesno("続行しますか？") is expected
+    assert capsys.readouterr().out == "続行しますか？ [y/n] : "
+
+
+@pytest.mark.parametrize(
+    ("choice", "expected"),
+    [
+        ("y", (True, False)),
+        ("Y", (True, False)),
+        ("n", (False, False)),
+        ("N", (False, False)),
+        ("all", (True, True)),
+        ("ALL", (True, True)),
+        ("All", (True, True)),
+    ],
+)
+def test_prompt_yesnoall(choice, expected, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", io.StringIO(f"{choice}\n"))
+
+    assert prompt_yesnoall("続行しますか？") == expected
+    assert capsys.readouterr().out == "続行しますか？ [y/n/all] : "
+
+
+@pytest.mark.parametrize("choice", ["\n", "invalid\n", "all\n", "ALL\n"])
+def test_prompt_yesnoで空入力や不正な入力は再入力を求める(choice, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", io.StringIO(f"{choice}y\n"))
+
+    assert prompt_yesno("続行しますか？") is True
+    assert capsys.readouterr().out == "続行しますか？ [y/n] : " * 2
+
+
+@pytest.mark.parametrize("choice", ["\n", "invalid\n"])
+def test_prompt_yesnoallで空入力や不正な入力は再入力を求める(choice, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", io.StringIO(f"{choice}all\n"))
+
+    assert prompt_yesnoall("続行しますか？") == (True, True)
+    assert capsys.readouterr().out == "続行しますか？ [y/n/all] : " * 2
 
 
 class TestResolveRequiredWorkspaceId:
