@@ -2,24 +2,28 @@ import argparse
 
 import annoworkcli
 import annoworkcli.common.cli
+import annoworkcli.schedule.create_schedule
 import annoworkcli.schedule.delete_schedule
 import annoworkcli.schedule.list_assigned_hours_daily
 import annoworkcli.schedule.list_assigned_hours_daily_by_parent_job
 import annoworkcli.schedule.list_assigned_hours_daily_groupby_tag
 import annoworkcli.schedule.list_schedule
 import annoworkcli.schedule.list_schedule_weekly
+import annoworkcli.schedule.update_schedule
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義
+    annoworkcli.schedule.create_schedule.add_parser(subparsers)
     annoworkcli.schedule.delete_schedule.add_parser(subparsers)
     annoworkcli.schedule.list_schedule.add_parser(subparsers)
     annoworkcli.schedule.list_assigned_hours_daily.add_parser(subparsers)
     annoworkcli.schedule.list_assigned_hours_daily_by_parent_job.add_parser(subparsers)
     annoworkcli.schedule.list_assigned_hours_daily_groupby_tag.add_parser(subparsers)
     annoworkcli.schedule.list_schedule_weekly.add_parser(subparsers)
+    annoworkcli.schedule.update_schedule.add_parser(subparsers)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:

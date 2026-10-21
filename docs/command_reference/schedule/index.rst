@@ -25,12 +25,14 @@ Available Commands
    :maxdepth: 1
    :titlesonly:
 
+   create
    delete
    list
    list_daily
    list_daily_by_parent_job
    list_daily_groupby_tag
    list_weekly
+   update
 
 Usage Details
 =================================
