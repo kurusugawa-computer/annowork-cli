@@ -25,6 +25,7 @@ class ListExternalLinkageInfo:
             info = self.annowork_service.wrapper.get_account_external_linkage_info_or_none(user_id)
             if info is None:
                 logger.warning(f"user_id={user_id} のアカウント外部連携情報は存在しません。")
+                continue
             info["user_id"] = user_id
             results.append(info)
 
