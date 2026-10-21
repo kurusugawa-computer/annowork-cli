@@ -42,6 +42,17 @@ Examples
       --parent_job_id parent1 --user_id file://users.txt \
       --start_date 2026-11-02 --end_date 2026-11-06 --hours 4
 
+.. _schedule-start-date-restriction:
+
+開始日の制限
+=================================
+
+昨日より前の ``--start_date`` はエラーになります。昨日は指定できます。
+例外的に許可する場合は ``--allow_past_start_date`` を指定してください。
+日付形式と開始日・終了日の前後関係は、許可した場合も検証します。
+「今日」「昨日」は実行環境のローカル日付が基準です。
+``--yes`` は確認を省略するだけで、この制限を解除しません。
+
 Common Behavior
 =================================
 

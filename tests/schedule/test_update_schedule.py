@@ -3,6 +3,8 @@ import requests
 
 from annoworkcli.schedule.update_schedule import UpdateSchedule
 
+pytestmark = pytest.mark.usefixtures("fixed_local_datetime")
+
 
 @pytest.fixture
 def update_service(service):
@@ -117,3 +119,35 @@ def test_複数計画の更新確認は一回だけ行う(update_service, monkey
     assert update_service.api.put_schedule.call_count == (2 if answer == "y" else 0)
     expected_summary = "成功: 2 件、スキップ: 0 件、失敗: 0 件" if answer == "y" else "成功: 0 件、スキップ: 2 件、失敗: 0 件"
     assert caplog.records[-1].getMessage() == expected_summary
+
+
+@pytest.mark.parametrize("start_date", ["2026-10-20", "2026-10-21", "2026-10-22"])
+def test_昨日以降の開始日への変更を許可する(update_service, start_date):
+    UpdateSchedule(update_service, "workspace", all_yes=True).main(schedule_ids=["schedule"], start_date=start_date)
+    assert update_service.api.put_schedule.call_args.kwargs["request_body"]["start_date"] == start_date
+
+
+@pytest.mark.parametrize("allow_past_start_date", [False, True])
+def test_昨日より前への開始日変更は明示的な許可が必要(update_service, allow_past_start_date):
+    command = UpdateSchedule(update_service, "workspace", all_yes=True)
+    if allow_past_start_date:
+        command.main(schedule_ids=["schedule"], start_date="2026-10-19", allow_past_start_date=True)
+        assert update_service.api.put_schedule.call_count == 1
+    else:
+        with pytest.raises(ValueError):
+            command.main(schedule_ids=["schedule"], start_date="2026-10-19")
+        update_service.api.put_schedule.assert_not_called()
+
+
+@pytest.mark.parametrize("changes", [{"end_date": "2026-11-30"}, {"hours": 4}, {"percentage": 50}])
+def test_開始日省略なら過去に開始した計画も更新できる(update_service, changes):
+    update_service.api.get_schedule.return_value["start_date"] = "2026-10-01"
+    UpdateSchedule(update_service, "workspace", all_yes=True).main(schedule_ids=["schedule"], **changes)
+    assert update_service.api.put_schedule.call_args.kwargs["request_body"]["start_date"] == "2026-10-01"
+
+
+@pytest.mark.parametrize("start_date", ["invalid", "20261019", "2026-11-07"])
+def test_過去開始日を許可しても不正な日付では更新しない(update_service, start_date):
+    with pytest.raises((ValueError, RuntimeError)):
+        UpdateSchedule(update_service, "workspace", all_yes=True).main(schedule_ids=["schedule"], start_date=start_date, allow_past_start_date=True)
+    update_service.api.put_schedule.assert_not_called()

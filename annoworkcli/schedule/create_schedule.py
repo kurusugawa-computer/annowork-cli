@@ -8,7 +8,7 @@ import requests
 from annoworkapi.resource import Resource as AnnoworkResource
 
 from annoworkcli.common import cli
-from annoworkcli.schedule.write_common import WriteResult, add_write_arguments, validate_assignment, validate_dates
+from annoworkcli.schedule.write_common import WriteResult, add_write_arguments, validate_assignment, validate_dates, validate_start_date
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +28,12 @@ class CreateSchedule:
         start_date: str | None = None,
         hours: float | None = None,
         percentage: float | None = None,
+        allow_past_start_date: bool = False,
     ) -> None:
         validate_assignment(hours, percentage)
         start_date = start_date if start_date is not None else datetime.datetime.now().astimezone().date().isoformat()
         validate_dates(start_date, end_date)
+        validate_start_date(start_date, allow_past_start_date=allow_past_start_date)
         user_ids = list(dict.fromkeys(user_ids))
         if not user_ids:
             raise ValueError("作成対象のuser_idを1件以上指定してください。")
@@ -80,6 +82,7 @@ def main(args: argparse.Namespace) -> None:
     validate_assignment(args.hours, args.percentage)
     start_date = args.start_date if args.start_date is not None else datetime.datetime.now().astimezone().date().isoformat()
     validate_dates(start_date, args.end_date)
+    validate_start_date(start_date, allow_past_start_date=args.allow_past_start_date)
     workspace_id = cli.resolve_required_workspace_id(args)
     user_ids = cli.get_list_from_args(args.user_id)
     assert user_ids is not None
@@ -90,6 +93,7 @@ def main(args: argparse.Namespace) -> None:
         end_date=args.end_date,
         hours=args.hours,
         percentage=args.percentage,
+        allow_past_start_date=args.allow_past_start_date,
     )
 
 

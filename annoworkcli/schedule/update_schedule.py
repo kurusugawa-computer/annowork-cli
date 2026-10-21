@@ -7,18 +7,22 @@ import requests
 from annoworkapi.resource import Resource as AnnoworkResource
 
 from annoworkcli.common import cli
-from annoworkcli.schedule.write_common import WriteResult, add_write_arguments, validate_assignment, validate_dates
+from annoworkcli.schedule.write_common import WriteResult, add_write_arguments, validate_assignment, validate_dates, validate_start_date
 
 logger = logging.getLogger(__name__)
 
 
-def validate_update(start_date: str | None, end_date: str | None, hours: float | None, percentage: float | None) -> None:
+def validate_update(
+    start_date: str | None, end_date: str | None, hours: float | None, percentage: float | None, *, allow_past_start_date: bool = False
+) -> None:
     validate_assignment(hours, percentage)
     if all(value is None for value in [start_date, end_date, hours, percentage]):
         raise ValueError("更新する項目を1つ以上指定してください。")
     for date in [start_date, end_date]:
         if date is not None:
             validate_dates(date, date)
+    if start_date is not None:
+        validate_start_date(start_date, allow_past_start_date=allow_past_start_date)
     if start_date is not None and end_date is not None:
         validate_dates(start_date, end_date)
 
@@ -37,8 +41,9 @@ class UpdateSchedule:
         end_date: str | None = None,
         hours: float | None = None,
         percentage: float | None = None,
+        allow_past_start_date: bool = False,
     ) -> None:
-        validate_update(start_date, end_date, hours, percentage)
+        validate_update(start_date, end_date, hours, percentage, allow_past_start_date=allow_past_start_date)
         schedule_ids = list(dict.fromkeys(schedule_ids))
         if not schedule_ids:
             raise ValueError("更新対象のschedule_idを1件以上指定してください。")
@@ -85,12 +90,17 @@ class UpdateSchedule:
 
 
 def main(args: argparse.Namespace) -> None:
-    validate_update(args.start_date, args.end_date, args.hours, args.percentage)
+    validate_update(args.start_date, args.end_date, args.hours, args.percentage, allow_past_start_date=args.allow_past_start_date)
     workspace_id = cli.resolve_required_workspace_id(args)
     schedule_ids = cli.get_list_from_args(args.schedule_id)
     assert schedule_ids is not None
     UpdateSchedule(cli.build_annoworkapi(args), workspace_id, all_yes=args.yes).main(
-        schedule_ids=schedule_ids, start_date=args.start_date, end_date=args.end_date, hours=args.hours, percentage=args.percentage
+        schedule_ids=schedule_ids,
+        start_date=args.start_date,
+        end_date=args.end_date,
+        hours=args.hours,
+        percentage=args.percentage,
+        allow_past_start_date=args.allow_past_start_date,
     )
 
 

@@ -1,4 +1,5 @@
-from unittest.mock import MagicMock
+import datetime
+from unittest.mock import MagicMock, patch
 
 import pytest
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -27,3 +28,12 @@ def service():
     ]
     result.api.get_expected_working_times.return_value = []
     return result
+
+
+@pytest.fixture
+def fixed_local_datetime():
+    """実行日によって書き込み系テストの日付条件が変わらないようにする。"""
+    now = datetime.datetime(2026, 10, 21, 0, 30, tzinfo=datetime.timezone(datetime.timedelta(hours=9)))
+    with patch("datetime.datetime", side_effect=datetime.datetime) as clock:
+        clock.now.return_value.astimezone.return_value = now
+        yield

@@ -8,6 +8,8 @@ import requests
 
 from annoworkcli.schedule.create_schedule import CreateSchedule
 
+pytestmark = pytest.mark.usefixtures("fixed_local_datetime")
+
 
 @pytest.mark.parametrize(
     ("answer", "api_results", "expected_summary", "has_failure"),
@@ -137,3 +139,30 @@ def test_割当量の境界値と開始終了が同日の計画を許可する(s
         parent_job_id="parent", user_ids=["alice"], start_date="2026-11-02", end_date="2026-11-02", **assignment
     )
     assert service.api.put_schedule.call_count == 1
+
+
+@pytest.mark.parametrize("start_date", ["2026-10-20", "2026-10-21", "2026-10-22"])
+def test_昨日以降の開始日を許可する(service, start_date):
+    CreateSchedule(service, "workspace", all_yes=True).main(parent_job_id="parent", user_ids=["alice"], start_date=start_date, end_date="2026-11-06")
+    assert service.api.put_schedule.call_args.kwargs["request_body"]["start_date"] == start_date
+
+
+@pytest.mark.parametrize("allow_past_start_date", [False, True])
+def test_昨日より前の開始日は明示的な許可が必要(service, allow_past_start_date):
+    command = CreateSchedule(service, "workspace", all_yes=True)
+    if allow_past_start_date:
+        command.main(parent_job_id="parent", user_ids=["alice"], start_date="2026-10-19", end_date="2026-11-06", allow_past_start_date=True)
+        assert service.api.put_schedule.call_count == 1
+    else:
+        with pytest.raises(ValueError):
+            command.main(parent_job_id="parent", user_ids=["alice"], start_date="2026-10-19", end_date="2026-11-06")
+        service.api.put_schedule.assert_not_called()
+
+
+@pytest.mark.parametrize("start_date", ["invalid", "20261019", "2026-11-07"])
+def test_過去開始日を許可しても日付の形式と前後関係を検証する(service, start_date):
+    with pytest.raises(ValueError):
+        CreateSchedule(service, "workspace", all_yes=True).main(
+            parent_job_id="parent", user_ids=["alice"], start_date=start_date, end_date="2026-11-06", allow_past_start_date=True
+        )
+    service.api.put_schedule.assert_not_called()
