@@ -1,5 +1,4 @@
 import argparse
-import datetime
 import logging
 from collections.abc import Collection
 from pathlib import Path
@@ -14,7 +13,7 @@ from annoworkapi.utils import str_to_datetime
 import annoworkcli
 import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
-from annoworkcli.common.utils import print_csv, print_json
+from annoworkcli.common.utils import get_timezone, print_csv, print_json
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +25,7 @@ class ListActualWorkingTime:
 
         self.workspace_members = self.annowork_service.api.get_workspace_members(self.workspace_id, query_params={"includes_inactive_members": True})
 
-        # none 判定
-        if timezone_offset_hours is not None:
-            tzinfo = datetime.timezone(datetime.timedelta(hours=timezone_offset_hours))
-        else:
-            tzinfo = datetime.datetime.now().astimezone().tzinfo  # type: ignore[assignment]
-        self.tzinfo = tzinfo
+        self.tzinfo = get_timezone(timezone_offset_hours)
         """日付に対するタイムゾーン"""
 
     def get_actual_working_times_by_workspace_member(

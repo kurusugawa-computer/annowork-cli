@@ -9,6 +9,7 @@ from annoworkapi.job import get_parent_job_id_from_job_tree
 
 import annoworkcli
 import annoworkcli.common.cli
+from annoworkcli.actual_working_time.list_actual_working_hours_daily import create_actual_working_hours_daily_list, filter_actual_daily_list
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
@@ -16,20 +17,36 @@ from annoworkcli.common.utils import print_csv, print_json
 logger = logging.getLogger(__name__)
 
 
-def get_weekly_actual_working_hours_df(actual_working_times: list[dict[str, Any]], workspace_members: list[dict[str, Any]]) -> pandas.DataFrame:
+def get_weekly_actual_working_hours_df(
+    actual_working_times: list[dict[str, Any]],
+    workspace_members: list[dict[str, Any]],
+    *,
+    timezone_offset_hours: float | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+) -> pandas.DataFrame:
     """週単位の実績作業時間が格納されたDataFrameを生成します。
 
     Args:
-        actual_working_times: 実績作業時間情報。start_datetime, workspace_member_id, job_id, job_name, actual_working_hours を参照します。
+        actual_working_times: ユーザー・ジョブ情報を付加した実績作業時間情報。
         workspace_members: ワークスペースメンバ情報。workspace_member_id, user_id, username を参照します。
+        timezone_offset_hours: 日付と週の区切りに使うUTCからの時差。未指定時はローカルのタイムゾーンを使います。
+        start_date: 集計開始日。この日より前の作業時間は除外します。
+        end_date: 集計終了日。この日より後の作業時間は除外します。
 
     Returns:
         以下の列を返すDataFrame。
             "workspace_member_id", "user_id","username", "job_id", "job_name", "start_date", "end_date", "actual_working_hours"
     """
-    df = pandas.DataFrame(actual_working_times)
-    # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
-    df["dt_date"] = pandas.to_datetime(df["start_datetime"])
+    columns = ["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "actual_working_hours"]
+    daily_list = create_actual_working_hours_daily_list(actual_working_times, timezone_offset_hours=timezone_offset_hours, show_notes=False)
+    daily_list = filter_actual_daily_list(daily_list, start_date=start_date, end_date=end_date)
+    if not daily_list:
+        return pandas.DataFrame(columns=columns)
+
+    df = pandas.DataFrame(daily_list)
+    # 指定タイムゾーンで分割した日次実績を、日曜日始まりの週ごとに集計する。
+    df["dt_date"] = pandas.to_datetime(df["date"])
 
     df_weekly = (
         # `include_groups=False`を指定する理由：pandas2.2.0で以下の警告が出ないようにするため
@@ -57,7 +74,7 @@ def get_weekly_actual_working_hours_df(actual_working_times: list[dict[str, Any]
     df = df_weekly.merge(df_workspace_member, on="workspace_member_id", how="left")
     df.sort_values(["user_id", "job_id", "start_date"], inplace=True)
 
-    return df[["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "actual_working_hours"]]
+    return df[columns]
 
 
 def add_parent_job_info_to_df(df: pandas.DataFrame, all_jobs: list[dict[str, Any]]) -> pandas.DataFrame:
@@ -131,7 +148,13 @@ def main(args: argparse.Namespace) -> None:
     if len(actual_working_times) == 0:
         df = pandas.DataFrame(columns=required_columns)
     else:
-        df = get_weekly_actual_working_hours_df(actual_working_times, main_obj.workspace_members)
+        df = get_weekly_actual_working_hours_df(
+            actual_working_times,
+            main_obj.workspace_members,
+            timezone_offset_hours=args.timezone_offset,
+            start_date=start_date,
+            end_date=end_date,
+        )
         # 親ジョブ情報を追加
         all_jobs = annowork_service.api.get_jobs(workspace_id)
         df = add_parent_job_info_to_df(df, all_jobs)

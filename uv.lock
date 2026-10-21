@@ -125,6 +125,7 @@ dependencies = [
     { name = "isodate" },
     { name = "more-itertools" },
     { name = "pandas" },
+    { name = "python-dateutil" },
     { name = "pyyaml" },
     { name = "shtab" },
 ]
@@ -160,6 +161,7 @@ requires-dist = [
     { name = "isodate" },
     { name = "more-itertools" },
     { name = "pandas", specifier = ">=2.2,<4" },
+    { name = "python-dateutil" },
     { name = "pyyaml" },
     { name = "shtab", specifier = ">=1.12.1,<2" },
 ]

@@ -18,7 +18,7 @@ import annoworkcli
 import annoworkcli.common.cli
 from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
-from annoworkcli.common.utils import print_csv, print_json
+from annoworkcli.common.utils import get_timezone, print_csv, print_json
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class SimpleWorkspaceMember(DataClassJsonMixin):
     username: str
 
 
-def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.timezone) -> ActualWorkingHoursDict:
+def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.tzinfo) -> ActualWorkingHoursDict:
     results_dict: ActualWorkingHoursDict = {}
 
     dt_local_start_datetime = str_to_datetime(actual["start_datetime"]).astimezone(tzinfo)
@@ -75,7 +75,9 @@ def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.t
     job_id = actual["job_id"]
 
     if dt_local_start_datetime.date() == dt_local_end_datetime.date():
-        actual_working_hours = (dt_local_end_datetime - dt_local_start_datetime).total_seconds() / 3600
+        actual_working_hours = (
+            dt_local_end_datetime.astimezone(datetime.UTC) - dt_local_start_datetime.astimezone(datetime.UTC)
+        ).total_seconds() / 3600
         results_dict[(dt_local_start_datetime.date(), workspace_member_id, job_id)] = actual_working_hours
     else:
         dt_tmp_local_start_datetime = dt_local_start_datetime
@@ -84,11 +86,15 @@ def _create_actual_working_hours_dict(actual: dict[str, Any], tzinfo: datetime.t
         while dt_tmp_local_start_datetime.date() < dt_local_end_datetime.date():
             dt_next_date = dt_tmp_local_start_datetime.date() + datetime.timedelta(days=1)
             dt_tmp_local_end_datetime = datetime.datetime(year=dt_next_date.year, month=dt_next_date.month, day=dt_next_date.day, tzinfo=tzinfo)
-            actual_working_hours = (dt_tmp_local_end_datetime - dt_tmp_local_start_datetime).total_seconds() / 3600
+            actual_working_hours = (
+                dt_tmp_local_end_datetime.astimezone(datetime.UTC) - dt_tmp_local_start_datetime.astimezone(datetime.UTC)
+            ).total_seconds() / 3600
             results_dict[(dt_tmp_local_start_datetime.date(), workspace_member_id, job_id)] = actual_working_hours
             dt_tmp_local_start_datetime = dt_tmp_local_end_datetime
 
-        actual_working_hours = (dt_local_end_datetime - dt_tmp_local_start_datetime).total_seconds() / 3600
+        actual_working_hours = (
+            dt_local_end_datetime.astimezone(datetime.UTC) - dt_tmp_local_start_datetime.astimezone(datetime.UTC)
+        ).total_seconds() / 3600
         results_dict[(dt_local_end_datetime.date(), workspace_member_id, job_id)] = actual_working_hours
 
     return results_dict
@@ -105,11 +111,7 @@ def create_actual_working_hours_daily_list(
     job_dict: dict[str, SimpleJob] = {}
     member_dict: dict[str, SimpleWorkspaceMember] = {}
 
-    # none 判定
-    if timezone_offset_hours is not None:
-        tzinfo = datetime.timezone(datetime.timedelta(hours=timezone_offset_hours))
-    else:
-        tzinfo = datetime.datetime.now().astimezone().tzinfo  # type: ignore[assignment]
+    tzinfo = get_timezone(timezone_offset_hours)
 
     for actual in actual_working_time_list:
         tmp_results = _create_actual_working_hours_dict(actual, tzinfo=tzinfo)
