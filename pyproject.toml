@@ -28,6 +28,7 @@ dependencies = [
     "more-itertools",
     "pandas>=2.2,<4",
     "isodate",
+    "python-dateutil",
     "annofabcli>=1.136.0",
     "shtab>=1.12.1,<2",
 ]

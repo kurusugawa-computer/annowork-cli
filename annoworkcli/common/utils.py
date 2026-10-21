@@ -10,6 +10,7 @@ from typing import Any, TypeVar
 import isodate
 import pandas
 import yaml
+from dateutil.tz import gettz, tzlocal
 
 DEFAULT_CSV_FORMAT = {"encoding": "utf_8_sig", "index": False}
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -17,6 +18,13 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")  # Can be anything
+
+
+def get_timezone(timezone_offset_hours: float | None) -> datetime.tzinfo:
+    """指定された固定時差、または夏時間規則を持つローカルのタイムゾーンを返します。"""
+    if timezone_offset_hours is not None:
+        return datetime.timezone(datetime.timedelta(hours=timezone_offset_hours))
+    return gettz() or tzlocal()
 
 
 def read_lines(filepath: str) -> list[str]:

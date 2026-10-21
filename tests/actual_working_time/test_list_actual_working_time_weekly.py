@@ -1,5 +1,6 @@
 import datetime
 import json
+import time
 from unittest.mock import MagicMock
 
 import pandas
@@ -8,12 +9,26 @@ from annoworkapi.api import AnnoworkApi
 from annoworkapi.resource import Resource
 
 from annoworkcli.__main__ import create_parser
+from annoworkcli.actual_working_time.list_actual_working_time import ListActualWorkingTime
 from annoworkcli.actual_working_time.list_actual_working_time_weekly import get_weekly_actual_working_hours_df, main
 
 WORKSPACE_MEMBERS = [
     {"workspace_member_id": "alice", "user_id": "alice", "username": "ALICE"},
     {"workspace_member_id": "bob", "user_id": "bob", "username": "BOB"},
 ]
+
+
+@pytest.fixture
+def paris_timezone(monkeypatch):
+    if not hasattr(time, "tzset"):
+        pytest.skip("実行環境はTZによるローカルタイムゾーンの変更に対応していません。")
+    try:
+        with monkeypatch.context() as context:
+            context.setenv("TZ", "Europe/Paris")
+            time.tzset()
+            yield
+    finally:
+        time.tzset()
 
 
 def make_actual(start: str, end: str, member_index: int = 0, job_id: str = "job1"):
@@ -79,6 +94,63 @@ def test_タイムゾーン未指定時はローカルの週境界を使う():
     )
     assert actual["start_date"].tolist() == ["2026-10-18"]
     assert actual["actual_working_hours"].tolist() == [1.0]
+
+
+@pytest.mark.usefixtures("paris_timezone")
+@pytest.mark.parametrize(
+    ("start", "end", "expected_week"),
+    [
+        ("2026-01-03T23:15:00+01:00", "2026-01-03T23:45:00+01:00", "2025-12-28"),
+        ("2026-07-05T00:15:00+02:00", "2026-07-05T00:45:00+02:00", "2026-07-05"),
+    ],
+)
+def test_未指定時は実行する季節によらず実績日の時差で週を決める(start, end, expected_week):
+    # 冬と夏の両方を検証し、実行時の固定時差に依存すると必ず一方が失敗するようにする。
+    actual = get_weekly_actual_working_hours_df([make_actual(start, end)], WORKSPACE_MEMBERS)
+    assert actual["start_date"].tolist() == [expected_week]
+    assert actual["actual_working_hours"].tolist() == [0.5]
+
+
+@pytest.mark.usefixtures("paris_timezone")
+@pytest.mark.parametrize(
+    ("start", "end", "expected_hours"),
+    [
+        ("2026-03-29T01:30:00+01:00", "2026-03-29T03:30:00+02:00", 1),
+        ("2026-10-25T02:15:00+02:00", "2026-10-25T02:45:00+01:00", 1.5),
+        ("2026-03-29T00:00:00+01:00", "2026-03-30T00:00:00+02:00", 23),
+        ("2026-10-25T00:00:00+02:00", "2026-10-26T00:00:00+01:00", 25),
+        ("2026-03-28T23:30:00+01:00", "2026-03-30T00:30:00+02:00", 24),
+        ("2026-10-24T23:30:00+02:00", "2026-10-26T00:30:00+01:00", 26),
+    ],
+)
+def test_夏時間切り替えをまたぐ実績は経過時間を集計する(start, end, expected_hours):
+    actual = get_weekly_actual_working_hours_df([make_actual(start, end)], WORKSPACE_MEMBERS)
+    assert actual["actual_working_hours"].sum() == expected_hours
+
+
+@pytest.mark.usefixtures("paris_timezone")
+@pytest.mark.parametrize("by_member", [True, False])
+@pytest.mark.parametrize(
+    ("date", "expected_start", "expected_end"),
+    [
+        ("2026-01-03", "2026-01-02T23:00:00Z", "2026-01-03T22:59:59.999Z"),
+        ("2026-07-05", "2026-07-04T22:00:00Z", "2026-07-05T21:59:59.999Z"),
+        ("2026-03-29", "2026-03-28T23:00:00Z", "2026-03-29T21:59:59.999Z"),
+        ("2026-10-25", "2026-10-24T22:00:00Z", "2026-10-25T22:59:59.999Z"),
+    ],
+)
+def test_取得期間の境界も対象日の夏時間規則を使う(date, expected_start, expected_end, by_member):
+    service = MagicMock(spec=Resource)
+    service.api = MagicMock(spec=AnnoworkApi)
+    command = ListActualWorkingTime(service, "ws", timezone_offset_hours=None)
+    if by_member:
+        command.get_actual_working_times_by_workspace_member(["alice"], start_date=date, end_date=date)
+        query = service.api.get_actual_working_times_by_workspace_member.call_args.kwargs["query_params"]
+    else:
+        command.get_actual_working_times_by_job(start_date=date, end_date=date)
+        query = service.api.get_actual_working_times.call_args.kwargs["query_params"]
+    assert datetime.datetime.fromisoformat(query["term_start"]) == datetime.datetime.fromisoformat(expected_start)
+    assert datetime.datetime.fromisoformat(query["term_end"]) == datetime.datetime.fromisoformat(expected_end)
 
 
 @pytest.mark.parametrize(
