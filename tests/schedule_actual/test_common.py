@@ -104,16 +104,16 @@ def test_get_daily_schedule_actual_dfは親ジョブIDで作業計画を取得�
         def __init__(self, annowork_service, workspace_id):  # noqa: ANN001
             pass
 
-        def get_assigned_hours_daily_list(self, *, start_date, end_date, job_ids, user_ids):  # noqa: ANN001, ANN201
+        def get_assigned_hours_daily_list(self, *, start_date, end_date, parent_job_ids, user_ids):  # noqa: ANN001, ANN201
             captured["start_date"] = start_date
             captured["end_date"] = end_date
-            captured["job_ids"] = job_ids
+            captured["parent_job_ids"] = parent_job_ids
             captured["user_ids"] = user_ids
             return [
                 AssignedHoursDaily(
                     date="2022-03-06",
-                    job_id="parent_job",
-                    job_name="親ジョブ",
+                    parent_job_id="parent_job",
+                    parent_job_name="親ジョブ",
                     workspace_member_id="member",
                     user_id="user",
                     username="username",
@@ -140,7 +140,7 @@ def test_get_daily_schedule_actual_dfは親ジョブIDで作業計画を取得�
     assert captured == {
         "start_date": "2022-03-06",
         "end_date": "2022-03-06",
-        "job_ids": ["parent_job"],
+        "parent_job_ids": ["parent_job"],
         "user_ids": None,
     }
     assert actual.to_dict("records") == [

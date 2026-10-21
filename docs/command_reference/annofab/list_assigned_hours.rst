@@ -39,7 +39,7 @@ Examples
 
 .. note:: 
 
-   ``parent_job_id`` は、``schedule list_daily`` コマンドの ``job_id`` に対応します。
+   ``parent_job_id`` は、``schedule list_daily`` コマンドの ``parent_job_id`` に対応します。
    1個の親ジョブは複数のAnnofabプロジェクトに紐づく可能性があるため、出力には ``annofab_project_id`` は含まれません。
 
 

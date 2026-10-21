@@ -1,13 +1,7 @@
 import os
 from pathlib import Path
 
-import pytest
-
 from annoworkcli.schedule.list_schedule_weekly import get_weekly_assigned_hours_df
-
-# モジュールレベルでpytestのmarkerを付ける
-pytestmark = pytest.mark.access_webapi
-
 
 # プロジェクトトップに移動する
 os.chdir(os.path.dirname(os.path.abspath(__file__)) + "/../../")
@@ -21,36 +15,36 @@ ASSIGNED_HOURS_DAILY_LIST = [
     {
         "workspace_member_id": "alice",
         "date": "2022-03-05",
-        "job_id": "job1",
-        "job_name": "Job 1",
+        "parent_job_id": "job1",
+        "parent_job_name": "Job 1",
         "assigned_working_hours": 1,
     },
     {
         "workspace_member_id": "alice",
         "date": "2022-03-06",
-        "job_id": "job1",
-        "job_name": "Job 1",
+        "parent_job_id": "job1",
+        "parent_job_name": "Job 1",
         "assigned_working_hours": 2,
     },
     {
         "workspace_member_id": "alice",
         "date": "2022-03-12",
-        "job_id": "job1",
-        "job_name": "Job 1",
+        "parent_job_id": "job1",
+        "parent_job_name": "Job 1",
         "assigned_working_hours": 3,
     },
     {
         "workspace_member_id": "bob",
         "date": "2022-02-06",
-        "job_id": "job2",
-        "job_name": "Job 2",
+        "parent_job_id": "job2",
+        "parent_job_name": "Job 2",
         "assigned_working_hours": 4,
     },
     {
         "workspace_member_id": "bob",
         "date": "2022-03-13",
-        "job_id": "job2",
-        "job_name": "Job 2",
+        "parent_job_id": "job2",
+        "parent_job_name": "Job 2",
         "assigned_working_hours": 0,
     },
 ]
@@ -63,3 +57,8 @@ def test_get_weekly_assigned_hours_df():
     actual = get_weekly_assigned_hours_df(ASSIGNED_HOURS_DAILY_LIST, WORKSPACE_MEMBERS)
     assert len(actual) == 3
     assert actual.query("workspace_member_id == 'alice' and start_date == '2022-03-06'").iloc[0]["assigned_working_hours"] == 5
+
+    assert "parent_job_id" in actual.columns
+    assert "parent_job_name" in actual.columns
+    assert "job_id" not in actual.columns
+    assert "job_name" not in actual.columns

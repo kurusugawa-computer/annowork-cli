@@ -281,16 +281,14 @@ class ReshapeDataFrame:
         if "annofab_working_hours" not in df_sum_actual.columns:
             df_sum_actual["annofab_working_hours"] = 0
 
-        df_sum_assigned = df_assigned.groupby(["job_id", "job_name"])[["assigned_working_hours"]].sum(numeric_only=True)
+        df_sum_assigned = df_assigned.groupby(["parent_job_id", "parent_job_name"])[["assigned_working_hours"]].sum(numeric_only=True)
         df_sum_assigned.reset_index(inplace=True)
         # df_sum_assigned が0件のときは、assigned_working_hours 列がないので、追加する。
         if "assigned_working_hours" not in df_sum_assigned.columns:
             df_sum_assigned["assigned_working_hours"] = 0
 
-        df = df_sum_actual.merge(df_sum_assigned, how="outer", left_on="parent_job_id", right_on="job_id")
-        # outer joinしているので、parent_job_idに欠損値が出る。それをjob_idで埋める。
-        df["parent_job_id"] = df["parent_job_id"].fillna(df["job_id"])
-        df["parent_job_name"] = df["parent_job_name"].fillna(df["job_name"])
+        df = df_sum_actual.merge(df_sum_assigned, how="outer", on="parent_job_id", suffixes=("", "_assigned"))
+        df["parent_job_name"] = df["parent_job_name"].fillna(df["parent_job_name_assigned"])
 
         df.fillna(
             {
@@ -345,9 +343,7 @@ class ReshapeDataFrame:
         if "annofab_working_hours" not in df_sum_actual.columns:
             df_sum_actual["annofab_working_hours"] = 0
 
-        df_sum_assigned = df_assigned.groupby(["user_id", "job_id", "job_name"])[["assigned_working_hours"]].sum()
-        # df_assignedのjob_idとdf_actualのparent_job_idが対応するので、わかりやすくするため、index.namesを変更する
-        df_sum_assigned.index.names = ["user_id", "parent_job_id", "parent_job_name"]
+        df_sum_assigned = df_assigned.groupby(["user_id", "parent_job_id", "parent_job_name"])[["assigned_working_hours"]].sum()
         # df_sum_assigned が0件のときは、assigned_working_hours 列がないので、追加する。
         if "assigned_working_hours" not in df_sum_assigned.columns:
             df_sum_assigned["assigned_working_hours"] = 0
@@ -767,20 +763,20 @@ class ReshapeWorkingHours:
         result = list_assigned_obj.get_assigned_hours_daily_list(
             start_date=start_date,
             end_date=end_date,
-            job_ids=parent_job_ids,
+            parent_job_ids=parent_job_ids,
             user_ids=user_ids,
         )
         return pandas.DataFrame(
             result,
-            columns=["date", "user_id", "username", "workspace_member_id", "job_id", "job_name", "assigned_working_hours"],
+            columns=["date", "user_id", "username", "workspace_member_id", "parent_job_id", "parent_job_name", "assigned_working_hours"],
         ).astype(
             {
                 "date": "string",
                 "user_id": "string",
                 "username": "string",
                 "workspace_member_id": "string",
-                "job_id": "string",
-                "job_name": "string",
+                "parent_job_id": "string",
+                "parent_job_name": "string",
                 "assigned_working_hours": "float64",
             }
         )
@@ -900,7 +896,7 @@ class ReshapeWorkingHours:
 
 
         Args:
-            parent_job_ids: df_actualのjob_idの親ジョブのjob_id, df_assignedのjob_idで絞り込みます。
+            parent_job_ids: df_actualのjob_idの親ジョブのjob_id, df_assignedのparent_job_idで絞り込みます。
             job_ids: df_actualのjob_idで絞り込みます。df_assignedは絞り込まず0件のDataFrameになります。
             annofab_project_ids: df_actualのAnnofabプロジェクトIDで絞り込みます。df_assignedは0件のDataFrameになります。
 
@@ -922,8 +918,7 @@ class ReshapeWorkingHours:
             # アサインは親ジョブに紐付けているため、子ジョブやAnnofabプロジェクト単位では比較できない。
             df_assigned = df_assigned.iloc[:0].copy()
         else:
-            # df_assignedのjob_idがparent_job_idになるので、job_ids にはparent_job_idsを渡している
-            df_assigned = filter_df(df_assigned, job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
+            df_assigned = filter_df(df_assigned, parent_job_ids=parent_job_ids, user_ids=user_ids, start_date=start_date, end_date=end_date)
         return (df_actual, df_assigned)
 
 
@@ -931,8 +926,8 @@ def get_empty_df_assigned() -> pandas.DataFrame:
     return pandas.DataFrame(
         columns=[
             "date",
-            "job_id",
-            "job_name",
+            "parent_job_id",
+            "parent_job_name",
             "workspace_member_id",
             "user_id",
             "username",
@@ -941,8 +936,8 @@ def get_empty_df_assigned() -> pandas.DataFrame:
     ).astype(
         {
             "date": "string",
-            "job_id": "string",
-            "job_name": "string",
+            "parent_job_id": "string",
+            "parent_job_name": "string",
             "workspace_member_id": "string",
             "user_id": "string",
             "username": "string",
@@ -1057,7 +1052,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         type=str,
         nargs="+",
         required=False,
-        help="絞り込み対象の親のジョブID。\n指定すると、actual_fileのjob_idの親ジョブ、assigned_fileのjob_idで絞り込まれます。",
+        help="絞り込み対象の親のジョブID。\n指定すると、actual_fileのjob_idの親ジョブ、assigned_fileのparent_job_idで絞り込まれます。",
     )
     job_id_group.add_argument(
         "-j",

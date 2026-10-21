@@ -19,12 +19,13 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
     """週単位のアサイン時間が格納されたDataFrameを生成します。
 
     Args:
-        assigned_hours_daily_list: 日ごとのアサイン時間情報。date, workspace_member_id, job_id, job_name, assigned_working_hours を参照します。
+        assigned_hours_daily_list: 日ごとのアサイン時間情報。
+            date, workspace_member_id, parent_job_id, parent_job_name, assigned_working_hours を参照します。
         workspace_members: ワークスペースメンバ情報。workspace_member_id, user_id, username を参照します。
 
     Returns:
         以下の列を返すDataFrame。
-            "workspace_member_id", "user_id","username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"
+            "workspace_member_id", "user_id","username", "parent_job_id", "parent_job_name", "start_date", "end_date", "assigned_working_hours"
     """
     df = pandas.DataFrame(assigned_hours_daily_list)
     # 1週間ごとに集計する（日曜日始まり, 日曜日がindexになっている）
@@ -35,7 +36,7 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
         # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
         # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
-        df.groupby(["workspace_member_id", "job_id", "job_name"])
+        df.groupby(["workspace_member_id", "parent_job_id", "parent_job_name"])
         .resample("W-SUN", on="dt_date", label="left", closed="left", include_groups=False)
         .agg({"assigned_working_hours": "sum"})
     )
@@ -54,21 +55,21 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
     df_workspace_member = pandas.DataFrame(workspace_members)
 
     df = df_weekly.merge(df_workspace_member, on="workspace_member_id", how="left")
-    df.sort_values(["user_id", "job_id", "start_date"], inplace=True)
+    df.sort_values(["user_id", "parent_job_id", "start_date"], inplace=True)
 
-    return df[["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"]]
+    return df[["workspace_member_id", "user_id", "username", "parent_job_id", "parent_job_name", "start_date", "end_date", "assigned_working_hours"]]
 
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     user_id_list = get_list_from_args(args.user_id)
-    job_id_list = get_list_from_args(args.job_id)
+    parent_job_id_list = get_list_from_args(args.parent_job_id)
     start_date: str | None = args.start_date
     end_date: str | None = args.end_date
 
     command = " ".join(sys.argv[0:3])
-    if all(v is None for v in [user_id_list, job_id_list, start_date, end_date]):
+    if all(v is None for v in [user_id_list, parent_job_id_list, start_date, end_date]):
         print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
@@ -77,14 +78,23 @@ def main(args: argparse.Namespace) -> None:
     assigned_hours_daily_list = main_obj.get_assigned_hours_daily_list(
         start_date=start_date,
         end_date=end_date,
-        job_ids=job_id_list,
+        parent_job_ids=parent_job_id_list,
         user_ids=user_id_list,
     )
 
     # AssignedHoursDailyオブジェクトのリストをdictのリストに変換
     assigned_hours_daily_dict_list = [e.to_dict() for e in assigned_hours_daily_list]
 
-    required_columns = ["workspace_member_id", "user_id", "username", "job_id", "job_name", "start_date", "end_date", "assigned_working_hours"]
+    required_columns = [
+        "workspace_member_id",
+        "user_id",
+        "username",
+        "parent_job_id",
+        "parent_job_name",
+        "start_date",
+        "end_date",
+        "assigned_working_hours",
+    ]
     if len(assigned_hours_daily_dict_list) == 0:
         df = pandas.DataFrame(columns=required_columns)
     else:
@@ -108,7 +118,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")
 
-    parser.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="集計対象のジョブID")
+    parser.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="集計対象の親ジョブID")
 
     parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
     parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")

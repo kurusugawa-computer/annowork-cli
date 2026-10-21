@@ -15,8 +15,8 @@ from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDail
 logger = logging.getLogger(__name__)
 
 
-def get_daily_assigned_hours_by_job_df(assigned_hours_daily_list: list[dict[str, Any]]) -> pandas.DataFrame:
-    required_columns = ["date", "job_id", "job_name", "assigned_working_hours", "active_user_count"]
+def get_daily_assigned_hours_by_parent_job_df(assigned_hours_daily_list: list[dict[str, Any]]) -> pandas.DataFrame:
+    required_columns = ["date", "parent_job_id", "parent_job_name", "assigned_working_hours", "active_user_count"]
 
     df = pandas.DataFrame(assigned_hours_daily_list)
     if len(df) == 0:
@@ -27,16 +27,16 @@ def get_daily_assigned_hours_by_job_df(assigned_hours_daily_list: list[dict[str,
         return pandas.DataFrame(columns=required_columns)
 
     df_hours = (
-        df_positive.groupby(["date", "job_id"], as_index=False)
-        .agg({"assigned_working_hours": "sum", "job_name": "first"})
-        .sort_values(["date", "job_id"])
+        df_positive.groupby(["date", "parent_job_id"], as_index=False)
+        .agg({"assigned_working_hours": "sum", "parent_job_name": "first"})
+        .sort_values(["date", "parent_job_id"])
     )
     df_active_user = (
-        df_positive.groupby(["date", "job_id"], as_index=False)
+        df_positive.groupby(["date", "parent_job_id"], as_index=False)
         .agg({"workspace_member_id": "nunique"})
         .rename(columns={"workspace_member_id": "active_user_count"})
     )
-    df_total = df_hours.merge(df_active_user, on=["date", "job_id"], how="inner")
+    df_total = df_hours.merge(df_active_user, on=["date", "parent_job_id"], how="inner")
 
     return df_total[required_columns]
 
@@ -44,13 +44,13 @@ def get_daily_assigned_hours_by_job_df(assigned_hours_daily_list: list[dict[str,
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
-    job_id_list = get_list_from_args(args.job_id)
+    parent_job_id_list = get_list_from_args(args.parent_job_id)
     start_date: str | None = args.start_date
     end_date: str | None = args.end_date
 
     command = " ".join(sys.argv[0:3])
-    if all(v is None for v in [job_id_list, start_date, end_date]):
-        print(f"{command}: error: '--start_date'や'--job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
+    if all(v is None for v in [parent_job_id_list, start_date, end_date]):
+        print(f"{command}: error: '--start_date'や'--parent_job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
         sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
     main_obj = ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=workspace_id)
@@ -58,13 +58,13 @@ def main(args: argparse.Namespace) -> None:
     assigned_hours_daily_list = main_obj.get_assigned_hours_daily_list(
         start_date=start_date,
         end_date=end_date,
-        job_ids=job_id_list,
+        parent_job_ids=parent_job_id_list,
         user_ids=None,
     )
 
-    df = get_daily_assigned_hours_by_job_df([e.to_dict() for e in assigned_hours_daily_list])
+    df = get_daily_assigned_hours_by_parent_job_df([e.to_dict() for e in assigned_hours_daily_list])
 
-    logger.info(f"{len(df)} 件の日ごとのアサイン時間情報（ジョブごと）を出力します。")
+    logger.info(f"{len(df)} 件の日ごとのアサイン時間情報（親ジョブごと）を出力します。")
 
     match OutputFormat(args.format):
         case OutputFormat.CSV:
@@ -79,7 +79,7 @@ def main(args: argparse.Namespace) -> None:
 def parse_args(parser: argparse.ArgumentParser) -> None:
     annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
 
-    parser.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="集計対象のジョブID")
+    parser.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="集計対象の親ジョブID")
 
     parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
     parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
@@ -98,8 +98,8 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
-    subcommand_name = "list_daily_by_job"
-    subcommand_help = "作業計画から求めたアサイン時間を日ごと・ジョブごとに集計して出力します。"
+    subcommand_name = "list_daily_by_parent_job"
+    subcommand_help = "作業計画から求めたアサイン時間を日ごと・親ジョブごとに集計して出力します。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)
