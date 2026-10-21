@@ -125,7 +125,7 @@ def test_不正な日付はAPIアクセス前に拒否する(start_date_service,
 
 def test_CLIでも不正な日付は認証前に拒否する(monkeypatch):
     clock = Mock(wraps=datetime.datetime)
-    clock.now.return_value = datetime.datetime(2026, 10, 10, tzinfo=datetime.UTC)
+    clock.now.return_value = datetime.datetime(2026, 10, 10).astimezone()
     monkeypatch.setattr("annoworkcli.schedule.update_start_date.datetime.datetime", clock)
     api = Mock()
     monkeypatch.setattr("annoworkcli.schedule.update_start_date.cli.build_annoworkapi", api)
