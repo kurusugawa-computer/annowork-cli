@@ -25,8 +25,8 @@ Examples
    [
       {
          "date": "2022-01-02",
-         "job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
-         "job_name": "MOON",
+         "parent_job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
+         "parent_job_name": "MOON",
          "assigned_working_hours": {
             "type:acceptor": 6.0,
             "type:monitored": 8.0,

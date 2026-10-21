@@ -71,7 +71,7 @@ Annofabにアクセスするサブコマンド
 - `annoworkcli schedule delete`: 作業計画情報を削除します。
 - `annoworkcli schedule list`: 作業計画の一覧を出力します。
 - `annoworkcli schedule list_daily`: 作業計画から求めたアサイン時間を日ごとに出力します。
-- `annoworkcli schedule list_daily_by_job`: 作業計画から求めたアサイン時間を日ごと・ジョブごとに集計して出力します。
+- `annoworkcli schedule list_daily_by_parent_job`: 作業計画から求めたアサイン時間を日ごと・親ジョブごとに集計して出力します。
 - `annoworkcli schedule list_daily_groupby_tag`: 日ごとのアサイン時間を、ワークスペースタグで集計した値を出力します。
 - `annoworkcli schedule list_weekly`: 作業計画から求めたアサイン時間を週ごと（日曜日始まり）に出力します。
 

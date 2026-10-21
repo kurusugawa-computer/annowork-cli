@@ -118,21 +118,21 @@ class ListAssignedHoursMain:
         assigned_hours_daily_list = self.list_assigned_hours_daily_obj.get_assigned_hours_daily_list(
             start_date=start_date,
             end_date=end_date,
-            job_ids=parent_job_id_list,  # parent_job_idを指定しているのは間違っていない
+            parent_job_ids=parent_job_id_list,
             user_ids=user_id_list,
         )
 
         # 結果リストを作成
         result_list: list[AssignedHours] = []
         for obj in assigned_hours_daily_list:
-            assert obj.job_name is not None
+            assert obj.parent_job_name is not None
             assert obj.user_id is not None
             assert obj.username is not None
             result_list.append(
                 AssignedHours(
                     date=obj.date,
-                    parent_job_id=obj.job_id,
-                    parent_job_name=obj.job_name,
+                    parent_job_id=obj.parent_job_id,
+                    parent_job_name=obj.parent_job_name,
                     workspace_member_id=obj.workspace_member_id,
                     user_id=obj.user_id,
                     username=obj.username,

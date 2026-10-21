@@ -105,7 +105,15 @@ class TestReshapeDataFrame:
             ]
         )
         df_assigned = pandas.DataFrame(
-            [{"user_id": "alice", "username": "Alice", "job_id": "parent", "job_name": "Parent", "assigned_working_hours": assigned_hours}]
+            [
+                {
+                    "user_id": "alice",
+                    "username": "Alice",
+                    "parent_job_id": "parent",
+                    "parent_job_name": "Parent",
+                    "assigned_working_hours": assigned_hours,
+                }
+            ]
         )
         kwargs = {"df_actual": df_actual, "df_assigned": df_assigned}
         if shape_type == "total_by_user":
@@ -127,7 +135,9 @@ class TestReshapeWorkingHours:
                 {"job_id": "job2", "parent_job_id": "parent2", "annofab_project_id": "project2"},
             ]
         )
-        df_assigned = pandas.DataFrame([{"job_id": "parent1", "assigned_working_hours": 10.0}, {"job_id": "parent2", "assigned_working_hours": 20.0}])
+        df_assigned = pandas.DataFrame(
+            [{"parent_job_id": "parent1", "assigned_working_hours": 10.0}, {"parent_job_id": "parent2", "assigned_working_hours": 20.0}]
+        )
         actual, assigned = main_obj.filter_df(
             df_actual=df_actual,
             df_assigned=df_assigned,

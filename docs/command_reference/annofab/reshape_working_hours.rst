@@ -4,6 +4,10 @@ annofab reshape_working_hours
 
 Description
 =================================
+
+``--assigned_file`` には ``parent_job_id`` / ``parent_job_name`` 列を持つCSVを指定してください。
+旧 ``job_id`` / ``job_name`` 列のCSVは使用できません。
+
 Annoworkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。
 
 

@@ -147,7 +147,7 @@ def get_daily_schedule_actual_df(
         ).get_assigned_hours_daily_list(
             start_date=assigned_start_date,
             end_date=assigned_end_date,
-            job_ids=[parent_job_id],
+            parent_job_ids=[parent_job_id],
             user_ids=None,
         )
         assigned_daily_df = pandas.DataFrame([e.to_dict() for e in assigned_daily_list])

@@ -65,7 +65,7 @@ class ListSchedule:
             schedule["assigned_working_hours"] = sum(assigned_hours_dict.values())
 
     def set_additional_info_to_schedule(self, schedule_list: list[dict[str, Any]]):  # noqa: ANN201
-        """workspace_member_id, job_idに紐づく情報, アサインされた時間を付与する。
+        """workspace_member_id, parent_job_idに紐づく情報, アサインされた時間を付与する。
 
         Args:
             schedule_list (list[dict[str,Any]]): (IN/OUT) 実績作業時間のリスト
@@ -94,12 +94,12 @@ class ListSchedule:
             schedule["user_id"] = member["user_id"]
             schedule["username"] = member["username"]
 
-            job_id = schedule["job_id"]
-            job = job_dict.get(job_id)
+            parent_job_id = schedule["parent_job_id"]
+            job = job_dict.get(parent_job_id)
             if job is None:
-                logger.warning(f"{job_id=} であるジョブは存在しません。 :: schedule_id= '{schedule['schedule_id']}' ")
+                logger.warning(f"{parent_job_id=} であるジョブは存在しません。 :: schedule_id= '{schedule['schedule_id']}' ")
                 continue
-            schedule["job_name"] = job["job_name"]
+            schedule["parent_job_name"] = job["job_name"]
 
         self._set_assigned_hours(schedule_list, min_date=min_date, max_date=max_date)
 
@@ -119,7 +119,7 @@ class ListSchedule:
         *,
         start_date: str | None = None,
         end_date: str | None = None,
-        job_ids: Collection[str] | None = None,
+        parent_job_ids: Collection[str] | None = None,
         user_ids: Collection[str] | None = None,
         is_set_additional_info: bool = False,
     ) -> list[dict[str, Any]]:
@@ -129,8 +129,8 @@ class ListSchedule:
         Args:
             start_date:
             end_date:
-            job_id_list: 取得対象のジョブのjob_idのリスト
-            user_id_list:
+            parent_job_ids: アサイン先の親ジョブIDのリスト
+            user_ids:
             is_set_additional_info: Trueなら名前などの付加情報を設定します。
         """
 
@@ -140,9 +140,9 @@ class ListSchedule:
         }
 
         schedule_list = []
-        if job_ids is not None:
-            for job_id in job_ids:
-                query_params["job_id"] = job_id
+        if parent_job_ids is not None:
+            for parent_job_id in parent_job_ids:
+                query_params["job_id"] = parent_job_id
                 logger.debug(f"作業計画を取得します。 :: {query_params=}")
                 schedule_list.extend(self.annowork_service.api.get_schedules(self.workspace_id, query_params=query_params))
         else:
@@ -153,7 +153,12 @@ class ListSchedule:
             workspace_member_id_list = self.get_workspace_member_id_list_from_user_id(user_ids)
             schedule_list = [e for e in schedule_list if e["workspace_member_id"] in set(workspace_member_id_list)]
 
-        if is_set_additional_info is not None:
+        # APIのjob_idはアサイン先の親ジョブIDを表す。CLI内部ではparent_job_idに統一する。
+        schedule_list = [{**schedule, "parent_job_id": schedule["job_id"]} for schedule in schedule_list]
+        for schedule in schedule_list:
+            del schedule["job_id"]
+
+        if is_set_additional_info:
             self.set_additional_info_to_schedule(schedule_list)
         return schedule_list
 
@@ -164,13 +169,13 @@ class ListSchedule:
         output_format: OutputFormat,
         start_date: str | None,
         end_date: str | None,
-        job_id_list: list[str] | None,
+        parent_job_id_list: list[str] | None,
         user_id_list: list[str] | None,
     ):
         result = self.get_schedules(
             start_date=start_date,
             end_date=end_date,
-            job_ids=job_id_list,
+            parent_job_ids=parent_job_id_list,
             user_ids=user_id_list,
             is_set_additional_info=True,
         )
@@ -183,8 +188,8 @@ class ListSchedule:
             required_columns = [
                 "workspace_id",
                 "schedule_id",
-                "job_id",
-                "job_name",
+                "parent_job_id",
+                "parent_job_name",
                 "workspace_member_id",
                 "user_id",
                 "username",
@@ -209,15 +214,15 @@ class ListSchedule:
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
-    job_id_list = get_list_from_args(args.job_id)
+    parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
 
     start_date: str | None = args.start_date
     end_date: str | None = args.end_date
 
-    if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
+    if all(v is None for v in [parent_job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "'--start_date'や'--parent_job_id'などの絞り込み条件が1つも指定されていません。"
             "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
@@ -225,7 +230,7 @@ def main(args):  # noqa: ANN001, ANN201
         annowork_service=annowork_service,
         workspace_id=workspace_id,
     ).main(
-        job_id_list=job_id_list,
+        parent_job_id_list=parent_job_id_list,
         user_id_list=user_id_list,
         start_date=start_date,
         end_date=end_date,
@@ -239,7 +244,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 
-    parser.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="取得対象のジョブID")
+    parser.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="取得対象の親ジョブID")
 
     parser.add_argument("--start_date", type=str, required=False, help="取得する範囲の開始日")
     parser.add_argument("--end_date", type=str, required=False, help="取得する範囲の終了日")

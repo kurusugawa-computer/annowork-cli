@@ -51,7 +51,7 @@ class ListAssignedHoursDailyGroupbyTag:
                     f":: {len(target_workspace_tag_names)=}, {len(workspace_tags)=}"
                 )
 
-        # dictのkeyはtuple[date, job_id, workspace_tag_name]
+        # dictのkeyはtuple[date, parent_job_id, workspace_tag_name]
         dict_hours: dict[tuple[str, str, str], float] = defaultdict(float)
 
         # ワークスペースタグごと日毎の時間を集計する
@@ -61,27 +61,27 @@ class ListAssignedHoursDailyGroupbyTag:
             member_ids = {e["workspace_member_id"] for e in members}
             for elm in assigned_hours_list:
                 if elm.workspace_member_id in member_ids:
-                    dict_hours[elm.date, elm.job_id, workspace_tag_name] += elm.assigned_working_hours
+                    dict_hours[elm.date, elm.parent_job_id, workspace_tag_name] += elm.assigned_working_hours
 
         # 全体の時間を日毎に集計する
 
-        # key:job_id, value:job_nameのdict
+        # key:parent_job_id, value:parent_job_nameのdict
         job_dict: dict[str, str | None] = {}
         for elm in assigned_hours_list:
-            dict_hours[elm.date, elm.job_id, "total"] += elm.assigned_working_hours
-            job_dict[elm.job_id] = elm.job_name
+            dict_hours[elm.date, elm.parent_job_id, "total"] += elm.assigned_working_hours
+            job_dict[elm.parent_job_id] = elm.parent_job_name
 
-        # dictのkeyは、tuple[date, job_id]
+        # dictのkeyは、tuple[date, parent_job_id]
         dict_date: dict[tuple[str, str], dict[str, float]] = defaultdict(dict)
-        for (date, job_id, org_tag), hours in dict_hours.items():
-            dict_date[(date, job_id)].update({org_tag: hours})
+        for (date, parent_job_id, org_tag), hours in dict_hours.items():
+            dict_date[(date, parent_job_id)].update({org_tag: hours})
 
         results = []
-        for (date, job_id), value in dict_date.items():
-            e = {"date": date, "job_id": job_id, "job_name": job_dict.get(job_id), "assigned_working_hours": value}
+        for (date, parent_job_id), value in dict_date.items():
+            e = {"date": date, "parent_job_id": parent_job_id, "parent_job_name": job_dict.get(parent_job_id), "assigned_working_hours": value}
             results.append(e)
 
-        results.sort(key=lambda e: (e["date"], e["job_id"]))
+        results.sort(key=lambda e: (e["date"], e["parent_job_id"]))
         return results
 
     def main(  # noqa: ANN201
@@ -91,7 +91,7 @@ class ListAssignedHoursDailyGroupbyTag:
         output_format: OutputFormat,
         start_date: str | None,
         end_date: str | None,
-        job_id_list: list[str] | None,
+        parent_job_id_list: list[str] | None,
         user_id_list: list[str] | None,
         target_workspace_tag_ids: Collection[str] | None,
         target_workspace_tag_names: Collection[str] | None,
@@ -100,7 +100,7 @@ class ListAssignedHoursDailyGroupbyTag:
         assigned_hours_list = list_obj.get_assigned_hours_daily_list(
             start_date=start_date,
             end_date=end_date,
-            job_ids=job_id_list,
+            parent_job_ids=parent_job_id_list,
             user_ids=user_id_list,
         )
         if len(assigned_hours_list) == 0:
@@ -120,8 +120,8 @@ class ListAssignedHoursDailyGroupbyTag:
         else:
             required_columns = [
                 "date",
-                "job_id",
-                "job_name",
+                "parent_job_id",
+                "parent_job_name",
                 "assigned_working_hours.total",
             ]
 
@@ -140,15 +140,15 @@ class ListAssignedHoursDailyGroupbyTag:
 def main(args):  # noqa: ANN001, ANN201
     annowork_service = build_annoworkapi(args)
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
-    job_id_list = get_list_from_args(args.job_id)
+    parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
 
     start_date: str | None = args.start_date
     end_date: str | None = args.end_date
 
-    if all(v is None for v in [job_id_list, user_id_list, start_date, end_date]):
+    if all(v is None for v in [parent_job_id_list, user_id_list, start_date, end_date]):
         logger.warning(
-            "'--start_date'や'--job_id'などの絞り込み条件が1つも指定されていません。"
+            "'--start_date'や'--parent_job_id'などの絞り込み条件が1つも指定されていません。"
             "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
         )
 
@@ -159,7 +159,7 @@ def main(args):  # noqa: ANN001, ANN201
         annowork_service=annowork_service,
         workspace_id=workspace_id,
     ).main(
-        job_id_list=job_id_list,
+        parent_job_id_list=parent_job_id_list,
         user_id_list=user_id_list,
         start_date=start_date,
         end_date=end_date,
@@ -175,7 +175,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="絞り込み対象のユーザID")
 
-    parser.add_argument("-j", "--job_id", type=str, nargs="+", required=False, help="取得対象のジョブID")
+    parser.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="取得対象の親ジョブID")
 
     parser.add_argument("--start_date", type=str, required=False, help="取得する範囲の開始日")
     parser.add_argument("--end_date", type=str, required=False, help="取得する範囲の終了日")

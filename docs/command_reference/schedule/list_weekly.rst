@@ -26,8 +26,8 @@ Examples
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "user_id": "alice",
          "username": "Alice",
-         "job_id": "job1",
-         "job_name": "MOON",
+         "parent_job_id": "job1",
+         "parent_job_name": "MOON",
          "start_date": "2021-12-26",
          "end_date": "2022-01-01",
          "assigned_working_hours": 20
@@ -36,8 +36,8 @@ Examples
          "workspace_member_id": "57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a",
          "user_id": "alice",
          "username": "Alice",
-         "job_id": "job1",
-         "job_name": "MOON",
+         "parent_job_id": "job1",
+         "parent_job_name": "MOON",
          "start_date": "2022-01-02",
          "end_date": "2022-01-08",
          "assigned_working_hours": 25

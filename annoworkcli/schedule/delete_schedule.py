@@ -30,7 +30,7 @@ class DeleteSchedule:
         self.all_yes = all_yes
 
     def delete_schedule(
-        self, schedule_ids: Collection[str], *, target_user_ids: Collection[str] | None = None, target_job_ids: Collection[str] | None = None
+        self, schedule_ids: Collection[str], *, target_user_ids: Collection[str] | None = None, target_parent_job_ids: Collection[str] | None = None
     ) -> None:
         all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_jobs}
@@ -38,7 +38,7 @@ class DeleteSchedule:
         all_member_dict = {e["workspace_member_id"]: e for e in all_members}
 
         target_user_ids = set(target_user_ids) if target_user_ids is not None else None
-        target_job_ids = set(target_job_ids) if target_job_ids is not None else None
+        target_parent_job_ids = set(target_parent_job_ids) if target_parent_job_ids is not None else None
 
         success_count = 0
         for index, schedule_id in enumerate(schedule_ids):
@@ -50,23 +50,23 @@ class DeleteSchedule:
                     continue
                 raise e
 
-            if target_job_ids is not None:
-                if schedule["job_id"] in target_job_ids:
+            if target_parent_job_ids is not None:
+                if schedule["job_id"] not in target_parent_job_ids:
                     continue
 
             job = all_job_dict.get(schedule["job_id"])
             member = all_member_dict.get(schedule["workspace_member_id"])
-            job_name = job["job_name"] if job is not None else None
+            parent_job_name = job["job_name"] if job is not None else None
             user_id = member["user_id"] if member is not None else None
 
             if target_user_ids is not None:
-                if user_id != target_user_ids:
+                if user_id not in target_user_ids:
                     continue
 
             if not self.all_yes:
                 message = (
                     f"schedule_id='{schedule_id}', start_date='{schedule['start_date']}, end_date='{schedule['end_date']}, "
-                    f"user_id='{user_id}', job_name='{job_name}' である作業計画情報を削除しますか？"
+                    f"user_id='{user_id}', parent_job_name='{parent_job_name}' である作業計画情報を削除しますか？"
                 )
                 is_yes, all_yes = prompt_yesnoall(message)
                 if not is_yes:
@@ -79,14 +79,14 @@ class DeleteSchedule:
                 logger.debug(
                     f"{index + 1} 件目: 作業計画情報を削除しました。:: "
                     f"schedule_id='{schedule_id}', start_date='{schedule['start_date']}, end_date='{schedule['end_date']}, "
-                    f"user_id='{user_id}', job_name='{job_name}'"
+                    f"user_id='{user_id}', parent_job_name='{parent_job_name}'"
                 )
                 success_count += 1
             except requests.exceptions.HTTPError:
                 logger.debug(
                     f"{index + 1} 件目: 作業計画情報の削除に失敗しました。:: "
                     f"schedule_id='{schedule_id}', start_date='{schedule['start_date']}, end_date='{schedule['end_date']}, "
-                    f"user_id='{user_id}', job_name='{job_name}'",
+                    f"user_id='{user_id}', parent_job_name='{parent_job_name}'",
                     exc_info=True,
                 )
                 continue
@@ -101,12 +101,12 @@ def main(args: argparse.Namespace) -> None:
     schedule_id_list = get_list_from_args(args.schedule_id)
     assert schedule_id_list is not None
     user_id_list = get_list_from_args(args.user_id)
-    job_id_list = get_list_from_args(args.job_id)
+    parent_job_id_list = get_list_from_args(args.parent_job_id)
     DeleteSchedule(
         annowork_service=annowork_service,
         workspace_id=workspace_id,
         all_yes=args.yes,
-    ).delete_schedule(schedule_ids=schedule_id_list, target_job_ids=job_id_list, target_user_ids=user_id_list)
+    ).delete_schedule(schedule_ids=schedule_id_list, target_parent_job_ids=parent_job_id_list, target_user_ids=user_id_list)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
@@ -120,7 +120,9 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         help="削除したい作業計画の`schedule_id`を指定してください。",
     )
 
-    parser.add_argument("-j", "--job_id", type=str, required=False, nargs="+", help="指定したjob_idに一致する作業計画情報のみ削除します。")
+    parser.add_argument(
+        "-pj", "--parent_job_id", type=str, required=False, nargs="+", help="指定したparent_job_idに一致する作業計画情報のみ削除します。"
+    )
     parser.add_argument("-u", "--user_id", type=str, required=False, nargs="+", help="指定したuser_idに一致する作業計画情報のみ削除します。")
 
     parser.add_argument("-y", "--yes", type=str, help="すべてのプロンプトに自動的に 'yes' と答えます。")
