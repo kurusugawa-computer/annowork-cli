@@ -9,6 +9,7 @@ import annoworkcli.schedule.list_assigned_hours_daily_by_parent_job
 import annoworkcli.schedule.list_assigned_hours_daily_groupby_tag
 import annoworkcli.schedule.list_schedule
 import annoworkcli.schedule.list_schedule_weekly
+import annoworkcli.schedule.update_end_date
 import annoworkcli.schedule.update_schedule
 import annoworkcli.schedule.update_start_date
 
@@ -25,6 +26,7 @@ def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     annoworkcli.schedule.list_assigned_hours_daily_groupby_tag.add_parser(subparsers)
     annoworkcli.schedule.list_schedule_weekly.add_parser(subparsers)
     annoworkcli.schedule.update_schedule.add_parser(subparsers)
+    annoworkcli.schedule.update_end_date.add_parser(subparsers)
     annoworkcli.schedule.update_start_date.add_parser(subparsers)
 
 

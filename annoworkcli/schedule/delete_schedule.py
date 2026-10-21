@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import logging
 from collections.abc import Collection
 
@@ -30,7 +31,12 @@ class DeleteSchedule:
         self.all_yes = all_yes
 
     def delete_schedule(
-        self, schedule_ids: Collection[str], *, target_user_ids: Collection[str] | None = None, target_parent_job_ids: Collection[str] | None = None
+        self,
+        schedule_ids: Collection[str],
+        *,
+        target_user_ids: Collection[str] | None = None,
+        target_parent_job_ids: Collection[str] | None = None,
+        allow_past_end_date: bool = False,
     ) -> None:
         all_jobs = self.annowork_service.api.get_jobs(self.workspace_id)
         all_job_dict = {e["job_id"]: e for e in all_jobs}
@@ -40,7 +46,9 @@ class DeleteSchedule:
         target_user_ids = set(target_user_ids) if target_user_ids is not None else None
         target_parent_job_ids = set(target_parent_job_ids) if target_parent_job_ids is not None else None
 
+        today = datetime.datetime.now().astimezone().date()
         success_count = 0
+        past_skipped_count = 0
         for index, schedule_id in enumerate(schedule_ids):
             try:
                 schedule = self.annowork_service.api.get_schedule(self.workspace_id, schedule_id)
@@ -62,6 +70,14 @@ class DeleteSchedule:
             if target_user_ids is not None:
                 if user_id not in target_user_ids:
                     continue
+
+            if not allow_past_end_date and datetime.date.fromisoformat(schedule["end_date"]) < today:
+                logger.info(
+                    f"{index + 1} 件目: 終了日が昨日以前のため削除をスキップします。 :: {schedule_id=}, end_date='{schedule['end_date']}'。"
+                    "削除する場合は--allow_past_end_dateを指定してください。"
+                )
+                past_skipped_count += 1
+                continue
 
             if not self.all_yes:
                 message = (
@@ -91,7 +107,7 @@ class DeleteSchedule:
                 )
                 continue
 
-        logger.info(f"{success_count} / {len(schedule_ids)} 件の作業計画情報を削除しました。")
+        logger.info(f"{success_count} / {len(schedule_ids)} 件の作業計画情報を削除しました。終了済みのためスキップ: {past_skipped_count} 件")
 
 
 def main(args: argparse.Namespace) -> None:
@@ -106,7 +122,12 @@ def main(args: argparse.Namespace) -> None:
         annowork_service=annowork_service,
         workspace_id=workspace_id,
         all_yes=args.yes,
-    ).delete_schedule(schedule_ids=schedule_id_list, target_parent_job_ids=parent_job_id_list, target_user_ids=user_id_list)
+    ).delete_schedule(
+        schedule_ids=schedule_id_list,
+        target_parent_job_ids=parent_job_id_list,
+        target_user_ids=user_id_list,
+        allow_past_end_date=args.allow_past_end_date,
+    )
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
@@ -125,6 +146,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument("-u", "--user_id", type=str, required=False, nargs="+", help="指定したuser_idに一致する作業計画情報のみ削除します。")
 
+    parser.add_argument("--allow_past_end_date", action="store_true", help="終了日が昨日以前の作業計画の削除を許可します。")
     parser.add_argument("-y", "--yes", action="store_true", help="確認を省略します。")
 
     parser.set_defaults(subcommand_func=main)

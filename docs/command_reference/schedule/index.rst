@@ -33,6 +33,7 @@ Available Commands
    list_daily_groupby_tag
    list_weekly
    update
+   update_end_date
    update_start_date
 
 Usage Details
