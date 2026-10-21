@@ -125,7 +125,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument("-u", "--user_id", type=str, required=False, nargs="+", help="指定したuser_idに一致する作業計画情報のみ削除します。")
 
-    parser.add_argument("-y", "--yes", type=str, help="すべてのプロンプトに自動的に 'yes' と答えます。")
+    parser.add_argument("-y", "--yes", action="store_true", help="確認を省略します。")
 
     parser.set_defaults(subcommand_func=main)
 

@@ -176,7 +176,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         help="削除したい実績作業時間IDを指定してください。",
     )
 
-    parser.add_argument("-y", "--yes", type=str, help="すべてのプロンプトに自動的に 'yes' と答えます。")
+    parser.add_argument("-y", "--yes", action="store_true", help="確認を省略します。")
 
     parser.set_defaults(subcommand_func=main)
 
