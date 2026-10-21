@@ -23,15 +23,15 @@ Examples
 
     annoworkcli schedule delete_by_schedule_id --workspace_id org --schedule_id id1 id2
 
-誤作成の取り消し
+ID一覧ファイルによる削除
 =================================
-:doc:`create` の ``--output_schedule_id`` で保存したID一覧を渡せます。
+削除対象のIDを1行1IDで記載したファイルを渡せます。
 まず ``--dry_run`` で対象を確認してから、同じ指定で ``--dry_run`` を外して実行します。
 
 .. code-block:: bash
 
     annoworkcli schedule delete_by_schedule_id --workspace_id org \
-      --schedule_id file://created_schedule_ids.txt --allow_past_end_date --dry_run
+      --schedule_id file://schedule_ids.txt --allow_past_end_date --dry_run
 
 Usage Details
 =================================
