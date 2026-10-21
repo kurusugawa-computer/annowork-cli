@@ -1,3 +1,5 @@
+import subprocess
+import traceback
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -6,6 +8,7 @@ import pytest
 from annofabcli.statistics.visualize_statistics import read_actual_worktime
 from annoworkapi.resource import Resource as AnnoworkResource
 
+from annoworkcli.__main__ import main
 from annoworkcli.annofab.visualize_statistics import add_parser, visualize_statistics
 
 
@@ -40,7 +43,7 @@ def test_実績作業時間CSVを最新のannofabcliに渡せる(tmp_path, monke
     )
     service.wrapper.get_annofab_account_id_from_user_id.return_value = "account1"
     monkeypatch.setattr("annoworkcli.annofab.visualize_statistics.build_annoworkapi", lambda _args: service)
-    run = MagicMock()
+    run = MagicMock(return_value=subprocess.CompletedProcess([], 0))
     monkeypatch.setattr("annoworkcli.annofab.visualize_statistics.subprocess.run", run)
     args = add_parser().parse_args(
         ["--workspace_id", "workspace", filter_option, "job1" if filter_option == "--job_id" else "project1", "--output_dir", str(tmp_path / "out")]
@@ -66,3 +69,65 @@ def test_実績作業時間CSVを最新のannofabcliに渡せる(tmp_path, monke
         if has_actual_worktime
         else []
     )
+
+
+@pytest.mark.parametrize("returncode", [0, 1, 2, -15])
+def test_外部コマンドの成否によらず認証情報をログやトレースバックに出力しない(tmp_path, monkeypatch, caplog, returncode):
+    service = MagicMock(spec=AnnoworkResource)
+    service.api = MagicMock()
+    service.api.get_jobs.return_value = [
+        {"job_id": "job1", "job_name": "Job 1", "job_tree": "/job1", "external_linkage_info": {"url": "https://annofab.com/projects/project1"}}
+    ]
+    service.api.get_workspace_members.return_value = []
+    service.api.get_actual_working_times.return_value = []
+    monkeypatch.setattr("annoworkcli.annofab.visualize_statistics.build_annoworkapi", lambda _args: service)
+    # ログ設定のファイル出力を避け、通常のCLI経由のログをcaplogで検証する。
+    monkeypatch.setattr("annoworkcli.__main__.set_default_logger", lambda **_kwargs: None)
+    caplog.set_level("DEBUG")
+
+    def run_command(command, *, check):
+        if check and returncode != 0:
+            raise subprocess.CalledProcessError(returncode, command)
+        return subprocess.CompletedProcess(command, returncode)
+
+    run = MagicMock(side_effect=run_command)
+    monkeypatch.setattr("annoworkcli.annofab.visualize_statistics.subprocess.run", run)
+    credentials = ["review-dummy-user", "review-dummy-password", "review-dummy-pat"]
+    arguments = [
+        "annofab",
+        "visualize_statistics",
+        "--workspace_id",
+        "workspace",
+        "--annofab_project_id",
+        "project1",
+        "--output_dir",
+        str(tmp_path / "out"),
+        "--temp_dir",
+        str(tmp_path),
+        "--annofab_user_id",
+        credentials[0],
+        "--annofab_password",
+        credentials[1],
+        "--annofab_pat",
+        credentials[2],
+    ]
+    if returncode == 0:
+        main(arguments)
+        assert not any(record.levelname == "ERROR" for record in caplog.records)
+    else:
+        with pytest.raises(RuntimeError) as exc_info:
+            main(arguments)
+        assert any(record.levelname == "ERROR" for record in caplog.records)
+        formatted_traceback = "".join(traceback.format_exception(exc_info.value))
+        for credential in credentials:
+            assert credential not in formatted_traceback
+        assert exc_info.value.__context__ is None
+        assert exc_info.value.__cause__ is None
+
+    # 認証情報は外部コマンドへ渡しつつ、実際のCLIログには出力しない。
+    run.assert_called_once()
+    command = run.call_args.args[0]
+    for credential in credentials:
+        assert credential in command
+        assert credential not in caplog.text
+    assert "annofabcli statistics visualizeを実行します。" in caplog.text

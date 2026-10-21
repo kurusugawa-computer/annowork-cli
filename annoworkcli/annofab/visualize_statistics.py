@@ -223,7 +223,10 @@ def visualize_statistics(temp_dir: Path, args: argparse.Namespace, workspace_id:
         command.extend(args.annofabcli_options)
 
     logger.debug("annofabcli statistics visualizeを実行します。")
-    subprocess.run(command, check=True)
+    # CalledProcessErrorはコマンド全体を保持するため、終了コードだけで失敗を報告する。
+    result = subprocess.run(command, check=False)
+    if result.returncode != 0:
+        raise RuntimeError(f"annofabcli statistics visualizeが失敗しました。終了コード: {result.returncode}")
 
 
 def main(args: argparse.Namespace) -> None:
