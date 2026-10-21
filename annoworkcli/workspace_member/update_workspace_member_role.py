@@ -13,7 +13,7 @@ from annoworkcli.common.cli import build_annoworkapi, get_list_from_args
 logger = logging.getLogger(__name__)
 
 
-class ChangeWorkspaceMemberProperties:
+class UpdateWorkspaceMemberRole:
     def __init__(
         self,
         *,
@@ -23,7 +23,7 @@ class ChangeWorkspaceMemberProperties:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def put_workspace_member(
+    def update_workspace_member_role(
         self,
         user_id: str,
         *,
@@ -62,14 +62,14 @@ class ChangeWorkspaceMemberProperties:
                 old_tags = self.annowork_service.api.get_workspace_member_tags(self.workspace_id, old_member["workspace_member_id"])
                 old_workspace_tag_ids = {e["workspace_tag_id"] for e in old_tags}
 
-                result = self.put_workspace_member(user_id, role=role, old_workspace_tag_ids=old_workspace_tag_ids, old_member=old_member)
+                result = self.update_workspace_member_role(user_id, role=role, old_workspace_tag_ids=old_workspace_tag_ids, old_member=old_member)
                 if result:
                     success_count += 1
             except Exception as e:
-                logger.warning(f"{user_id=}: ワークスペースメンバの登録に失敗しました。{e}")
+                logger.warning(f"{user_id=}: ワークスペースメンバのロールの変更に失敗しました。{e}", exc_info=True)
                 continue
 
-        logger.info(f"{success_count}/{len(user_id_list)} 件のユーザをワークスペースメンバに登録しました。")
+        logger.info(f"{success_count}/{len(user_id_list)} 件のワークスペースメンバのロールを変更しました。")
 
 
 def main(args: argparse.Namespace) -> None:
@@ -77,7 +77,7 @@ def main(args: argparse.Namespace) -> None:
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     user_id_list = get_list_from_args(args.user_id)
     assert user_id_list is not None
-    ChangeWorkspaceMemberProperties(
+    UpdateWorkspaceMemberRole(
         annowork_service=annowork_service,
         workspace_id=workspace_id,
     ).main(user_id_list=user_id_list, role=args.role)
@@ -92,7 +92,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         type=str,
         nargs="+",
         required=True,
-        help="ワークスペースメンバに追加するuser_id",
+        help="ロールを変更するワークスペースメンバのuser_id",
     )
 
     parser.add_argument(
@@ -100,15 +100,15 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         type=str,
         choices=[e.value for e in Role],
         required=True,
-        help="権限",
+        help="変更後のロール",
     )
 
     parser.set_defaults(subcommand_func=main)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
-    subcommand_name = "change"
-    subcommand_help = "ワークスペースメンバの情報（ロールなど）を変更します。"
+    subcommand_name = "update_role"
+    subcommand_help = "ワークスペースメンバのロールを変更します。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)

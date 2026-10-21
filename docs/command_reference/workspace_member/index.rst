@@ -15,11 +15,11 @@ Available Commands
    :titlesonly:
 
    append_tag
-   change
    delete
    list
    put
    remove_tag
+   update_role
 
 Usage Details
 =================================
