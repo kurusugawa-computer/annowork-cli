@@ -101,3 +101,14 @@ def test_割合指定の浮動小数点誤差を超過扱いしない(service):
     result = ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
     assert result[0].status == "full"
     assert result[0].remaining_working_hours == 0
+
+
+@pytest.mark.parametrize("has_schedule", [False, True])
+def test_予定稼働時間とアサイン時間がともに0の日は省略する(service, has_schedule):
+    service.api.get_expected_working_times.return_value = [{"date": "2026-10-01", "workspace_member_id": "member", "expected_working_hours": 0}]
+    if has_schedule:
+        service.api.get_schedules.return_value[0].update(type="percentage", value=100)
+    else:
+        service.api.get_schedules.return_value = []
+    result = ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
+    assert result == []

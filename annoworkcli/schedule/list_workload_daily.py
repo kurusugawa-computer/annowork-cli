@@ -92,11 +92,11 @@ class ListWorkloadDaily:
             key = (date, member_id)
             details = [Assignment(job_id, jobs.get(job_id), hours) for job_id, hours in sorted(assignments.get(key, {}).items())]
             expected_hours = expected.get(key)
-            if expected_hours == 0 and not details:
-                continue
             assigned = (
                 None if any(item.assigned_working_hours is None for item in details) else sum(item.assigned_working_hours or 0 for item in details)
             )
+            if expected_hours == 0 and assigned == 0:
+                continue
             status = get_status(expected_hours, assigned)
             remaining = None if expected_hours is None or assigned is None else (0.0 if status == "full" else expected_hours - assigned)
             member = members.get(member_id, {})
