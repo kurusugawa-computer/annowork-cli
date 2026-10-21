@@ -27,6 +27,7 @@ Available Commands
 
    create
    delete
+   delete_by_schedule_id
    list
    list_daily
    list_daily_by_parent_job

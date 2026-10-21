@@ -166,3 +166,44 @@ def test_過去開始日を許可しても日付の形式と前後関係を検�
             parent_job_id="parent", user_ids=["alice"], start_date=start_date, end_date="2026-11-06", allow_past_start_date=True
         )
     service.api.put_schedule.assert_not_called()
+
+
+def test_途中で失敗しても成功したIDを一覧ファイルに保存する(service, tmp_path):
+    service.api.get_workspace_members.return_value.extend(
+        [{"user_id": "bob", "workspace_member_id": "member-bob"}, {"user_id": "charlie", "workspace_member_id": "member-charlie"}]
+    )
+    service.api.put_schedule.side_effect = [None, requests.exceptions.HTTPError(), None]
+    output = tmp_path / "ids.txt"
+    with pytest.raises(RuntimeError):
+        CreateSchedule(service, "workspace", all_yes=True).main(
+            parent_job_id="parent", user_ids=["alice", "bob", "charlie"], end_date="2026-11-06", output_schedule_id=output
+        )
+    calls = service.api.put_schedule.call_args_list
+    assert output.read_text().splitlines() == [calls[0].args[1], calls[2].args[1]]
+
+
+def test_ID保存先が既存の場合は上書きも作成もしない(service, tmp_path):
+    output = tmp_path / "ids.txt"
+    output.write_text("existing\n")
+    with pytest.raises(FileExistsError):
+        CreateSchedule(service, "workspace", all_yes=True).main(
+            parent_job_id="parent", user_ids=["alice"], end_date="2026-11-06", output_schedule_id=output
+        )
+    assert output.read_text() == "existing\n"
+    service.api.put_schedule.assert_not_called()
+
+
+def test_作成成功ごとにIDをファイルへ反映する(service, tmp_path):
+    service.api.get_workspace_members.return_value.append({"user_id": "bob", "workspace_member_id": "member-bob"})
+    output = tmp_path / "ids.txt"
+    created: list[str] = []
+
+    def put_schedule(_workspace, schedule_id, **_kwargs):
+        assert output.read_text().splitlines() == created
+        created.append(schedule_id)
+
+    service.api.put_schedule.side_effect = put_schedule
+    CreateSchedule(service, "workspace", all_yes=True).main(
+        parent_job_id="parent", user_ids=["alice", "bob"], end_date="2026-11-06", output_schedule_id=output
+    )
+    assert output.read_text().splitlines() == created

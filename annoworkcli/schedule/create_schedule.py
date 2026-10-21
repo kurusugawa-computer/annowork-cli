@@ -3,6 +3,8 @@ import datetime
 import logging
 import uuid
 from collections.abc import Collection
+from contextlib import nullcontext
+from pathlib import Path
 
 import requests
 from annoworkapi.resource import Resource as AnnoworkResource
@@ -29,6 +31,7 @@ class CreateSchedule:
         hours: float | None = None,
         percentage: float | None = None,
         allow_past_start_date: bool = False,
+        output_schedule_id: Path | None = None,
     ) -> None:
         validate_assignment(hours, percentage)
         start_date = start_date if start_date is not None else datetime.datetime.now().astimezone().date().isoformat()
@@ -39,43 +42,48 @@ class CreateSchedule:
             raise ValueError("作成対象のuser_idを1件以上指定してください。")
         schedule_type = "hours" if hours is not None else "percentage"
         value = hours if hours is not None else (percentage if percentage is not None else 100)
-        members = self.service.api.get_workspace_members(self.workspace_id)
-        member_ids = {member["user_id"]: member["workspace_member_id"] for member in members}
-        logger.info(f"{len(user_ids)} 人の作業計画を作成します。 :: {parent_job_id=}, {start_date=}, {end_date=}, {schedule_type=}, {value=}")
-        result = WriteResult()
-        if not self.all_yes and not cli.prompt_yesno(
-            f"{len(user_ids)} 人の作業計画を作成しますか？ :: {parent_job_id=}, {user_ids=}, {start_date=}, {end_date=}, {schedule_type=}, {value=}"
-        ):
-            result.skipped = len(user_ids)
+        with output_schedule_id.open("x", encoding="utf-8") if output_schedule_id is not None else nullcontext() as id_file:
+            members = self.service.api.get_workspace_members(self.workspace_id)
+            member_ids = {member["user_id"]: member["workspace_member_id"] for member in members}
+            logger.info(f"{len(user_ids)} 人の作業計画を作成します。 :: {parent_job_id=}, {start_date=}, {end_date=}, {schedule_type=}, {value=}")
+            result = WriteResult()
+            if not self.all_yes and not cli.prompt_yesno(
+                f"{len(user_ids)} 人の作業計画を作成しますか？ :: {parent_job_id=}, {user_ids=}, "
+                f"{start_date=}, {end_date=}, {schedule_type=}, {value=}"
+            ):
+                result.skipped = len(user_ids)
+                result.finish()
+                return
+            for index, user_id in enumerate(user_ids, 1):
+                result.log_progress(index, len(user_ids))
+                member_id = member_ids.get(user_id)
+                if member_id is None:
+                    logger.warning(f"{index} 件目: {user_id=} のワークスペースメンバーが存在しません。")
+                    result.failed += 1
+                    continue
+                request_body = {
+                    # APIのjob_idには、アサイン先自身の親ジョブIDを渡す。
+                    "job_id": parent_job_id,
+                    "workspace_member_id": member_id,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "type": schedule_type,
+                    "value": value,
+                }
+                message = f"{index} 件目: {user_id=}, {parent_job_id=}, {start_date=}, {end_date=}, {schedule_type=}, {value=}"
+                schedule_id = str(uuid.uuid4())
+                try:
+                    self.service.api.put_schedule(self.workspace_id, schedule_id, request_body=request_body)
+                except requests.exceptions.RequestException:
+                    logger.warning(f"作業計画の作成に失敗しました。 :: {message}, {schedule_id=}", exc_info=True)
+                    result.failed += 1
+                    continue
+                logger.info(f"作業計画を作成しました。 :: {message}, {schedule_id=}")
+                if id_file is not None:
+                    id_file.write(schedule_id + "\n")
+                    id_file.flush()
+                result.success += 1
             result.finish()
-            return
-        for index, user_id in enumerate(user_ids, 1):
-            result.log_progress(index, len(user_ids))
-            member_id = member_ids.get(user_id)
-            if member_id is None:
-                logger.warning(f"{index} 件目: {user_id=} のワークスペースメンバーが存在しません。")
-                result.failed += 1
-                continue
-            request_body = {
-                # APIのjob_idには、アサイン先自身の親ジョブIDを渡す。
-                "job_id": parent_job_id,
-                "workspace_member_id": member_id,
-                "start_date": start_date,
-                "end_date": end_date,
-                "type": schedule_type,
-                "value": value,
-            }
-            message = f"{index} 件目: {user_id=}, {parent_job_id=}, {start_date=}, {end_date=}, {schedule_type=}, {value=}"
-            schedule_id = str(uuid.uuid4())
-            try:
-                self.service.api.put_schedule(self.workspace_id, schedule_id, request_body=request_body)
-            except requests.exceptions.RequestException:
-                logger.warning(f"作業計画の作成に失敗しました。 :: {message}, {schedule_id=}", exc_info=True)
-                result.failed += 1
-                continue
-            logger.info(f"作業計画を作成しました。 :: {message}, {schedule_id=}")
-            result.success += 1
-        result.finish()
 
 
 def main(args: argparse.Namespace) -> None:
@@ -94,6 +102,7 @@ def main(args: argparse.Namespace) -> None:
         hours=args.hours,
         percentage=args.percentage,
         allow_past_start_date=args.allow_past_start_date,
+        output_schedule_id=args.output_schedule_id,
     )
 
 
@@ -105,6 +114,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument("--start_date", help="開始日（YYYY-MM-DD）。省略時は実行環境のローカル日付の今日です。")
     parser.add_argument("--end_date", required=True, help="終了日（YYYY-MM-DD、当日を含む）")
+    parser.add_argument("--output_schedule_id", type=Path, help="作成成功したIDの出力先（1行1ID）。既存ファイルへの上書きはエラーです。")
     add_write_arguments(parser)
     parser.set_defaults(subcommand_func=main)
 

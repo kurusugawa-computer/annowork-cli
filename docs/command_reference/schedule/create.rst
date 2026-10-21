@@ -24,6 +24,12 @@ Description
 既存計画の有無にかかわらず新しいIDで作成するため、再実行すると計画が追加されます。
 作成した作業計画IDはinfoログに出力します。
 
+``--output_schedule_id`` に保存先を指定すると、成功したIDを1行1IDで保存します。
+成功のたびにファイルへ反映するため、途中でAPIエラーが発生しても成功済みIDは残ります。
+出力先が既に存在する場合や、出力先を開けない場合は作成前にエラーになります。
+確認を拒否した場合や全件失敗した場合は空のファイルが残ります。
+APIのタイムアウトなど、サーバー側の作成結果を確認できない失敗はID一覧に含めません。作成結果は別途確認してください。
+
 Examples
 =================================
 
@@ -41,6 +47,15 @@ Examples
     annoworkcli schedule create --workspace_id org \
       --parent_job_id parent1 --user_id file://users.txt \
       --start_date 2026-11-02 --end_date 2026-11-06 --hours 4
+
+誤作成の取り消しに備えて、作成したIDを保存できます。
+取り消し手順は :doc:`delete_by_schedule_id` を参照してください。
+
+.. code-block:: bash
+
+    annoworkcli schedule create --workspace_id org \
+      --parent_job_id parent1 --user_id alice bob --end_date 2026-11-30 \
+      --output_schedule_id created_schedule_ids.txt
 
 .. _schedule-start-date-restriction:
 
