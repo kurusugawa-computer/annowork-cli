@@ -5,6 +5,7 @@ schedule list_workload_daily
 Description
 =================================
 取得期間の指定・省略時の動作は :ref:`planned-list-date-range` を参照してください。
+週単位の集計は :doc:`list_workload_weekly` を使ってください。
 
 全ユーザーを対象に、日ごとの予定稼働時間と親ジョブ別のアサイン時間を比較します。
 指定期間の全日を日付順に出力します。開始日・終了日を含みます。

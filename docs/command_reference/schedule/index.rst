@@ -31,6 +31,8 @@ Available Commands
    list_weekly
    list_workload_daily
    list_workload_daily_by_user
+   list_workload_weekly
+   list_workload_weekly_by_user
    update
    update_end_date
    update_start_date
