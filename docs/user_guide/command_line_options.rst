@@ -52,15 +52,15 @@
 JSONの入力
 ==========================================
 
-``account put_external_linkage_info`` の ``--external_linkage_info`` には、JSON文字列またはJSONファイルを渡せます。
+``account update_external_linkage_info`` の ``--external_linkage_info`` には、JSON文字列またはJSONファイルを渡せます。
 次の例はアカウントの外部連携情報を更新します。
 
 .. code-block:: bash
 
-    annoworkcli account put_external_linkage_info --user_id YOUR_USER_ID \
+    annoworkcli account update_external_linkage_info --user_id YOUR_USER_ID \
       --external_linkage_info '{"annofab":{"account_id":"YOUR_ANNOFAB_ACCOUNT_ID"}}'
 
-    annoworkcli account put_external_linkage_info --user_id YOUR_USER_ID \
+    annoworkcli account update_external_linkage_info --user_id YOUR_USER_ID \
       --external_linkage_info file://external_linkage_info.json
 
 .. code-block:: json

@@ -14,8 +14,9 @@ Available Commands
    :maxdepth: 1
    :titlesonly:
 
+   create
    list
-   put
+   update
 
 Usage Details
 =================================

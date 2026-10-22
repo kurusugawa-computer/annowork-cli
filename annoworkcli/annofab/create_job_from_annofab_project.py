@@ -12,7 +12,7 @@ from annoworkcli.common.cli import build_annoworkapi
 logger = logging.getLogger(__name__)
 
 
-class PutJobFromAnnofabProject:
+class CreateJobFromAnnofabProject:
     def __init__(
         self,
         *,
@@ -24,7 +24,7 @@ class PutJobFromAnnofabProject:
         self.workspace_id = workspace_id
         self.annofab_service = annofab_service
 
-    def put_job_from_annofab_project(self, parent_job_id: str, annofab_project_id: str, job_id: str | None = None) -> bool:
+    def create_job_from_annofab_project(self, parent_job_id: str, annofab_project_id: str, job_id: str | None = None) -> bool:
         af_project = self.annofab_service.wrapper.get_project_or_none(annofab_project_id)
         if af_project is None:
             logger.warning(f"{annofab_project_id=} にアクセスできません。ジョブの登録処理をスキップします。")
@@ -53,7 +53,7 @@ class PutJobFromAnnofabProject:
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
-    main_obj = PutJobFromAnnofabProject(
+    main_obj = CreateJobFromAnnofabProject(
         annowork_service=annowork_service,
         workspace_id=workspace_id,
         annofab_service=build_annofabapi_resource(
@@ -62,7 +62,7 @@ def main(args: argparse.Namespace) -> None:
             annofab_pat=args.annofab_pat,
         ),
     )
-    main_obj.put_job_from_annofab_project(parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id)
+    main_obj.create_job_from_annofab_project(parent_job_id=args.parent_job_id, annofab_project_id=args.annofab_project_id, job_id=args.job_id)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
@@ -99,7 +99,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
-    subcommand_name = "put_job"
+    subcommand_name = "create_job"
     subcommand_help = "Annofabプロジェクトからジョブを作成します。"
     description = (
         "Annofabプロジェクトからジョブを作成します。\n"

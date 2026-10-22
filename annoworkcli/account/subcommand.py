@@ -2,7 +2,7 @@ import argparse
 
 import annoworkcli
 import annoworkcli.account.list_external_linkage_info
-import annoworkcli.account.put_external_linkage_info
+import annoworkcli.account.update_external_linkage_info
 import annoworkcli.common.cli
 
 
@@ -11,7 +11,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
     # サブコマンドの定義
     annoworkcli.account.list_external_linkage_info.add_parser(subparsers)
-    annoworkcli.account.put_external_linkage_info.add_parser(subparsers)
+    annoworkcli.account.update_external_linkage_info.add_parser(subparsers)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:

@@ -10,7 +10,7 @@
 ユーザアカウントに関するサブコマンド
 
 - `annoworkcli account list_external_linkage_info`: アカウント外部連携情報取得の一覧を出力します。
-- `annoworkcli account put_external_linkage_info`: アカウントの外部連携情報を更新します。
+- `annoworkcli account update_external_linkage_info`: アカウントの外部連携情報を更新します。
 
 ## actual_working_time
 
@@ -26,13 +26,13 @@
 
 Annofab連携に関するサブコマンド
 
+- `annoworkcli annofab create_job`: Annofabプロジェクトからジョブを作成します。
 - `annoworkcli annofab list_assigned_hours`: Annofabプロジェクトに紐づくジョブのアサイン時間を日ごとに出力します。
 - `annoworkcli annofab list_job`: ジョブとジョブに紐づくAnnofabプロジェクトの情報を一緒に出力します。
 - `annoworkcli annofab list_working_hours`: 日ごとの実績作業時間と、ジョブに紐づくAnnofabプロジェクトの作業時間を一緒に出力します。
-- `annoworkcli annofab visualize_statistics`: Annofabの統計情報を実績作業時間と組み合わせて可視化します。
 - `annoworkcli annofab reshape_working_hours`: Annoworkの実績作業時間とアサイン時間、Annofabの作業時間を比較できるようなCSVファイルに成形します。
-- `annoworkcli annofab put_account_external_linkage_info`: アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。 Annofabのuser_idはAnnoworkのuser_idと一致している必要があります。
-- `annoworkcli annofab put_job`: Annofabプロジェクトからジョブを作成します。
+- `annoworkcli annofab set_account_external_linkage_info`: アカウントの外部連携情報に、Annofabから取得したaccount_idを設定します。 Annofabのuser_idはAnnoworkのuser_idと一致している必要があります。
+- `annoworkcli annofab visualize_statistics`: Annofabの統計情報を実績作業時間と組み合わせて可視化します。
 
 ## completion
 
@@ -95,17 +95,18 @@ Annofab連携に関するサブコマンド
 
 ワークスペース関係のサブコマンド
 
+- `annoworkcli workspace create`: ワークスペースを作成します。
 - `annoworkcli workspace list`: ワークスペースの一覧を取得します。
-- `annoworkcli workspace put`: ワークスペースを登録/更新します。
+- `annoworkcli workspace update`: ワークスペースを更新します。
 
 ## workspace_member
 
 ワークスペースメンバ関係のサブコマンド
 
 - `annoworkcli workspace_member append_tag`: ワークスペースメンバにワークスペースタグを追加します。
+- `annoworkcli workspace_member create`: ワークスペースメンバを作成します。
 - `annoworkcli workspace_member delete`: ワークスペースメンバを削除します。
 - `annoworkcli workspace_member list`: ワークスペースメンバの一覧を出力します。無効化されたメンバも出力します。
-- `annoworkcli workspace_member put`: ワークスペースメンバを登録します。
 - `annoworkcli workspace_member remove_tag`: ワークスペースメンバからワークスペースタグを削除します。
 - `annoworkcli workspace_member update_role`: ワークスペースメンバのロールを変更します。
 
@@ -113,5 +114,6 @@ Annofab連携に関するサブコマンド
 
 ワークスペースタグ関係のサブコマンド
 
+- `annoworkcli workspace_tag create`: ワークスペースタグを作成します。
 - `annoworkcli workspace_tag list`: ワークスペースタグの一覧を出力します。
-- `annoworkcli workspace_tag put`: ワークスペースタグを作成または更新します。
+- `annoworkcli workspace_tag update`: ワークスペースタグを更新します。

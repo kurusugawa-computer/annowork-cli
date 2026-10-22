@@ -19,12 +19,12 @@ Annofab APIにアクセスするコマンドには、AnnoworkとAnnofabの認証
    :maxdepth: 1
    :titlesonly:
 
+   create_job
    list_assigned_hours
    list_job
    list_working_hours
-   put_account_external_linkage_info
-   put_job
    reshape_working_hours
+   set_account_external_linkage_info
    visualize_statistics
 
 Usage Details
