@@ -92,7 +92,7 @@ JSONのキーや値はコマンドごとに異なるため、各コマンドの�
 作業計画・予定稼働時間の一覧・集計期間
 ------------------------------------------
 
-``schedule`` 配下の一覧・集計7コマンドと、``expected_working_time`` 配下の
+``schedule`` 配下の一覧・集計コマンドと、``expected_working_time`` 配下の
 ``list``、``list_weekly``、``list_groupby_tag`` では、``--start_date`` と ``--end_date`` を省略できます。
 
 * ``--start_date`` の省略時は、実行環境のローカル日付の今日を開始日とします。

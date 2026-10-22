@@ -14,6 +14,8 @@ import pytest
         "list_schedule_weekly",
         "list_workload_daily",
         "list_workload_daily_by_user",
+        "list_workload_weekly",
+        "list_workload_weekly_by_user",
     ],
 )
 @pytest.mark.usefixtures("fixed_local_datetime")
