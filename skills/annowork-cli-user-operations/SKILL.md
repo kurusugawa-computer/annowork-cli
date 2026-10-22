@@ -34,6 +34,9 @@ description: ユーザーからAnnowork上の情報取得、作業時間の集�
 - 作業時間を集計する場合は、対象期間、タイムゾーン、ジョブやメンバーなどの集計単位を確認してください。
 - 出力形式や保存先の指定は、[出力方法](https://annowork-cli.readthedocs.io/ja/latest/user_guide/cli_usage_output.html)と使用するコマンドのヘルプを参照してください。
 
+## アサインの変更
+- アサインを変更する場合は、[アサインの条件と注意事項](references/assignment-rules.md)を参照してください。
+
 ## 参考サイト
 
 - [GitHubリポジトリ](https://github.com/kurusugawa-computer/annowork-cli)
