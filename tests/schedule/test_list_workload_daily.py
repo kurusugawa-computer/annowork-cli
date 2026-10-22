@@ -214,3 +214,21 @@ def test_割合指定の誤差で残り時間を負数にしない(service):
 def test_逆転した期間は拒否する(service):
     with pytest.raises(ValueError):
         ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-02", end_date="2026-10-01")
+
+
+@pytest.mark.parametrize("last_source", ["schedule", "expected", "empty"])
+def test_終了日省略時はデータの最終日まで集計する(service, last_source):
+    service.api.get_schedules.return_value[0].update(start_date="2026-09-30", end_date="2026-12-01")
+    if last_source != "schedule":
+        service.api.get_schedules.return_value = []
+    if last_source == "expected":
+        service.api.get_expected_working_times.return_value = [{"date": "2026-12-01", "workspace_member_id": "member", "expected_working_hours": 8}]
+    rows = ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-01")
+    if last_source == "empty":
+        assert rows == []
+    else:
+        assert len(rows) == 62
+        assert rows[0].date == "2026-10-01"
+        assert rows[-1].date == "2026-12-01"
+        assert rows[-1].assigned_working_hours == (3 if last_source == "schedule" else 0)
+        assert rows[-1].expected_working_hours == (8 if last_source == "expected" else 0)

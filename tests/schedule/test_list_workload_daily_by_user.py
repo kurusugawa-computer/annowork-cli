@@ -96,6 +96,25 @@ def test_逆転した期間は拒否する(service):
         ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-02", end_date="2026-10-01")
 
 
+@pytest.mark.parametrize("percentage", [False, True])
+def test_終了日省略時は予定稼働時間と計画を上限なしで取得する(service, percentage):
+    service.api.get_schedules.return_value[0].update(
+        start_date="2026-09-01", end_date="2026-12-01", type="percentage" if percentage else "hours", value=50 if percentage else 3
+    )
+    service.api.get_expected_working_times.return_value = [
+        {"date": date, "workspace_member_id": "member", "expected_working_hours": 8} for date in ["2026-09-30", "2026-10-01", "2026-12-02"]
+    ]
+    rows = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01")
+    assert len(rows) == 63
+    assert rows[0].date == "2026-10-01"
+    assert rows[0].assigned_working_hours == (4 if percentage else 3)
+    assert rows[-2].date == "2026-12-01"
+    assert rows[-2].assigned_working_hours == (None if percentage else 3)
+    assert rows[-1].date == "2026-12-02"
+    assert rows[-1].status == "unassigned"
+    assert service.api.get_expected_working_times.call_args.kwargs["query_params"] == {"term_start": "2026-10-01", "term_end": None}
+
+
 def test_割合指定の浮動小数点誤差を超過扱いしない(service):
     service.api.get_expected_working_times.return_value = [{"date": "2026-10-01", "workspace_member_id": "member", "expected_working_hours": 7.6}]
     service.api.get_schedules.return_value[0].update(type="percentage", value=100)

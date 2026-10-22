@@ -15,6 +15,7 @@ import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_schedule import ExpectedWorkingHoursDict, ListSchedule, create_assigned_hours_dict
+from annoworkcli.schedule.read_common import add_date_arguments, resolve_start_date
 
 logger = logging.getLogger(__name__)
 
@@ -178,14 +179,8 @@ def main(args: argparse.Namespace) -> None:
     parent_job_id_list = get_list_from_args(args.parent_job_id)
     user_id_list = get_list_from_args(args.user_id)
 
-    start_date: str | None = args.start_date
+    start_date = resolve_start_date(args.start_date, args.end_date)
     end_date: str | None = args.end_date
-
-    if all(v is None for v in [parent_job_id_list, user_id_list, start_date, end_date]):
-        logger.warning(
-            "'--start_date'や'--parent_job_id'などの絞り込み条件が1つも指定されていません。"
-            "WebAPIから取得するデータ量が多すぎて、WebAPIのリクエストが失敗するかもしれません。"
-        )
 
     ListAssignedHoursDaily(
         annowork_service=annowork_service,
@@ -207,8 +202,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
     parser.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="取得対象の親ジョブID")
 
-    parser.add_argument("--start_date", type=str, required=False, help="取得する範囲の開始日")
-    parser.add_argument("--end_date", type=str, required=False, help="取得する範囲の終了日")
+    add_date_arguments(parser)
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
 

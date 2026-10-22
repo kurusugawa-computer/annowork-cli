@@ -12,6 +12,7 @@ import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser, WorkloadDaily, get_status
+from annoworkcli.schedule.read_common import add_date_arguments, resolve_start_date
 from annoworkcli.schedule.workload_csv import get_parent_job_columns
 
 logger = logging.getLogger(__name__)
@@ -122,14 +123,19 @@ class ListWorkloadDaily:
     def __init__(self, annowork_service: AnnoworkResource, workspace_id: str) -> None:
         self.by_user = ListWorkloadDailyByUser(annowork_service, workspace_id)
 
-    def get_workloads(self, *, start_date: str, end_date: str) -> list[WorkloadDailySummary]:
-        """全ユーザーの時間を集計し、指定期間の全日を返す。"""
+    def get_workloads(self, *, start_date: str | None = None, end_date: str | None = None) -> list[WorkloadDailySummary]:
+        """全ユーザーの時間を集計する。終了日省略時はデータの最終日まで返す。"""
+        start_date = resolve_start_date(start_date, end_date)
         daily: dict[str, list[WorkloadDaily]] = defaultdict(list)
         for row in self.by_user.get_workloads(start_date=start_date, end_date=end_date):
             daily[row.date].append(row)
+        if end_date is None:
+            if not daily:
+                return []
+            end_date = max(daily)
         return [summarize_workloads(str(date.date()), daily[str(date.date())]) for date in pandas.date_range(start_date, end_date)]
 
-    def main(self, *, start_date: str, end_date: str, output: Path | None, output_format: OutputFormat) -> None:
+    def main(self, *, start_date: str | None = None, end_date: str | None = None, output: Path | None, output_format: OutputFormat) -> None:
         logger.info(f"全ユーザーの日別アサイン状況を集計します。 :: {start_date=}, {end_date=}")
         result = self.get_workloads(start_date=start_date, end_date=end_date)
         if output_format == OutputFormat.JSON:
@@ -141,7 +147,7 @@ class ListWorkloadDaily:
 
 def main(args: argparse.Namespace) -> None:
     ListWorkloadDaily(build_annoworkapi(args), annoworkcli.common.cli.resolve_required_workspace_id(args)).main(
-        start_date=args.start_date,
+        start_date=resolve_start_date(args.start_date, args.end_date),
         end_date=args.end_date,
         output=args.output,
         output_format=OutputFormat(args.format),
@@ -153,8 +159,7 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
         subparsers, "list_workload_daily", "全ユーザーの日別予定稼働時間と親ジョブ別アサイン時間を出力します。"
     )
     annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
-    parser.add_argument("--start_date", required=True, help="集計開始日(YYYY-mm-dd、当日を含む)")
-    parser.add_argument("--end_date", required=True, help="集計終了日(YYYY-mm-dd、当日を含む)")
+    add_date_arguments(parser)
     parser.add_argument("-o", "--output", type=Path, help="出力先。省略時は標準出力")
     parser.add_argument("-f", "--format", choices=[item.value for item in OutputFormat], default=OutputFormat.CSV.value, help="出力先のフォーマット")
     parser.set_defaults(subcommand_func=main)

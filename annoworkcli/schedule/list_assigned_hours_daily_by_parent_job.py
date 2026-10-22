@@ -1,6 +1,5 @@
 import argparse
 import logging
-import sys
 from pathlib import Path
 from typing import Any, assert_never
 
@@ -8,9 +7,10 @@ import pandas
 
 import annoworkcli
 import annoworkcli.common.cli
-from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_assigned_hours_daily import ListAssignedHoursDaily
+from annoworkcli.schedule.read_common import add_date_arguments, resolve_start_date
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +45,8 @@ def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     parent_job_id_list = get_list_from_args(args.parent_job_id)
-    start_date: str | None = args.start_date
+    start_date = resolve_start_date(args.start_date, args.end_date)
     end_date: str | None = args.end_date
-
-    command = " ".join(sys.argv[0:3])
-    if all(v is None for v in [parent_job_id_list, start_date, end_date]):
-        print(f"{command}: error: '--start_date'や'--parent_job_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
-        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
     main_obj = ListAssignedHoursDaily(annowork_service=annowork_service, workspace_id=workspace_id)
 
@@ -81,8 +76,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
     parser.add_argument("-pj", "--parent_job_id", type=str, nargs="+", required=False, help="集計対象の親ジョブID")
 
-    parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
-    parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
+    add_date_arguments(parser)
 
     parser.add_argument("-o", "--output", type=Path, help="出力先")
     parser.add_argument(
@@ -105,7 +99,7 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
         subparsers,
         subcommand_name,
         subcommand_help,
-        description=subcommand_help + "\n--parent_job_id、--start_date、--end_dateのいずれかを1つ以上指定してください。",
+        description=subcommand_help,
     )
     parse_args(parser)
     return parser

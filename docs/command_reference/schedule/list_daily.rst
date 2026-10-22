@@ -4,6 +4,8 @@ schedule list_daily
 
 Description
 =================================
+取得期間の指定・省略時の動作は :ref:`schedule-list-date-range` を参照してください。
+
 作業計画から求めたアサイン時間を日ごとに出力します。
 
 
