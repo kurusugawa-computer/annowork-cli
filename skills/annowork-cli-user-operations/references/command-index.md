@@ -69,7 +69,8 @@ Annofab連携に関するサブコマンド
 作業計画関係のサブコマンド
 
 - `annoworkcli schedule create`: 作業計画をユーザーごとに作成します。
-- `annoworkcli schedule delete`: 作業計画情報を削除します。
+- `annoworkcli schedule delete`: 親ジョブ・ユーザー・開始日で選んだ作業計画を削除します。
+- `annoworkcli schedule delete_by_schedule_id`: IDを指定して作業計画を削除します。
 - `annoworkcli schedule list`: 作業計画の一覧を出力します。
 - `annoworkcli schedule list_daily`: 作業計画から求めたアサイン時間を日ごとに出力します。
 - `annoworkcli schedule list_daily_by_parent_job`: 作業計画から求めたアサイン時間を日ごと・親ジョブごとに集計して出力します。
