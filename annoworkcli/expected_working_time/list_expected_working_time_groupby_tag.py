@@ -68,9 +68,10 @@ class ListExpectedWorkingTimeGroupbyTag:
                 if elm["workspace_member_id"] in member_ids:
                     dict_hours[elm["date"], workspace_tag_name] += elm["expected_working_hours"]
 
-        # 全体の時間を日毎に集計する
+        # タグ名と衝突しないよう、全体の時間は別に集計する。
+        totals: dict[str, float] = defaultdict(float)
         for elm in expected_working_times:
-            dict_hours[elm["date"], "total"] += elm["expected_working_hours"]
+            totals[elm["date"]] += elm["expected_working_hours"]
 
         dict_date: dict[str, dict[str, float]] = defaultdict(dict)
         for (date, org_tag), hours in dict_hours.items():
@@ -78,8 +79,8 @@ class ListExpectedWorkingTimeGroupbyTag:
 
         results = []
 
-        for date, value in dict_date.items():
-            elm = {"date": date, "expected_working_hours": value}
+        for date, total in totals.items():
+            elm = {"date": date, "expected_working_hours": {"total": total, "by_tag": dict_date.get(date, {})}}
             results.append(elm)
 
         results.sort(key=lambda e: e["date"])

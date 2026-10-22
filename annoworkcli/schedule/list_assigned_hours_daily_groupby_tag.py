@@ -63,12 +63,13 @@ class ListAssignedHoursDailyGroupbyTag:
                 if elm.workspace_member_id in member_ids:
                     dict_hours[elm.date, elm.parent_job_id, workspace_tag_name] += elm.assigned_working_hours
 
-        # 全体の時間を日毎に集計する
+        # タグ名と衝突しないよう、全体の時間は別に集計する。
+        totals: dict[tuple[str, str], float] = defaultdict(float)
 
         # key:parent_job_id, value:parent_job_nameのdict
         job_dict: dict[str, str | None] = {}
         for elm in assigned_hours_list:
-            dict_hours[elm.date, elm.parent_job_id, "total"] += elm.assigned_working_hours
+            totals[elm.date, elm.parent_job_id] += elm.assigned_working_hours
             job_dict[elm.parent_job_id] = elm.parent_job_name
 
         # dictのkeyは、tuple[date, parent_job_id]
@@ -77,8 +78,13 @@ class ListAssignedHoursDailyGroupbyTag:
             dict_date[(date, parent_job_id)].update({org_tag: hours})
 
         results = []
-        for (date, parent_job_id), value in dict_date.items():
-            e = {"date": date, "parent_job_id": parent_job_id, "parent_job_name": job_dict.get(parent_job_id), "assigned_working_hours": value}
+        for (date, parent_job_id), total in totals.items():
+            e = {
+                "date": date,
+                "parent_job_id": parent_job_id,
+                "parent_job_name": job_dict.get(parent_job_id),
+                "assigned_working_hours": {"total": total, "by_tag": dict_date.get((date, parent_job_id), {})},
+            }
             results.append(e)
 
         results.sort(key=lambda e: (e["date"], e["parent_job_id"]))
