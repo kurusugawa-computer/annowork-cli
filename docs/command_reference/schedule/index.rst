@@ -10,13 +10,6 @@ Description
 引数には ``--parent_job_id`` / ``-pj``、出力には ``parent_job_id`` / ``parent_job_name`` を使用します。
 指定するIDはアサイン先自身のIDです。そこからさらに親ジョブをたどることはありません。
 
-.. warning::
-
-   旧引数 ``--job_id`` / ``-j``、旧出力名 ``job_id`` / ``job_name``、
-   旧コマンド ``list_daily_by_job`` は廃止しました。
-   集計には ``list_daily_by_parent_job`` を使用してください。
-   既存のスクリプトやCSV・JSONを使用する処理も更新が必要です。
-
 
 Available Commands
 =================================
