@@ -168,8 +168,8 @@ def test_CSVは期間全体のジョブをID順の列にする(service):
     assert df["Parent"].tolist() == [3, 0, 0]
 
 
-@pytest.mark.parametrize("name", ["Parent", "date", "expected_working_hours", "assigned_working_hours", "remaining_working_hours", ""])
-def test_CSVの列名が重複または空なら拒否しJSONでは出力できる(service, tmp_path, name):
+@pytest.mark.parametrize("name", ["date", "expected_working_hours", "assigned_working_hours", "remaining_working_hours", ""])
+def test_CSVの固定列名との衝突または空なら拒否しJSONでは出力できる(service, tmp_path, name):
     service.api.get_jobs.return_value[1]["job_name"] = name
     schedule = service.api.get_schedules.return_value[0]
     service.api.get_schedules.return_value.append({**schedule, "job_id": "grandparent", "schedule_id": "second"})

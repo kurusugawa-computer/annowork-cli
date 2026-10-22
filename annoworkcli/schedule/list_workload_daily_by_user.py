@@ -55,17 +55,17 @@ def create_workload_csv(workloads: list[WorkloadDaily]) -> pandas.DataFrame:
     )
     rows = []
     for workload in workloads:
-        row: dict[str, str | float | None] = {
-            "date": workload.date,
-            "workspace_member_id": workload.workspace_member_id,
-            "user_id": workload.user_id,
-            "username": workload.username,
-            "expected_working_hours": workload.expected_working_hours,
-            "assigned_working_hours": workload.assigned_working_hours,
-            "remaining_working_hours": workload.remaining_working_hours,
-        }
+        row: list[str | float | None] = [
+            workload.date,
+            workload.workspace_member_id,
+            workload.user_id,
+            workload.username,
+            workload.expected_working_hours,
+            workload.assigned_working_hours,
+            workload.remaining_working_hours,
+        ]
         hours_by_job = {assignment.parent_job_id: assignment.assigned_working_hours for assignment in workload.assignments}
-        row.update({name: hours_by_job.get(job_id, 0.0) for job_id, name in jobs.items()})
+        row.extend(hours_by_job.get(job_id, 0.0) for job_id in jobs)
         rows.append(row)
     return pandas.DataFrame(rows, columns=[*CSV_COLUMNS, *jobs.values()])
 

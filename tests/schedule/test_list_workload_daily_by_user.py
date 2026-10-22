@@ -160,7 +160,7 @@ def test_予定稼働時間とアサイン時間がともに0の登録も含め�
     assert result[0].expected_working_hours == result[0].assigned_working_hours == result[0].remaining_working_hours == 0
 
 
-@pytest.mark.parametrize("name", ["Parent", *CSV_COLUMNS, "", None])
+@pytest.mark.parametrize("name", [*CSV_COLUMNS, "", None])
 def test_CSVの親ジョブ名が不正なら拒否しJSONは出力できる(service, tmp_path, name):
     service.api.get_jobs.return_value[1]["job_name"] = name
     schedule = service.api.get_schedules.return_value[0]
