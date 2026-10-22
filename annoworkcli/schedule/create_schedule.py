@@ -8,7 +8,8 @@ import requests
 from annoworkapi.resource import Resource as AnnoworkResource
 
 from annoworkcli.common import cli
-from annoworkcli.schedule.write_common import WriteResult, add_write_arguments, validate_assignment, validate_dates, validate_start_date
+from annoworkcli.common.date_range import validate_dates
+from annoworkcli.schedule.write_common import WriteResult, add_write_arguments, validate_assignment, validate_start_date
 
 logger = logging.getLogger(__name__)
 

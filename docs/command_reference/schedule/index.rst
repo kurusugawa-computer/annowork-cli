@@ -11,6 +11,9 @@ Description
 指定するIDはアサイン先自身のIDです。そこからさらに親ジョブをたどることはありません。
 
 
+一覧・集計コマンドの取得期間は :ref:`planned-list-date-range` を参照してください。
+
+
 Available Commands
 =================================
 

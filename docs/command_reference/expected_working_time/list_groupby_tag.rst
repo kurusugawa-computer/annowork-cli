@@ -7,7 +7,7 @@ Description
 ワークスペースタグで集計した予定稼働時間を出力します。
 
 
-``--user_id``、``--start_date``、``--end_date`` のいずれかを1つ以上指定してください。
+取得期間の指定・省略時の動作は :ref:`planned-list-date-range` を参照してください。
 
 Examples
 =================================

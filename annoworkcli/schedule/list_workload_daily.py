@@ -1,7 +1,6 @@
 import argparse
 import logging
 from collections import defaultdict
-from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -10,6 +9,7 @@ from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi
+from annoworkcli.common.date_range import add_date_arguments, resolve_start_date
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser, WorkloadDaily, get_status
 from annoworkcli.schedule.workload_csv import get_parent_job_columns
@@ -26,7 +26,7 @@ class WorkloadMember:
     user_id: str | None
     username: str | None
     expected_working_hours: float | None
-    assigned_working_hours: float | None
+    assigned_working_hours: float
     remaining_working_hours: float | None
     status: str
 
@@ -36,14 +36,14 @@ class AssignmentMember:
     workspace_member_id: str
     user_id: str | None
     username: str | None
-    assigned_working_hours: float | None
+    assigned_working_hours: float
 
 
 @dataclass
 class ParentJobAssignment:
     parent_job_id: str
     parent_job_name: str | None
-    assigned_working_hours: float | None
+    assigned_working_hours: float
     members: list[AssignmentMember]
 
 
@@ -51,20 +51,10 @@ class ParentJobAssignment:
 class WorkloadDailySummary:
     date: str
     expected_working_hours: float
-    assigned_working_hours: float | None
-    remaining_working_hours: float | None
+    assigned_working_hours: float
+    remaining_working_hours: float
     members: list[WorkloadMember]
     assignments: list[ParentJobAssignment]
-
-
-def sum_assigned_hours(hours: Iterable[float | None]) -> float | None:
-    """不明なアサイン時間を含む場合は合計も不明とする。"""
-    total = 0.0
-    for value in hours:
-        if value is None:
-            return None
-        total += value
-    return total
 
 
 def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDailySummary:
@@ -90,12 +80,12 @@ def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDa
                 AssignmentMember(row.workspace_member_id, row.user_id, row.username, assignment.assigned_working_hours)
             )
     assignments = [
-        ParentJobAssignment(job_id, job_names[job_id], sum_assigned_hours(member.assigned_working_hours for member in details), details)
+        ParentJobAssignment(job_id, job_names[job_id], sum(member.assigned_working_hours for member in details), details)
         for job_id, details in sorted(job_members.items())
     ]
     expected = sum(row.expected_working_hours for row in workloads if row.expected_working_hours is not None)
-    assigned = sum_assigned_hours(assignment.assigned_working_hours for assignment in assignments)
-    remaining = None if assigned is None else (0.0 if get_status(expected, assigned) == "full" else expected - assigned)
+    assigned = sum(assignment.assigned_working_hours for assignment in assignments)
+    remaining = 0.0 if get_status(expected, assigned) == "full" else expected - assigned
     return WorkloadDailySummary(date, expected, assigned, remaining, members, assignments)
 
 
@@ -122,14 +112,19 @@ class ListWorkloadDaily:
     def __init__(self, annowork_service: AnnoworkResource, workspace_id: str) -> None:
         self.by_user = ListWorkloadDailyByUser(annowork_service, workspace_id)
 
-    def get_workloads(self, *, start_date: str, end_date: str) -> list[WorkloadDailySummary]:
-        """全ユーザーの時間を集計し、指定期間の全日を返す。"""
+    def get_workloads(self, *, start_date: str | None = None, end_date: str | None = None) -> list[WorkloadDailySummary]:
+        """全ユーザーの時間を集計する。終了日省略時はデータの最終日まで返す。"""
+        start_date = resolve_start_date(start_date, end_date)
         daily: dict[str, list[WorkloadDaily]] = defaultdict(list)
         for row in self.by_user.get_workloads(start_date=start_date, end_date=end_date):
             daily[row.date].append(row)
+        if end_date is None:
+            if not daily:
+                return []
+            end_date = max(daily)
         return [summarize_workloads(str(date.date()), daily[str(date.date())]) for date in pandas.date_range(start_date, end_date)]
 
-    def main(self, *, start_date: str, end_date: str, output: Path | None, output_format: OutputFormat) -> None:
+    def main(self, *, start_date: str | None = None, end_date: str | None = None, output: Path | None, output_format: OutputFormat) -> None:
         logger.info(f"全ユーザーの日別アサイン状況を集計します。 :: {start_date=}, {end_date=}")
         result = self.get_workloads(start_date=start_date, end_date=end_date)
         if output_format == OutputFormat.JSON:
@@ -141,7 +136,7 @@ class ListWorkloadDaily:
 
 def main(args: argparse.Namespace) -> None:
     ListWorkloadDaily(build_annoworkapi(args), annoworkcli.common.cli.resolve_required_workspace_id(args)).main(
-        start_date=args.start_date,
+        start_date=resolve_start_date(args.start_date, args.end_date),
         end_date=args.end_date,
         output=args.output,
         output_format=OutputFormat(args.format),
@@ -153,8 +148,7 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
         subparsers, "list_workload_daily", "全ユーザーの日別予定稼働時間と親ジョブ別アサイン時間を出力します。"
     )
     annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
-    parser.add_argument("--start_date", required=True, help="集計開始日(YYYY-mm-dd、当日を含む)")
-    parser.add_argument("--end_date", required=True, help="集計終了日(YYYY-mm-dd、当日を含む)")
+    add_date_arguments(parser)
     parser.add_argument("-o", "--output", type=Path, help="出力先。省略時は標準出力")
     parser.add_argument("-f", "--format", choices=[item.value for item in OutputFormat], default=OutputFormat.CSV.value, help="出力先のフォーマット")
     parser.set_defaults(subcommand_func=main)
