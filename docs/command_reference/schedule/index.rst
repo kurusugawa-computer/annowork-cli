@@ -11,19 +11,7 @@ Description
 指定するIDはアサイン先自身のIDです。そこからさらに親ジョブをたどることはありません。
 
 
-.. _schedule-list-date-range:
-
-一覧・集計コマンドの取得期間
----------------------------------
-``list``、``list_daily``、``list_daily_by_parent_job``、``list_daily_groupby_tag``、
-``list_weekly``、``list_workload_daily``、``list_workload_daily_by_user`` では、
-``--start_date`` と ``--end_date`` を省略できます。
-
-* ``--start_date`` の省略時は、実行環境のローカル日付の今日を開始日とします。
-* ``--end_date`` の省略時は、終了日を制限せずに取得・集計します。
-* 指定した開始日・終了日を対象期間に含めます。開始日が終了日より後の場合はエラーです。
-
-過去の期間を取得・集計する場合は ``--start_date`` を明示してください。
+一覧・集計コマンドの取得期間は :ref:`planned-list-date-range` を参照してください。
 
 
 Available Commands

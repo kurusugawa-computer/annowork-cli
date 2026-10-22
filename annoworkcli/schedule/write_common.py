@@ -17,15 +17,6 @@ def validate_assignment(hours: float | None, percentage: float | None) -> None:
             raise ValueError(f"{name}は0.01以上{maximum}以下の有限の数値を指定してください。")
 
 
-def validate_dates(start_date: str, end_date: str) -> None:
-    start = datetime.date.fromisoformat(start_date)
-    end = datetime.date.fromisoformat(end_date)
-    if start.isoformat() != start_date or end.isoformat() != end_date:
-        raise ValueError("日付はYYYY-MM-DD形式で指定してください。")
-    if start > end:
-        raise ValueError("開始日は終了日以前にしてください。")
-
-
 def validate_start_date(start_date: str, *, allow_past_start_date: bool = False) -> None:
     """昨日より前の開始日を、明示的に許可された場合だけ受け付ける。"""
     yesterday = datetime.datetime.now().astimezone().date() - datetime.timedelta(days=1)

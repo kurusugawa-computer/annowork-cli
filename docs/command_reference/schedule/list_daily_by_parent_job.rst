@@ -4,7 +4,7 @@ schedule list_daily_by_parent_job
 
 Description
 =================================
-取得期間の指定・省略時の動作は :ref:`schedule-list-date-range` を参照してください。
+取得期間の指定・省略時の動作は :ref:`planned-list-date-range` を参照してください。
 
 作業計画から求めたアサイン時間を日ごと・親ジョブごとに集計して出力します。
 

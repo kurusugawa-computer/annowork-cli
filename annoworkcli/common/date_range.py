@@ -1,9 +1,7 @@
-"""作業計画の一覧・集計コマンドで使う日付引数。"""
+"""一覧・集計コマンドで使う日付引数と期間検証。"""
 
 import argparse
 import datetime
-
-from annoworkcli.schedule.write_common import validate_dates
 
 
 def resolve_start_date(start_date: str | None, end_date: str | None) -> str:
@@ -16,3 +14,12 @@ def resolve_start_date(start_date: str | None, end_date: str | None) -> str:
 def add_date_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--start_date", default=resolve_start_date(None, None), help="取得・集計する範囲の開始日（YYYY-MM-DD、当日を含む）")
     parser.add_argument("--end_date", help="取得・集計する範囲の終了日（YYYY-MM-DD、当日を含む）")
+
+
+def validate_dates(start_date: str, end_date: str) -> None:
+    start = datetime.date.fromisoformat(start_date)
+    end = datetime.date.fromisoformat(end_date)
+    if start.isoformat() != start_date or end.isoformat() != end_date:
+        raise ValueError("日付はYYYY-MM-DD形式で指定してください。")
+    if start > end:
+        raise ValueError("開始日は終了日以前にしてください。")

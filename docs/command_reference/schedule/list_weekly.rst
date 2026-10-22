@@ -4,7 +4,7 @@ schedule list_weekly
 
 Description
 =================================
-取得期間の指定・省略時の動作は :ref:`schedule-list-date-range` を参照してください。
+取得期間の指定・省略時の動作は :ref:`planned-list-date-range` を参照してください。
 
 作業計画から求めたアサイン時間をメンバー・ジョブ・週ごと（日曜日始まり）に出力します。
 

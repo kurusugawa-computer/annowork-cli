@@ -1,6 +1,5 @@
 import argparse
 import logging
-import sys
 from collections import defaultdict
 from collections.abc import Collection
 from pathlib import Path
@@ -11,7 +10,8 @@ from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli
 import annoworkcli.common.cli
-from annoworkcli.common.cli import COMMAND_LINE_ERROR_STATUS_CODE, OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.date_range import add_date_arguments, resolve_start_date
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.expected_working_time.list_expected_working_time import ListExpectedWorkingTime
 
@@ -140,21 +140,16 @@ def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
     user_id_list = get_list_from_args(args.user_id)
-    start_date: str | None = args.start_date
+    start_date = resolve_start_date(args.start_date, args.end_date)
     end_date: str | None = args.end_date
-
-    command = " ".join(sys.argv[0:3])
-    if all(v is None for v in [user_id_list, start_date, end_date]):
-        print(f"{command}: error: '--start_date'や'--user_id'などの絞り込み条件を1つ以上指定してください。", file=sys.stderr)  # noqa: T201
-        sys.exit(COMMAND_LINE_ERROR_STATUS_CODE)
 
     workspace_tag_id_list = get_list_from_args(args.workspace_tag_id)
     workspace_tag_name_list = get_list_from_args(args.workspace_tag_name)
 
     ListExpectedWorkingTimeGroupbyTag(annowork_service=annowork_service, workspace_id=workspace_id).main(
         user_id_list=user_id_list,
-        start_date=args.start_date,
-        end_date=args.end_date,
+        start_date=start_date,
+        end_date=end_date,
         output=args.output,
         target_workspace_tag_ids=workspace_tag_id_list,
         target_workspace_tag_names=workspace_tag_name_list,
@@ -167,8 +162,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
     parser.add_argument("-u", "--user_id", type=str, nargs="+", required=False, help="集計対象のユーザID")
 
-    parser.add_argument("--start_date", type=str, required=False, help="集計開始日(YYYY-mm-dd)")
-    parser.add_argument("--end_date", type=str, required=False, help="集計終了日(YYYY-mm-dd)")
+    add_date_arguments(parser)
 
     org_tag_group = parser.add_mutually_exclusive_group()
     org_tag_group.add_argument(
@@ -207,7 +201,7 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
         subparsers,
         subcommand_name,
         subcommand_help,
-        description=subcommand_help + "\n--user_id、--start_date、--end_dateのいずれかを1つ以上指定してください。",
+        description=subcommand_help,
     )
     parse_args(parser)
     return parser

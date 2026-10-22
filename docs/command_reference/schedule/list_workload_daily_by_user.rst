@@ -4,7 +4,7 @@ schedule list_workload_daily_by_user
 
 Description
 =================================
-取得期間の指定・省略時の動作は :ref:`schedule-list-date-range` を参照してください。
+取得期間の指定・省略時の動作は :ref:`planned-list-date-range` を参照してください。
 
 全体の日別集計は :doc:`list_workload_daily` を使ってください。
 

@@ -9,8 +9,9 @@ import requests
 from annoworkapi.resource import Resource as AnnoworkResource
 
 from annoworkcli.common import cli
+from annoworkcli.common.date_range import validate_dates
 from annoworkcli.schedule.list_schedule import ListSchedule
-from annoworkcli.schedule.write_common import WriteResult, validate_dates
+from annoworkcli.schedule.write_common import WriteResult
 
 logger = logging.getLogger(__name__)
 
