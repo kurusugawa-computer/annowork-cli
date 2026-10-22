@@ -1,7 +1,6 @@
 import argparse
 import logging
 from collections import defaultdict
-from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -27,7 +26,7 @@ class WorkloadMember:
     user_id: str | None
     username: str | None
     expected_working_hours: float | None
-    assigned_working_hours: float | None
+    assigned_working_hours: float
     remaining_working_hours: float | None
     status: str
 
@@ -37,14 +36,14 @@ class AssignmentMember:
     workspace_member_id: str
     user_id: str | None
     username: str | None
-    assigned_working_hours: float | None
+    assigned_working_hours: float
 
 
 @dataclass
 class ParentJobAssignment:
     parent_job_id: str
     parent_job_name: str | None
-    assigned_working_hours: float | None
+    assigned_working_hours: float
     members: list[AssignmentMember]
 
 
@@ -52,20 +51,10 @@ class ParentJobAssignment:
 class WorkloadDailySummary:
     date: str
     expected_working_hours: float
-    assigned_working_hours: float | None
-    remaining_working_hours: float | None
+    assigned_working_hours: float
+    remaining_working_hours: float
     members: list[WorkloadMember]
     assignments: list[ParentJobAssignment]
-
-
-def sum_assigned_hours(hours: Iterable[float | None]) -> float | None:
-    """不明なアサイン時間を含む場合は合計も不明とする。"""
-    total = 0.0
-    for value in hours:
-        if value is None:
-            return None
-        total += value
-    return total
 
 
 def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDailySummary:
@@ -91,12 +80,12 @@ def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDa
                 AssignmentMember(row.workspace_member_id, row.user_id, row.username, assignment.assigned_working_hours)
             )
     assignments = [
-        ParentJobAssignment(job_id, job_names[job_id], sum_assigned_hours(member.assigned_working_hours for member in details), details)
+        ParentJobAssignment(job_id, job_names[job_id], sum(member.assigned_working_hours for member in details), details)
         for job_id, details in sorted(job_members.items())
     ]
     expected = sum(row.expected_working_hours for row in workloads if row.expected_working_hours is not None)
-    assigned = sum_assigned_hours(assignment.assigned_working_hours for assignment in assignments)
-    remaining = None if assigned is None else (0.0 if get_status(expected, assigned) == "full" else expected - assigned)
+    assigned = sum(assignment.assigned_working_hours for assignment in assignments)
+    remaining = 0.0 if get_status(expected, assigned) == "full" else expected - assigned
     return WorkloadDailySummary(date, expected, assigned, remaining, members, assignments)
 
 

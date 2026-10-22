@@ -38,7 +38,25 @@ def test_予定稼働時間が未登録の場合は判定不能とする(service
     assert result[0].expected_working_hours is None
     assert result[0].remaining_working_hours is None
     assert result[0].status == "unknown"
-    assert result[0].assigned_working_hours == (None if percentage else 3)
+    assert result[0].assigned_working_hours == (0 if percentage else 3)
+
+
+@pytest.mark.parametrize("output_format", list(OutputFormat))
+def test_未登録の割合指定と時間指定を合算して数値で出力する(service, tmp_path, output_format):
+    schedule = service.api.get_schedules.return_value[0]
+    service.api.get_schedules.return_value.append({**schedule, "schedule_id": "percentage", "type": "percentage", "value": 50})
+    output = tmp_path / "workload"
+    ListWorkloadDailyByUser(service, "workspace").main(
+        start_date="2026-10-01", end_date="2026-10-01", user_ids=None, statuses=None, output=output, output_format=output_format
+    )
+    if output_format == OutputFormat.JSON:
+        row = json.loads(output.read_text())[0]
+        assert row["assignments"][0]["assigned_working_hours"] == 3
+    else:
+        with output.open(encoding="utf-8-sig") as stream:
+            row = next(csv.DictReader(stream))
+        assert float(row["Parent"]) == 3
+    assert float(row["assigned_working_hours"]) == 3
 
 
 @pytest.mark.parametrize("expected,assigned,status", [(0, 3, "overloaded"), (3, 3, "full"), (6, 3, "under_assigned")])
@@ -109,7 +127,7 @@ def test_終了日省略時は予定稼働時間と計画を上限なしで取�
     assert rows[0].date == "2026-10-01"
     assert rows[0].assigned_working_hours == (4 if percentage else 3)
     assert rows[-2].date == "2026-12-01"
-    assert rows[-2].assigned_working_hours == (None if percentage else 3)
+    assert rows[-2].assigned_working_hours == (0 if percentage else 3)
     assert rows[-1].date == "2026-12-02"
     assert rows[-1].status == "unassigned"
     assert service.api.get_expected_working_times.call_args.kwargs["query_params"] == {"term_start": "2026-10-01", "term_end": None}
@@ -174,13 +192,11 @@ def test_親ジョブ列の順序と時間が日別集計に対応する(service
     assert list(df.columns) == [*CSV_COLUMNS, "Grandparent", "Parent"]
     assert df["Parent"].tolist() == [0, 3, 0]
     assert df["Grandparent"].iloc[:2].tolist() == [0, 0]
-    assert df["Grandparent"].isna().iloc[2] == percentage
-    if not percentage:
-        assert df["Grandparent"].iloc[2] == 2
+    assert df["Grandparent"].iloc[2] == (0 if percentage else 2)
     summaries = ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-03")
     for summary in summaries:
         rows = [row for row in workloads if row.date == summary.date]
         for assignment in summary.assignments:
             hours = [detail.assigned_working_hours for row in rows for detail in row.assignments if detail.parent_job_id == assignment.parent_job_id]
-            assert assignment.assigned_working_hours == (None if None in hours else sum(value for value in hours if value is not None))
+            assert assignment.assigned_working_hours == sum(hours)
         assert len(summary.members) == len(rows)

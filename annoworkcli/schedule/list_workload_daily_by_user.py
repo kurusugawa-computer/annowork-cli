@@ -37,7 +37,7 @@ CSV_COLUMNS = [
 class Assignment:
     parent_job_id: str
     parent_job_name: str | None
-    assigned_working_hours: float | None
+    assigned_working_hours: float
 
 
 @dataclass
@@ -47,7 +47,7 @@ class WorkloadDaily:
     user_id: str | None
     username: str | None
     expected_working_hours: float | None
-    assigned_working_hours: float | None
+    assigned_working_hours: float
     remaining_working_hours: float | None
     status: str
     assignments: list[Assignment]
@@ -76,9 +76,9 @@ def create_workload_csv(workloads: list[WorkloadDaily]) -> pandas.DataFrame:
     return pandas.DataFrame(rows, columns=[*CSV_COLUMNS, *jobs.values()])
 
 
-def get_status(expected: float | None, assigned: float | None) -> str:
+def get_status(expected: float | None, assigned: float) -> str:
     """予定稼働時間とアサイン時間から過不足を判定する。"""
-    if expected is None or assigned is None:
+    if expected is None:
         return "unknown"
     if math.isclose(assigned, expected, rel_tol=0, abs_tol=1e-9):
         return "full"
@@ -115,7 +115,7 @@ class ListWorkloadDailyByUser:
             and (selected_members is None or entry["workspace_member_id"] in selected_members)
         }
         jobs = {job["job_id"]: job["job_name"] for job in self.annowork_service.api.get_jobs(self.workspace_id)}
-        assignments: dict[tuple[str, str], dict[str, float | None]] = defaultdict(dict)
+        assignments: dict[tuple[str, str], dict[str, float]] = defaultdict(dict)
         for schedule in schedules.get_schedules(start_date=start_date, end_date=end_date, user_ids=user_ids):
             member_id = schedule["workspace_member_id"]
             parent_job_id = schedule["parent_job_id"]
@@ -129,21 +129,16 @@ class ListWorkloadDailyByUser:
                     continue
                 key = (date, member_id)
                 previous = assignments[key].get(parent_job_id, 0.0)
-                if previous is None or (schedule["type"] == "percentage" and key not in expected):
-                    assignments[key][parent_job_id] = None
-                else:
-                    assignments[key][parent_job_id] = previous + hours
+                assignments[key][parent_job_id] = previous + hours
 
         result = []
         for date, member_id in sorted(expected.keys() | assignments.keys()):
             key = (date, member_id)
             details = [Assignment(job_id, jobs.get(job_id), hours) for job_id, hours in sorted(assignments.get(key, {}).items())]
             expected_hours = expected.get(key)
-            assigned = (
-                None if any(item.assigned_working_hours is None for item in details) else sum(item.assigned_working_hours or 0 for item in details)
-            )
+            assigned = sum(item.assigned_working_hours for item in details)
             status = get_status(expected_hours, assigned)
-            remaining = None if expected_hours is None or assigned is None else (0.0 if status == "full" else expected_hours - assigned)
+            remaining = None if expected_hours is None else (0.0 if status == "full" else expected_hours - assigned)
             member = members.get(member_id, {})
             result.append(
                 WorkloadDaily(

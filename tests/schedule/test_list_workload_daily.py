@@ -85,7 +85,7 @@ def test_同じ親ジョブの複数メンバーを集計する(service):
 
 
 @pytest.mark.parametrize("percentage", [False, True])
-def test_未登録の予定稼働時間と不明なアサイン時間を区別する(service, percentage):
+def test_未登録の予定稼働時間でもアサイン時間を集計する(service, percentage):
     service.api.get_workspace_members.return_value.append({"workspace_member_id": "free", "user_id": "bob", "username": "Bob"})
     service.api.get_expected_working_times.return_value = [{"date": "2026-10-01", "workspace_member_id": "free", "expected_working_hours": 8}]
     if percentage:
@@ -94,13 +94,14 @@ def test_未登録の予定稼働時間と不明なアサイン時間を区別�
     assert row.expected_working_hours == 8
     assert row.members[1].expected_working_hours is None
     assert row.members[1].remaining_working_hours is None
-    assert row.assigned_working_hours == (None if percentage else 3)
-    assert row.remaining_working_hours == (None if percentage else 5)
-    assert row.assignments[0].assigned_working_hours == (None if percentage else 3)
-    assert row.assignments[0].members[0].assigned_working_hours == (None if percentage else 3)
+    assert row.assigned_working_hours == (0 if percentage else 3)
+    assert row.remaining_working_hours == (8 if percentage else 5)
+    assert row.assignments[0].assigned_working_hours == (0 if percentage else 3)
+    assert row.assignments[0].members[0].assigned_working_hours == (0 if percentage else 3)
 
 
-def test_不明な時間は該当ジョブと日別合計へ伝播する(service):
+@pytest.mark.parametrize("reverse", [False, True])
+def test_予定稼働時間未登録の割合指定と時間指定を合算する(service, reverse):
     service.api.get_schedules.return_value[0].update(type="percentage", value=50)
     schedule = service.api.get_schedules.return_value[0]
     service.api.get_schedules.return_value.extend(
@@ -109,13 +110,15 @@ def test_不明な時間は該当ジョブと日別合計へ伝播する(service
             {**schedule, "schedule_id": "third", "job_id": "grandparent", "type": "hours", "value": 4},
         ]
     )
+    if reverse:
+        service.api.get_schedules.return_value.reverse()
     row = ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")[0]
-    assert row.assigned_working_hours is None
-    assert row.remaining_working_hours is None
-    known, unknown = row.assignments
-    assert known.assigned_working_hours == 4
-    assert unknown.assigned_working_hours is None
-    assert [member.assigned_working_hours for member in unknown.members] == [None, 2]
+    assert row.assigned_working_hours == 6
+    assert row.remaining_working_hours == -6
+    grandparent, parent = row.assignments
+    assert grandparent.assigned_working_hours == 4
+    assert parent.assigned_working_hours == 2
+    assert [member.assigned_working_hours for member in parent.members] == [0, 2]
 
 
 @pytest.mark.parametrize("has_schedule", [False, True])
@@ -190,14 +193,20 @@ def test_削除済みジョブはJSONの名前をnullとしCSVでは拒否する
         create_workload_csv(rows)
 
 
-def test_CSVでは計算不能を空欄にする(service, tmp_path):
+@pytest.mark.parametrize("output_format", list(OutputFormat))
+def test_予定稼働時間未登録の割合指定を0時間で出力する(service, tmp_path, output_format):
     service.api.get_schedules.return_value[0].update(type="percentage", value=50)
-    output = tmp_path / "workload.csv"
-    ListWorkloadDaily(service, "workspace").main(start_date="2026-10-01", end_date="2026-10-01", output=output, output_format=OutputFormat.CSV)
-    with output.open(encoding="utf-8-sig") as stream:
-        row = next(csv.DictReader(stream))
-    assert row["Parent"] == row["assigned_working_hours"] == row["remaining_working_hours"] == ""
-    assert float(row["expected_working_hours"]) == 0
+    output = tmp_path / "workload"
+    ListWorkloadDaily(service, "workspace").main(start_date="2026-10-01", end_date="2026-10-01", output=output, output_format=output_format)
+    if output_format == OutputFormat.JSON:
+        row = json.loads(output.read_text())[0]
+        assert row["assignments"][0]["assigned_working_hours"] == 0
+        assert row["members"][0]["assigned_working_hours"] == 0
+    else:
+        with output.open(encoding="utf-8-sig") as stream:
+            row = next(csv.DictReader(stream))
+        assert float(row["Parent"]) == 0
+    assert float(row["assigned_working_hours"]) == float(row["remaining_working_hours"]) == float(row["expected_working_hours"]) == 0
 
 
 def test_空のCSVでもヘッダーを出力する():
