@@ -14,10 +14,36 @@
 ``my get`` のようにJSONのみを出力し、 ``--format`` を持たないコマンドもあります。
 拡張子で出力形式を自動選択するわけではないので、JSONが必要なら ``--format json`` を指定してください。
 
+CSVとJSONの出力例は :doc:`../command_reference/job/list` など、各コマンドのExamplesに記載しています。
+対応する出力形式に制約があるコマンドは次のとおりです。
+
+* :doc:`../command_reference/my/get` : JSONのみ。
+* :doc:`../command_reference/annofab/reshape_working_hours` : CSVのみ。
+* :doc:`../command_reference/annofab/visualize_statistics` : HTMLやCSVなどをディレクトリに出力します。
+* :doc:`../command_reference/completion` : シェル補完スクリプトを出力します。
+
 .. code-block:: bash
 
     annoworkcli job list --workspace_id YOUR_WORKSPACE_ID --format json --output jobs.json
     annoworkcli job list --workspace_id YOUR_WORKSPACE_ID --format csv --output jobs.csv
+
+CSVでは、ネストしたオブジェクトを ``external_linkage_info.url`` のような列名に展開するコマンドがあります。
+配列の表現などはコマンドによって異なるため、各コマンドの出力例を確認してください。
+CSVの追加列の順序は一定とは限りません。読み込むときは列名で参照してください。
+
+.. _tag-grouped-output:
+
+タグ別集計の出力
+------------------------------------------
+
+予定稼働時間・アサイン時間・実績作業時間をタグ別に集計するコマンドでは、
+時間の項目に ``total`` と ``by_tag`` を出力します。
+``total`` はタグを無視した全体合計、``by_tag`` はタグごとの集計値です。
+タグがないメンバーや複数のタグを持つメンバーもいるため、タグ別の値の合計は全体合計と一致するとは限りません。
+タグ名が ``total`` でも、全体合計とは別に集計します。
+
+CSVでは、全体合計は ``<時間の項目>.total``、タグ別の列は ``<時間の項目>.by_tag.<タグ名>`` になります。
+従来の ``<時間の項目>.<タグ名>`` を参照する処理は更新してください。
 
 出力先
 ==========================================

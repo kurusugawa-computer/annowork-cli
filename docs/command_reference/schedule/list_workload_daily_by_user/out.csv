@@ -1,0 +1,2 @@
+date,workspace_member_id,user_id,username,expected_working_hours,assigned_working_hours,remaining_working_hours,status,assignments
+2026-11-02,member1,alice,Alice,6,8,-2,overloaded,"[{""parent_job_id"": ""job-a"", ""parent_job_name"": ""ジョブA"", ""assigned_working_hours"": 8}]"

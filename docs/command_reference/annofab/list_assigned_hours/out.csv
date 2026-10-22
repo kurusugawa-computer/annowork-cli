@@ -1,0 +1,2 @@
+date,parent_job_id,parent_job_name,workspace_member_id,user_id,username,assigned_working_hours
+2021-11-05,parent_job,親ジョブ,58005ead-f85b-45d8-931b-54ba2837d7b1,alice,Alice,1.5

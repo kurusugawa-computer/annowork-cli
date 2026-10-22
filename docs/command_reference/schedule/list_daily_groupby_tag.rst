@@ -7,13 +7,14 @@ Description
 日ごとのアサイン時間を、ワークスペースタグで集計した値を出力します。
 
 
-
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 以下のコマンドは、2022-01-01以降の日毎のアサイン時間を、ワークスペースタグで集計した値を出力します。
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli schedule list_daily_groupby_tag --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
@@ -38,19 +39,18 @@ Examples
    ]
 
 
-.. note::
+同じ条件でCSV形式に出力する例です。
 
-   ``assigned_working_hours.total`` は、ワークスペースタグを無視して集計した値です。
-   ``assigned_working_hours.by_tag`` の値の合計とは限りません。
+.. code-block:: console
 
-   たとえば上記の出力結果だと、``assigned_working_hours.total ≠ assigned_working_hours.by_tag.type:acceptor + assigned_working_hours.by_tag.type:monitored`` です。
+    $ annoworkcli schedule list_daily_groupby_tag --workspace_id org --start_date 2022-01-01 \
+     --format csv --output out.csv
 
+.. csv-table:: out.csv
+   :file: list_daily_groupby_tag/out.csv
+   :header-rows: 1
 
-
-
-タグ別の値は ``assigned_working_hours.by_tag`` に出力します。タグ名が ``total`` でも全体合計とは別に集計します。
-CSVでは、全体合計は ``assigned_working_hours.total``、タグ別の列は ``assigned_working_hours.by_tag.<タグ名>`` になります。
-従来の ``assigned_working_hours.<タグ名>`` を参照する処理は更新してください。
+``assigned_working_hours`` の ``total`` と ``by_tag`` の意味は :ref:`tag-grouped-output` を参照してください。
 
 
 Usage Details

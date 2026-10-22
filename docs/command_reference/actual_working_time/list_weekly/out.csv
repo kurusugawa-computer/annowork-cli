@@ -1,0 +1,3 @@
+workspace_member_id,user_id,username,parent_job_id,parent_job_name,job_id,job_name,start_date,end_date,actual_working_hours
+57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a,alice,Alice,parent_job1,Parent Job1,job1,Job1,2021-12-26,2022-01-01,20.5
+57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a,alice,Alice,parent_job1,Parent Job1,job2,Job2,2022-01-02,2022-01-08,25.0

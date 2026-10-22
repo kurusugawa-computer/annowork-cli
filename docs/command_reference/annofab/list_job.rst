@@ -7,15 +7,16 @@ Description
 ジョブとジョブに紐づくAnnofabプロジェクトの情報を一緒に出力します。
 
 
-
 Examples
 =================================
+
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
 
 
 以下のコマンドは、ジョブID ``job`` の情報と、そのジョブに紐づくAnnofabプロジェクトの情報を出力します。
 
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli annofab list_job --workspace_id org --job_id job \
      --format json --output out.json
@@ -50,8 +51,16 @@ Examples
    ]
 
 
+同じ条件でCSV形式に出力する例です。
 
+.. code-block:: console
 
+    $ annoworkcli annofab list_job --workspace_id org --job_id job \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list_job/out.csv
+   :header-rows: 1
 
 Usage Details
 =================================

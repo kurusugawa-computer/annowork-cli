@@ -7,14 +7,14 @@ Description
 実績作業時間を日ごとに集約した情報を一覧として出力します。
 
 
-
-
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 以下のコマンドは、2022-01-01以降の日ごとの実績作業時間情報を出力します。
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli actual_working_time list_daily --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
@@ -39,8 +39,16 @@ Examples
    ]
 
 
+同じ条件でCSV形式に出力する例です。
 
+.. code-block:: console
 
+    $ annoworkcli actual_working_time list_daily --workspace_id org --start_date 2022-01-01 \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list_daily/out.csv
+   :header-rows: 1
 
 Usage Details
 =================================

@@ -7,15 +7,15 @@ Description
 Annofabプロジェクトに紐づくジョブのアサイン時間を日ごとに出力します。
 
 
-
 Examples
 =================================
+
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
 
 以下のコマンドは、AnnofabプロジェクトID ``af_project`` に紐づくジョブのアサイン時間を、2021-11-01から2021-11-30の期間で出力します。
 
 
-
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli annofab list_assigned_hours --workspace_id org \
      --annofab_project_id af_project --start_date 2021-11-01 --end_date 2021-11-30 \
@@ -36,6 +36,19 @@ Examples
          "assigned_working_hours": 1.5
       }
    ]
+
+
+同じ条件でCSV形式に出力する例です。
+
+.. code-block:: console
+
+    $ annoworkcli annofab list_assigned_hours --workspace_id org \
+     --annofab_project_id af_project --start_date 2021-11-01 --end_date 2021-11-30 \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list_assigned_hours/out.csv
+   :header-rows: 1
 
 .. note:: 
 
