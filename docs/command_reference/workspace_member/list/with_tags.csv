@@ -1,0 +1,2 @@
+workspace_member_id,workspace_id,account_id,user_id,username,role,status,created_datetime,updated_datetime,workspace_tag_ids,workspace_tag_names
+e2d334cf-dfe8-411e-acd6-fe4e39687fea,org,b7d76c01-4a10-438e-a516-d5768afb7709,alice,Alice,manager,active,2021-10-31T14:49:59.841Z,2021-11-02T05:28:36.714Z,['tag'],['TAG']

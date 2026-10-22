@@ -1,0 +1,2 @@
+workspace_id,date,workspace_member_id,user_id,username,expected_working_hours,created_datetime,updated_datetime
+org,2022-01-02,57ba0a2a-37a3-47cf-bbb6-f1087c5c5f9a,alice,Alice,3,2021-11-24T22:14:31.030Z,2021-11-24T22:14:31.030Z

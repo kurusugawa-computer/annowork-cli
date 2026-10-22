@@ -10,10 +10,12 @@ Description
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 
 以下のコマンドは、自分自身が所属しているワークスペースの一覧を出力します。
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli workspace list \
      --format json --output out.json
@@ -33,6 +35,16 @@ Examples
    ]
 
 
+同じ条件でCSV形式に出力する例です。
+
+.. code-block:: console
+
+    $ annoworkcli workspace list \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list/out.csv
+   :header-rows: 1
 
 Usage Details
 =================================

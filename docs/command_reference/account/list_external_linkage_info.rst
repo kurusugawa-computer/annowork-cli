@@ -7,13 +7,14 @@ Description
 アカウント外部連携情報取得の一覧を出力します。
 
 
-
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 以下のコマンドは、ユーザID'alice'の外部連携情報を出力します。
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli account list_external_linkage_info  --user_id alice \
      --format json --output out.json
@@ -35,8 +36,16 @@ Examples
    ]
 
 
+同じ条件でCSV形式に出力する例です。
 
+.. code-block:: console
 
+    $ annoworkcli account list_external_linkage_info  --user_id alice \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list_external_linkage_info/out.csv
+   :header-rows: 1
 
 Usage Details
 =================================

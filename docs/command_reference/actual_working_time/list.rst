@@ -7,13 +7,14 @@ Description
 実績作業時間情報の一覧を出力します。
 
 
-
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 以下のコマンドは、2022-01-01以降の実績作業時間情報を出力します。
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli actual_working_time list --workspace_id org --start_date 2022-01-01 \
      --format json --output out.json
@@ -43,16 +44,24 @@ Examples
    ]
 
 
-``--timezone_offset`` は、日付に対するタイムゾーンを指定できます。``--timezone_offset`` を指定しない場合は、ローカルのタイムゾーンを参照します。
+同じ条件でCSV形式に出力する例です。
+
+.. code-block:: console
+
+    $ annoworkcli actual_working_time list --workspace_id org --start_date 2022-01-01 \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list/out.csv
+   :header-rows: 1
+
+``--timezone_offset`` の指定方法は :doc:`../../user_guide/command_line_options` の「日付とタイムゾーン」を参照してください。
 以下のコマンドは、日本時間（UTC+9）の2022-01-01以降の実績作業時間情報を出力します。
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli actual_working_time list --workspace_id org --start_date 2022-01-01 \
      --timezone_offset 9 --format json --output out.json
-
-
-
 
 
 Usage Details

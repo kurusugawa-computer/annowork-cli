@@ -7,17 +7,17 @@ Description
 日ごとの実績作業時間と、ジョブに紐づくAnnofabプロジェクトの作業時間を一緒に出力します。
 
 
-
 APIから取得する実績作業時間の日付は日本時間（UTC+9）で扱います。実行環境のローカルタイムゾーンには依存しません。
 
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 以下のコマンドは、ジョブID ``job`` の実績作業時間と、そのジョブに紐づくAnnofabプロジェクトでの作業時間を出力します。
 
 
-
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli annofab list_working_hours --workspace_id org --job_id job \
      --format json --output out.json
@@ -44,6 +44,18 @@ Examples
          "notes": null
       }
    ]
+
+
+同じ条件でCSV形式に出力する例です。
+
+.. code-block:: console
+
+    $ annoworkcli annofab list_working_hours --workspace_id org --job_id job \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list_working_hours/out.csv
+   :header-rows: 1
 
 .. note:: 
 

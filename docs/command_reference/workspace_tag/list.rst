@@ -7,13 +7,14 @@ Description
 ワークスペースタグの一覧を出力します。
 
 
-
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 以下のコマンドは、ワークスペースタグの一覧を出力します。
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli workspace_tag list --workspace_id ws \
      --format json --output out.json
@@ -32,6 +33,17 @@ Examples
       }
    ]
 
+
+同じ条件でCSV形式に出力する例です。
+
+.. code-block:: console
+
+    $ annoworkcli workspace_tag list --workspace_id ws \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list/out.csv
+   :header-rows: 1
 
 Usage Details
 =================================

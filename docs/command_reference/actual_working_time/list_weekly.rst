@@ -17,9 +17,11 @@ Description
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 以下のコマンドは、2022-01-01以降の実績作業時間を出力します。
 
-.. code-block:: 
+.. code-block:: console
 
     $ annoworkcli actual_working_time list_weekly --workspace_id org --start_date 2022-01-01  \
      --format json --output out.json
@@ -56,7 +58,16 @@ Examples
    ]
 
 
+同じ条件でCSV形式に出力する例です。
 
+.. code-block:: console
+
+    $ annoworkcli actual_working_time list_weekly --workspace_id org --start_date 2022-01-01  \
+     --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list_weekly/out.csv
+   :header-rows: 1
 
 Usage Details
 =================================

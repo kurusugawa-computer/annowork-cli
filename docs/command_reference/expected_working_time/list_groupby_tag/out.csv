@@ -1,0 +1,2 @@
+date,expected_working_hours.total,expected_working_hours.by_tag.type:acceptor,expected_working_hours.by_tag.type:monitored
+2022-01-02,8.0,4.0,5.0

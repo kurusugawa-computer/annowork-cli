@@ -1,0 +1,2 @@
+date,parent_job_id,parent_job_name,job_id,job_name,workspace_member_id,user_id,username,actual_working_hours,annofab_project_id,annofab_project_title,annofab_account_id,annofab_working_hours,notes
+2021-11-05,parent_job,親ジョブ,job,MOON,58005ead-f85b-45d8-931b-54ba2837d7b1,alice,Alice,1.1666666666666667,af_project,Annofabプロジェクト,4f275f74-5c58-4d35-a700-2475de20d2da,0.5,

@@ -27,6 +27,8 @@ Description
 未登録で換算できない場合は、そのアサイン時間と、それを含むユーザー別・親ジョブ別・日別の
 アサイン合計を不明とします。不明なアサイン合計から計算する差分も不明です。
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 CSV形式
 ---------------------------------
 
@@ -44,14 +46,11 @@ CSV形式
 .. code-block:: console
 
     $ annoworkcli schedule list_workload_daily --workspace_id org \
-      --start_date 2026-11-01 --end_date 2026-11-30 --output workload.csv
+      --start_date 2026-11-02 --end_date 2026-11-02 --format csv --output workload.csv
 
-.. code-block:: text
-
-    date,expected_working_hours,assigned_working_hours,remaining_working_hours,ジョブA,ジョブB
-    2026-11-01,16,13,3,9,4
-    2026-11-02,16,18,-2,10,8
-    2026-11-03,0,0,0,0,0
+.. csv-table:: workload.csv
+   :file: list_workload_daily/workload.csv
+   :header-rows: 1
 
 JSON形式
 ---------------------------------
@@ -77,6 +76,7 @@ JSON形式
       --start_date 2026-11-02 --end_date 2026-11-02 --format json --output workload.json
 
 .. code-block:: json
+   :caption: workload.json
 
     [
       {

@@ -5,6 +5,7 @@ annofab visualize_statistics
 Description
 =================================
 Annofabの統計情報を実績作業時間と組み合わせて可視化します。
+出力はHTMLやCSVなどを含むディレクトリです。``--format`` によるCSV・JSONの切り替えには対応していません。
 
 
 

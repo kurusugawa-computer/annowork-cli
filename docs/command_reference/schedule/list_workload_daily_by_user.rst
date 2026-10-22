@@ -35,12 +35,15 @@ JSONでは ``null``、CSVでは空欄にします。割合指定が含まれる�
 Examples
 =================================
 
+出力形式と出力先の指定方法は :doc:`../../user_guide/cli_usage_output` を参照してください。
+
 .. code-block:: console
 
     $ annoworkcli schedule list_workload_daily_by_user --workspace_id org \
       --start_date 2026-11-01 --end_date 2026-11-30 --format json --output workload.json
 
 .. code-block:: json
+   :caption: workload.json
 
     [
       {
@@ -57,6 +60,18 @@ Examples
         ]
       }
     ]
+
+
+同じ条件でCSV形式に出力する例です。
+
+.. code-block:: console
+
+    $ annoworkcli schedule list_workload_daily_by_user --workspace_id org \
+      --start_date 2026-11-01 --end_date 2026-11-30 --format csv --output out.csv
+
+.. csv-table:: out.csv
+   :file: list_workload_daily_by_user/out.csv
+   :header-rows: 1
 
 空きがあるメンバーだけCSVに出力する例です。
 
