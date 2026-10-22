@@ -4,6 +4,8 @@ schedule list_daily_groupby_tag
 
 Description
 =================================
+取得期間の指定・省略時の動作は :ref:`planned-list-date-range` を参照してください。
+
 日ごとのアサイン時間を、ワークスペースタグで集計した値を出力します。
 
 
