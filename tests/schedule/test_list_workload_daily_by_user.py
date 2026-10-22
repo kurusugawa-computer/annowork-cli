@@ -31,32 +31,39 @@ def test_全ジョブの内訳と未アサインを日ごとに集計する(serv
 
 
 @pytest.mark.parametrize("percentage", [False, True])
-def test_予定稼働時間が未登録の場合は判定不能とする(service, percentage):
+def test_予定稼働時間が未登録の場合は0時間として過不足を判定する(service, percentage):
     if percentage:
         service.api.get_schedules.return_value[0].update(type="percentage", value=50)
     result = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
-    assert result[0].expected_working_hours is None
-    assert result[0].remaining_working_hours is None
-    assert result[0].status == "unknown"
+    assert result[0].expected_working_hours == 0
+    assert result[0].remaining_working_hours == (0 if percentage else -3)
+    assert result[0].status == ("full" if percentage else "overloaded")
     assert result[0].assigned_working_hours == (0 if percentage else 3)
 
 
 @pytest.mark.parametrize("output_format", list(OutputFormat))
-def test_未登録の割合指定と時間指定を合算して数値で出力する(service, tmp_path, output_format):
+@pytest.mark.parametrize("percentage_only", [False, True])
+def test_未登録の割合指定と時間指定を合算して数値で出力する(service, tmp_path, output_format, percentage_only):
     schedule = service.api.get_schedules.return_value[0]
+    if percentage_only:
+        service.api.get_schedules.return_value = []
     service.api.get_schedules.return_value.append({**schedule, "schedule_id": "percentage", "type": "percentage", "value": 50})
+    assigned = 0 if percentage_only else 3
     output = tmp_path / "workload"
     ListWorkloadDailyByUser(service, "workspace").main(
         start_date="2026-10-01", end_date="2026-10-01", user_ids=None, statuses=None, output=output, output_format=output_format
     )
     if output_format == OutputFormat.JSON:
         row = json.loads(output.read_text())[0]
-        assert row["assignments"][0]["assigned_working_hours"] == 3
+        assert row["assignments"][0]["assigned_working_hours"] == assigned
     else:
         with output.open(encoding="utf-8-sig") as stream:
             row = next(csv.DictReader(stream))
-        assert float(row["Parent"]) == 3
-    assert float(row["assigned_working_hours"]) == 3
+        assert float(row["Parent"]) == assigned
+    assert float(row["assigned_working_hours"]) == assigned
+    assert float(row["expected_working_hours"]) == 0
+    assert float(row["remaining_working_hours"]) == -assigned
+    assert row["status"] == ("full" if percentage_only else "overloaded")
 
 
 @pytest.mark.parametrize("expected,assigned,status", [(0, 3, "overloaded"), (3, 3, "full"), (6, 3, "under_assigned")])
@@ -104,7 +111,8 @@ def test_JSONの内訳とCSVの親ジョブ列を出力する(service, tmp_path,
     assert len(rows) == (0 if empty else 1)
     if not empty and output_format == OutputFormat.CSV:
         assert float(rows[0]['日本語,"ジョブ"']) == 3
-        assert rows[0]["expected_working_hours"] == rows[0]["remaining_working_hours"] == ""
+        assert float(rows[0]["expected_working_hours"]) == 0
+        assert float(rows[0]["remaining_working_hours"]) == -3
     elif not empty:
         assert rows[0]["assignments"] == [{"parent_job_id": "parent", "parent_job_name": '日本語,"ジョブ"', "assigned_working_hours": 3}]
 

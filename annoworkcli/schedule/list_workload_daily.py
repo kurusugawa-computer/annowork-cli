@@ -25,9 +25,9 @@ class WorkloadMember:
     workspace_member_id: str
     user_id: str | None
     username: str | None
-    expected_working_hours: float | None
+    expected_working_hours: float
     assigned_working_hours: float
-    remaining_working_hours: float | None
+    remaining_working_hours: float
     status: str
 
 
@@ -83,7 +83,7 @@ def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDa
         ParentJobAssignment(job_id, job_names[job_id], sum(member.assigned_working_hours for member in details), details)
         for job_id, details in sorted(job_members.items())
     ]
-    expected = sum(row.expected_working_hours for row in workloads if row.expected_working_hours is not None)
+    expected = sum(row.expected_working_hours for row in workloads)
     assigned = sum(assignment.assigned_working_hours for assignment in assignments)
     remaining = 0.0 if get_status(expected, assigned) == "full" else expected - assigned
     return WorkloadDailySummary(date, expected, assigned, remaining, members, assignments)

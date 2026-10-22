@@ -92,8 +92,9 @@ def test_未登録の予定稼働時間でもアサイン時間を集計する(s
         service.api.get_schedules.return_value[0].update(type="percentage", value=50)
     row = ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")[0]
     assert row.expected_working_hours == 8
-    assert row.members[1].expected_working_hours is None
-    assert row.members[1].remaining_working_hours is None
+    assert row.members[1].expected_working_hours == 0
+    assert row.members[1].remaining_working_hours == (0 if percentage else -3)
+    assert row.members[1].status == ("full" if percentage else "overloaded")
     assert row.assigned_working_hours == (0 if percentage else 3)
     assert row.remaining_working_hours == (8 if percentage else 5)
     assert row.assignments[0].assigned_working_hours == (0 if percentage else 3)
@@ -145,7 +146,8 @@ def test_全日をCSVとJSONで出力する(service, tmp_path, output_format):
         assert len(rows) == 2
         assert rows[0]["assignments"][0]["parent_job_name"] == name
         assert rows[0]["assignments"][0]["members"][0]["user_id"] == "alice"
-        assert rows[0]["members"][0]["expected_working_hours"] is None
+        assert rows[0]["members"][0]["expected_working_hours"] == 0
+        assert rows[0]["members"][0]["remaining_working_hours"] == -3
         assert rows[1]["members"] == rows[1]["assignments"] == []
     else:
         with output.open(encoding="utf-8-sig") as stream:

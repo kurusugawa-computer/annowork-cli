@@ -26,8 +26,10 @@ CSVは日付・メンバーごとに1行で、ユーザー情報・時間・``st
 0件の場合も固定列のヘッダーを出力します。
 
 割合指定のアサイン時間の換算方法は :doc:`list_workload_daily` と同じです。
-予定稼働時間が未登録の場合は ``expected_working_hours`` と ``remaining_working_hours`` を
-JSONでは ``null``、CSVでは空欄にします。アサイン時間は数値で出力し、割合指定分は0時間として合算します。
+予定稼働時間が未登録の場合は ``expected_working_hours`` を0時間として扱います。
+``remaining_working_hours`` は予定稼働時間からアサイン時間を引いた値です。
+割合指定のみなら残り時間は0で ``status`` は ``full``、時間指定で3時間のアサインがあれば
+残り時間は-3で ``status`` は ``overloaded`` です。時間の各項目はCSV・JSONとも数値で出力します。
 
 ``status`` は次の値です。``--status`` で複数指定して絞り込めます。
 
@@ -35,7 +37,6 @@ JSONでは ``null``、CSVでは空欄にします。アサイン時間は数値�
 * ``under_assigned``: 一部アサイン済みで空きあり
 * ``unassigned``: 予定稼働時間が正でアサイン時間が0
 * ``full``: 予定稼働時間とアサイン時間が一致
-* ``unknown``: 予定稼働時間が未登録で判定不能
 
 CLIの共通引数（``--workspace_id``、``--start_date``、``--end_date``、``--format``、``--output``）は
 :doc:`list_workload_daily` と同じです。このコマンドでは追加で ``--user_id`` と ``--status`` による絞り込みができます。

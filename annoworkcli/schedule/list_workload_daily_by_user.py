@@ -17,7 +17,7 @@ from annoworkcli.schedule.workload_csv import get_parent_job_columns
 
 logger = logging.getLogger(__name__)
 
-STATUSES = ["overloaded", "under_assigned", "unassigned", "full", "unknown"]
+STATUSES = ["overloaded", "under_assigned", "unassigned", "full"]
 """予定稼働時間に対するアサイン状況。"""
 
 CSV_COLUMNS = [
@@ -46,9 +46,9 @@ class WorkloadDaily:
     workspace_member_id: str
     user_id: str | None
     username: str | None
-    expected_working_hours: float | None
+    expected_working_hours: float
     assigned_working_hours: float
-    remaining_working_hours: float | None
+    remaining_working_hours: float
     status: str
     assignments: list[Assignment]
 
@@ -76,10 +76,8 @@ def create_workload_csv(workloads: list[WorkloadDaily]) -> pandas.DataFrame:
     return pandas.DataFrame(rows, columns=[*CSV_COLUMNS, *jobs.values()])
 
 
-def get_status(expected: float | None, assigned: float) -> str:
+def get_status(expected: float, assigned: float) -> str:
     """予定稼働時間とアサイン時間から過不足を判定する。"""
-    if expected is None:
-        return "unknown"
     if math.isclose(assigned, expected, rel_tol=0, abs_tol=1e-9):
         return "full"
     if assigned > expected:
@@ -135,10 +133,10 @@ class ListWorkloadDailyByUser:
         for date, member_id in sorted(expected.keys() | assignments.keys()):
             key = (date, member_id)
             details = [Assignment(job_id, jobs.get(job_id), hours) for job_id, hours in sorted(assignments.get(key, {}).items())]
-            expected_hours = expected.get(key)
+            expected_hours = expected.get(key, 0.0)
             assigned = sum(item.assigned_working_hours for item in details)
             status = get_status(expected_hours, assigned)
-            remaining = None if expected_hours is None else (0.0 if status == "full" else expected_hours - assigned)
+            remaining = 0.0 if status == "full" else expected_hours - assigned
             member = members.get(member_id, {})
             result.append(
                 WorkloadDaily(
