@@ -1,0 +1,2 @@
+start_date,end_date,workspace_member_id,user_id,username,expected_working_hours,assigned_working_hours,remaining_working_hours,ジョブA
+2026-11-01,2026-11-07,member-1,alice,Alice,40,30,10,30

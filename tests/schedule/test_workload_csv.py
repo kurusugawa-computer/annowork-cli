@@ -6,10 +6,13 @@ import pytest
 from annoworkcli.common.cli import OutputFormat
 from annoworkcli.schedule.list_workload_daily import ListWorkloadDaily
 from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser
+from annoworkcli.schedule.list_workload_weekly import ListWorkloadWeekly
+from annoworkcli.schedule.list_workload_weekly_by_user import ListWorkloadWeeklyByUser
 
 
 @pytest.mark.parametrize("by_user", [False, True])
-def test_同名ジョブは警告して各ジョブの時間を別々の列に出力する(service, tmp_path, caplog, by_user):
+@pytest.mark.parametrize("weekly", [False, True])
+def test_同名ジョブは警告して各ジョブの時間を別々の列に出力する(service, tmp_path, caplog, by_user, weekly):
     service.api.get_jobs.return_value[1]["job_name"] = "Parent"
     schedule = service.api.get_schedules.return_value[0]
     service.api.get_schedules.return_value.append(
@@ -17,15 +20,17 @@ def test_同名ジョブは警告して各ジョブの時間を別々の列に�
     )
     output = tmp_path / "workload.csv"
     if by_user:
-        ListWorkloadDailyByUser(service, "workspace").main(
+        command = ListWorkloadWeeklyByUser if weekly else ListWorkloadDailyByUser
+        command(service, "workspace").main(
             start_date="2026-10-01", end_date="2026-10-02", user_ids=None, output=output, output_format=OutputFormat.CSV
         )
     else:
-        ListWorkloadDaily(service, "workspace").main(start_date="2026-10-01", end_date="2026-10-02", output=output, output_format=OutputFormat.CSV)
+        summary_command = ListWorkloadWeekly if weekly else ListWorkloadDaily
+        summary_command(service, "workspace").main(start_date="2026-10-01", end_date="2026-10-02", output=output, output_format=OutputFormat.CSV)
     with output.open(encoding="utf-8-sig") as stream:
         header, *rows = csv.reader(stream)
     assert header[-2:] == ["Parent", "Parent"]
-    assert [[float(value) for value in row[-2:]] for row in rows] == [[2, 3], [2, 0]]
+    assert [[float(value) for value in row[-2:]] for row in rows] == ([[4, 3]] if weekly else [[2, 3], [2, 0]])
     assigned_index = header.index("assigned_working_hours")
-    assert [float(row[assigned_index]) for row in rows] == [5, 2]
+    assert [float(row[assigned_index]) for row in rows] == ([7] if weekly else [5, 2])
     assert any(record.levelno == logging.WARNING and "Parent" in record.message and "grandparent" in record.message for record in caplog.records)

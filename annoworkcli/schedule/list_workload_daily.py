@@ -1,12 +1,13 @@
-import argparse
+from __future__ import annotations
+
 import logging
 import math
 from collections import defaultdict
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pandas
-from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi
@@ -14,6 +15,14 @@ from annoworkcli.common.date_range import add_date_arguments, resolve_start_date
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser, WorkloadDaily
 from annoworkcli.schedule.workload_csv import get_parent_job_columns
+
+if TYPE_CHECKING:
+    import argparse
+    from collections.abc import Sequence
+
+    from annoworkapi.resource import Resource as AnnoworkResource
+
+    from annoworkcli.schedule.list_workload_weekly_by_user import WorkloadWeekly
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +66,8 @@ class WorkloadDailySummary:
     assignments: list[ParentJobAssignment]
 
 
-def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDailySummary:
-    """ユーザー別の時間を日別・親ジョブ別に集計する。"""
+def summarize_workloads(date: str, workloads: Sequence[WorkloadDaily | WorkloadWeekly]) -> WorkloadDailySummary:
+    """ユーザー別の時間を指定日付・親ジョブ別に集計する。"""
     members = []
     job_members: dict[str, list[AssignmentMember]] = defaultdict(list)
     job_names: dict[str, str | None] = {}
