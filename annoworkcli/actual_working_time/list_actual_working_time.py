@@ -190,7 +190,7 @@ class ListActualWorkingTime:
         else:
             result = self.get_actual_working_times_by_job(job_id_list=job_ids, start_date=start_date, end_date=end_date)
 
-        if is_set_additional_info is not None:
+        if is_set_additional_info:
             self.set_additional_info_to_actual_working_time(result, is_add_parent_job_info=is_add_parent_job_info)
         return result
 

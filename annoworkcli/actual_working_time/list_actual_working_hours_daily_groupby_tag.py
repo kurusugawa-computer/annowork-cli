@@ -131,7 +131,7 @@ class ListActualWorkingTimeGroupbyTag:
             user_ids=user_ids,
             start_date=start_date,
             end_date=end_date,
-            is_set_additional_info=False,
+            is_set_additional_info=True,
         )
 
         logger.debug(f"{len(actual_working_time_list)} 件の実績作業時間情報を日ごとに集約します。")
