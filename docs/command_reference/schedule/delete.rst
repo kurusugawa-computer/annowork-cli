@@ -20,11 +20,6 @@ Description
 不正な日付や、開始日の下限が上限より後の場合はエラーになります。
 開始日の範囲を省略すると、終了日が今日以降の計画すべてが対象です。
 
-.. warning::
-
-   旧 ``schedule delete --schedule_id ...`` は廃止しました。
-   ID指定には :doc:`delete_by_schedule_id` を使用してください。
-   ``--allow_past_end_date`` もID指定のコマンド専用です。
 
 Examples
 =================================

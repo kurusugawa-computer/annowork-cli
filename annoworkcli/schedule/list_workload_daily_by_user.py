@@ -1,9 +1,8 @@
 import argparse
-import json
 import logging
 import math
 from collections import defaultdict
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import pandas
@@ -13,12 +12,25 @@ import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_schedule import ListSchedule, create_assigned_hours_dict
+from annoworkcli.schedule.workload_csv import get_parent_job_columns
 from annoworkcli.schedule.write_common import validate_dates
 
 logger = logging.getLogger(__name__)
 
 STATUSES = ["overloaded", "under_assigned", "unassigned", "full", "unknown"]
 """予定稼働時間に対するアサイン状況。"""
+
+CSV_COLUMNS = [
+    "date",
+    "workspace_member_id",
+    "user_id",
+    "username",
+    "expected_working_hours",
+    "assigned_working_hours",
+    "remaining_working_hours",
+    "status",
+]
+"""ユーザー別集計CSVの固定列。後ろに親ジョブ名の列を追加する。"""
 
 
 @dataclass
@@ -41,6 +53,29 @@ class WorkloadDaily:
     assignments: list[Assignment]
 
 
+def create_workload_csv(workloads: list[WorkloadDaily]) -> pandas.DataFrame:
+    """親ジョブ名を列名とする、日付・メンバーごとの比較表を作成する。"""
+    jobs = get_parent_job_columns(
+        ((assignment.parent_job_id, assignment.parent_job_name) for row in workloads for assignment in row.assignments), CSV_COLUMNS
+    )
+    rows = []
+    for workload in workloads:
+        row: dict[str, str | float | None] = {
+            "date": workload.date,
+            "workspace_member_id": workload.workspace_member_id,
+            "user_id": workload.user_id,
+            "username": workload.username,
+            "expected_working_hours": workload.expected_working_hours,
+            "assigned_working_hours": workload.assigned_working_hours,
+            "remaining_working_hours": workload.remaining_working_hours,
+            "status": workload.status,
+        }
+        hours_by_job = {assignment.parent_job_id: assignment.assigned_working_hours for assignment in workload.assignments}
+        row.update({name: hours_by_job.get(job_id, 0.0) for job_id, name in jobs.items()})
+        rows.append(row)
+    return pandas.DataFrame(rows, columns=[*CSV_COLUMNS, *jobs.values()])
+
+
 def get_status(expected: float | None, assigned: float | None) -> str:
     """予定稼働時間とアサイン時間から過不足を判定する。"""
     if expected is None or assigned is None:
@@ -57,16 +92,13 @@ class ListWorkloadDailyByUser:
         self.annowork_service = annowork_service
         self.workspace_id = workspace_id
 
-    def get_workloads(
-        self, *, start_date: str, end_date: str, user_ids: list[str] | None = None, include_zero_hours: bool = False
-    ) -> list[WorkloadDaily]:
+    def get_workloads(self, *, start_date: str, end_date: str, user_ids: list[str] | None = None) -> list[WorkloadDaily]:
         """日付・メンバーごとの過不足と、全親ジョブのアサイン内訳を取得する。
 
         Args:
             start_date: 集計開始日。
             end_date: 集計終了日。
             user_ids: 対象ユーザーID。Noneなら全ユーザー。
-            include_zero_hours: 日別集計用に、予定稼働時間とアサイン時間がともに0の行も返す。
         """
         validate_dates(start_date, end_date)
         schedules = ListSchedule(self.annowork_service, self.workspace_id)
@@ -104,8 +136,6 @@ class ListWorkloadDailyByUser:
             assigned = (
                 None if any(item.assigned_working_hours is None for item in details) else sum(item.assigned_working_hours or 0 for item in details)
             )
-            if not include_zero_hours and expected_hours == 0 and assigned == 0:
-                continue
             status = get_status(expected_hours, assigned)
             remaining = None if expected_hours is None or assigned is None else (0.0 if status == "full" else expected_hours - assigned)
             member = members.get(member_id, {})
@@ -135,14 +165,12 @@ class ListWorkloadDailyByUser:
         output_format: OutputFormat,
     ) -> None:
         result = self.get_workloads(start_date=start_date, end_date=end_date, user_ids=user_ids)
-        rows = [asdict(row) for row in result if statuses is None or row.status in statuses]
+        rows = [row for row in result if statuses is None or row.status in statuses]
         logger.info(f"{len(rows)} 件の日ごとのアサイン状況を出力します。")
         if output_format == OutputFormat.JSON:
-            print_json(rows, is_pretty=True, output=output)
+            print_json([asdict(row) for row in rows], is_pretty=True, output=output)
         else:
-            for row in rows:
-                row["assignments"] = json.dumps(row["assignments"], ensure_ascii=False)
-            print_csv(pandas.DataFrame(rows, columns=[field.name for field in fields(WorkloadDaily)]), output=output)
+            print_csv(create_workload_csv(rows), output=output)
 
 
 def main(args: argparse.Namespace) -> None:
@@ -161,11 +189,11 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
         subparsers, "list_workload_daily_by_user", "日付・ユーザーごとのアサイン状況と親ジョブ別の内訳を出力します。"
     )
     annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
-    parser.add_argument("--start_date", required=True, help="集計開始日(YYYY-mm-dd)")
-    parser.add_argument("--end_date", required=True, help="集計終了日(YYYY-mm-dd)")
+    parser.add_argument("--start_date", required=True, help="集計開始日(YYYY-mm-dd、当日を含む)")
+    parser.add_argument("--end_date", required=True, help="集計終了日(YYYY-mm-dd、当日を含む)")
     parser.add_argument("-u", "--user_id", nargs="+", help="集計対象のユーザID")
     parser.add_argument("--status", nargs="+", choices=STATUSES, help="出力対象のアサイン状況")
-    parser.add_argument("-o", "--output", type=Path, help="出力先")
+    parser.add_argument("-o", "--output", type=Path, help="出力先。省略時は標準出力")
     parser.add_argument("-f", "--format", choices=[item.value for item in OutputFormat], default=OutputFormat.CSV.value, help="出力先のフォーマット")
     parser.set_defaults(subcommand_func=main)
     return parser
