@@ -1,36 +1,26 @@
 import argparse
-import json
 import logging
-import math
 from collections import defaultdict
-from dataclasses import asdict, dataclass, fields
+from collections.abc import Iterable
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import pandas
 from annoworkapi.resource import Resource as AnnoworkResource
 
 import annoworkcli.common.cli
-from annoworkcli.common.cli import OutputFormat, build_annoworkapi, get_list_from_args
+from annoworkcli.common.cli import OutputFormat, build_annoworkapi
 from annoworkcli.common.utils import print_csv, print_json
-from annoworkcli.schedule.list_schedule import ListSchedule, create_assigned_hours_dict
-from annoworkcli.schedule.write_common import validate_dates
+from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser, WorkloadDaily, get_status
 
 logger = logging.getLogger(__name__)
 
-STATUSES = ["overloaded", "under_assigned", "unassigned", "full", "unknown"]
-"""予定稼働時間に対するアサイン状況。"""
+CSV_COLUMNS = ["date", "expected_working_hours", "assigned_working_hours", "remaining_working_hours"]
+"""日別集計CSVの固定列。後ろに親ジョブ名の列を追加する。"""
 
 
 @dataclass
-class Assignment:
-    parent_job_id: str
-    parent_job_name: str | None
-    assigned_working_hours: float | None
-
-
-@dataclass
-class WorkloadDaily:
-    date: str
+class WorkloadMember:
     workspace_member_id: str
     user_id: str | None
     username: str | None
@@ -38,123 +28,136 @@ class WorkloadDaily:
     assigned_working_hours: float | None
     remaining_working_hours: float | None
     status: str
-    assignments: list[Assignment]
 
 
-def get_status(expected: float | None, assigned: float | None) -> str:
-    """予定稼働時間とアサイン時間から過不足を判定する。"""
-    if expected is None or assigned is None:
-        return "unknown"
-    if math.isclose(assigned, expected, rel_tol=0, abs_tol=1e-9):
-        return "full"
-    if assigned > expected:
-        return "overloaded"
-    return "unassigned" if assigned == 0 else "under_assigned"
+@dataclass
+class AssignmentMember:
+    workspace_member_id: str
+    user_id: str | None
+    username: str | None
+    assigned_working_hours: float | None
+
+
+@dataclass
+class ParentJobAssignment:
+    parent_job_id: str
+    parent_job_name: str | None
+    assigned_working_hours: float | None
+    members: list[AssignmentMember]
+
+
+@dataclass
+class WorkloadDailySummary:
+    date: str
+    expected_working_hours: float
+    assigned_working_hours: float | None
+    remaining_working_hours: float | None
+    members: list[WorkloadMember]
+    assignments: list[ParentJobAssignment]
+
+
+def sum_assigned_hours(hours: Iterable[float | None]) -> float | None:
+    """不明なアサイン時間を含む場合は合計も不明とする。"""
+    total = 0.0
+    for value in hours:
+        if value is None:
+            return None
+        total += value
+    return total
+
+
+def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDailySummary:
+    """ユーザー別の時間を日別・親ジョブ別に集計する。"""
+    members = []
+    job_members: dict[str, list[AssignmentMember]] = defaultdict(list)
+    job_names: dict[str, str | None] = {}
+    for row in sorted(workloads, key=lambda row: row.workspace_member_id):
+        members.append(
+            WorkloadMember(
+                row.workspace_member_id,
+                row.user_id,
+                row.username,
+                row.expected_working_hours,
+                row.assigned_working_hours,
+                row.remaining_working_hours,
+                row.status,
+            )
+        )
+        for assignment in row.assignments:
+            job_names[assignment.parent_job_id] = assignment.parent_job_name
+            job_members[assignment.parent_job_id].append(
+                AssignmentMember(row.workspace_member_id, row.user_id, row.username, assignment.assigned_working_hours)
+            )
+    assignments = [
+        ParentJobAssignment(job_id, job_names[job_id], sum_assigned_hours(member.assigned_working_hours for member in details), details)
+        for job_id, details in sorted(job_members.items())
+    ]
+    expected = sum(row.expected_working_hours for row in workloads if row.expected_working_hours is not None)
+    assigned = sum_assigned_hours(assignment.assigned_working_hours for assignment in assignments)
+    remaining = None if assigned is None else (0.0 if get_status(expected, assigned) == "full" else expected - assigned)
+    return WorkloadDailySummary(date, expected, assigned, remaining, members, assignments)
+
+
+def create_workload_csv(workloads: list[WorkloadDailySummary]) -> pandas.DataFrame:
+    """親ジョブ名を列名とする、1日1行の比較表を作成する。"""
+    jobs = {assignment.parent_job_id: assignment.parent_job_name for row in workloads for assignment in row.assignments}
+    names = list(CSV_COLUMNS)
+    for job_id, name in sorted(jobs.items()):
+        if not name or name in names:
+            raise ValueError(f"親ジョブ名が未取得・空、またはCSV列名が重複しています。 :: {job_id=}, {name=}。--format json で出力してください。")
+        names.append(name)
+    rows = []
+    for workload in workloads:
+        row: dict[str, str | float | None] = {
+            "date": workload.date,
+            "expected_working_hours": workload.expected_working_hours,
+            "assigned_working_hours": workload.assigned_working_hours,
+            "remaining_working_hours": workload.remaining_working_hours,
+        }
+        hours_by_job = {assignment.parent_job_id: assignment.assigned_working_hours for assignment in workload.assignments}
+        row.update({name: hours_by_job.get(job_id, 0.0) for job_id, name in jobs.items() if name is not None})
+        rows.append(row)
+    return pandas.DataFrame(rows, columns=names)
 
 
 class ListWorkloadDaily:
     def __init__(self, annowork_service: AnnoworkResource, workspace_id: str) -> None:
-        self.annowork_service = annowork_service
-        self.workspace_id = workspace_id
+        self.by_user = ListWorkloadDailyByUser(annowork_service, workspace_id)
 
-    def get_workloads(self, *, start_date: str, end_date: str, user_ids: list[str] | None = None) -> list[WorkloadDaily]:
-        """日付・メンバーごとの過不足と、全親ジョブのアサイン内訳を取得する。"""
-        validate_dates(start_date, end_date)
-        schedules = ListSchedule(self.annowork_service, self.workspace_id)
-        members = {member["workspace_member_id"]: member for member in schedules.workspace_members}
-        selected_members = None if user_ids is None else set(schedules.get_workspace_member_id_list_from_user_id(user_ids))
-        expected_times = self.annowork_service.api.get_expected_working_times(
-            self.workspace_id, query_params={"term_start": start_date, "term_end": end_date}
-        )
-        expected = {
-            (entry["date"], entry["workspace_member_id"]): entry["expected_working_hours"]
-            for entry in expected_times
-            if start_date <= entry["date"] <= end_date and (selected_members is None or entry["workspace_member_id"] in selected_members)
-        }
-        jobs = {job["job_id"]: job["job_name"] for job in self.annowork_service.api.get_jobs(self.workspace_id)}
-        assignments: dict[tuple[str, str], dict[str, float | None]] = defaultdict(dict)
-        for schedule in schedules.get_schedules(start_date=start_date, end_date=end_date, user_ids=user_ids):
-            member_id = schedule["workspace_member_id"]
-            parent_job_id = schedule["parent_job_id"]
-            clipped_schedule = {**schedule, "start_date": max(start_date, schedule["start_date"]), "end_date": min(end_date, schedule["end_date"])}
-            for date, hours in create_assigned_hours_dict(clipped_schedule, expected).items():
-                if not start_date <= date <= end_date:
-                    continue
-                key = (date, member_id)
-                previous = assignments[key].get(parent_job_id, 0.0)
-                if previous is None or (schedule["type"] == "percentage" and key not in expected):
-                    assignments[key][parent_job_id] = None
-                else:
-                    assignments[key][parent_job_id] = previous + hours
+    def get_workloads(self, *, start_date: str, end_date: str) -> list[WorkloadDailySummary]:
+        """全ユーザーの時間を集計し、指定期間の全日を返す。"""
+        daily: dict[str, list[WorkloadDaily]] = defaultdict(list)
+        for row in self.by_user.get_workloads(start_date=start_date, end_date=end_date, include_zero_hours=True):
+            daily[row.date].append(row)
+        return [summarize_workloads(str(date.date()), daily[str(date.date())]) for date in pandas.date_range(start_date, end_date)]
 
-        result = []
-        for date, member_id in sorted(expected.keys() | assignments.keys()):
-            key = (date, member_id)
-            details = [Assignment(job_id, jobs.get(job_id), hours) for job_id, hours in sorted(assignments.get(key, {}).items())]
-            expected_hours = expected.get(key)
-            assigned = (
-                None if any(item.assigned_working_hours is None for item in details) else sum(item.assigned_working_hours or 0 for item in details)
-            )
-            if expected_hours == 0 and assigned == 0:
-                continue
-            status = get_status(expected_hours, assigned)
-            remaining = None if expected_hours is None or assigned is None else (0.0 if status == "full" else expected_hours - assigned)
-            member = members.get(member_id, {})
-            result.append(
-                WorkloadDaily(
-                    date,
-                    member_id,
-                    member.get("user_id"),
-                    member.get("username"),
-                    expected_hours,
-                    assigned,
-                    remaining,
-                    status,
-                    details,
-                )
-            )
-        return result
-
-    def main(
-        self,
-        *,
-        start_date: str,
-        end_date: str,
-        user_ids: list[str] | None,
-        statuses: list[str] | None,
-        output: Path | None,
-        output_format: OutputFormat,
-    ) -> None:
-        result = self.get_workloads(start_date=start_date, end_date=end_date, user_ids=user_ids)
-        rows = [asdict(row) for row in result if statuses is None or row.status in statuses]
-        logger.info(f"{len(rows)} 件の日ごとのアサイン状況を出力します。")
+    def main(self, *, start_date: str, end_date: str, output: Path | None, output_format: OutputFormat) -> None:
+        logger.info(f"全ユーザーの日別アサイン状況を集計します。 :: {start_date=}, {end_date=}")
+        result = self.get_workloads(start_date=start_date, end_date=end_date)
         if output_format == OutputFormat.JSON:
-            print_json(rows, is_pretty=True, output=output)
+            print_json([asdict(row) for row in result], is_pretty=True, output=output)
         else:
-            for row in rows:
-                row["assignments"] = json.dumps(row["assignments"], ensure_ascii=False)
-            print_csv(pandas.DataFrame(rows, columns=[field.name for field in fields(WorkloadDaily)]), output=output)
+            print_csv(create_workload_csv(result), output=output)
+        logger.info(f"{len(result)} 件の日別アサイン状況を出力しました。")
 
 
 def main(args: argparse.Namespace) -> None:
     ListWorkloadDaily(build_annoworkapi(args), annoworkcli.common.cli.resolve_required_workspace_id(args)).main(
         start_date=args.start_date,
         end_date=args.end_date,
-        user_ids=get_list_from_args(args.user_id),
-        statuses=args.status,
         output=args.output,
         output_format=OutputFormat(args.format),
     )
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
-    parser = annoworkcli.common.cli.add_parser(subparsers, "list_workload_daily", "日ごとのアサイン状況と親ジョブ別の内訳を出力します。")
+    parser = annoworkcli.common.cli.add_parser(
+        subparsers, "list_workload_daily", "全ユーザーの日別予定稼働時間と親ジョブ別アサイン時間を出力します。"
+    )
     annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
-    parser.add_argument("--start_date", required=True, help="集計開始日(YYYY-mm-dd)")
-    parser.add_argument("--end_date", required=True, help="集計終了日(YYYY-mm-dd)")
-    parser.add_argument("-u", "--user_id", nargs="+", help="集計対象のユーザID")
-    parser.add_argument("--status", nargs="+", choices=STATUSES, help="出力対象のアサイン状況")
-    parser.add_argument("-o", "--output", type=Path, help="出力先")
+    parser.add_argument("--start_date", required=True, help="集計開始日(YYYY-mm-dd、当日を含む)")
+    parser.add_argument("--end_date", required=True, help="集計終了日(YYYY-mm-dd、当日を含む)")
+    parser.add_argument("-o", "--output", type=Path, help="出力先。省略時は標準出力")
     parser.add_argument("-f", "--format", choices=[item.value for item in OutputFormat], default=OutputFormat.CSV.value, help="出力先のフォーマット")
     parser.set_defaults(subcommand_func=main)
     return parser
