@@ -28,9 +28,11 @@ Examples
          "parent_job_id": "11d73ea0-ed87-4f24-9ef6-68afcb1fdca7",
          "parent_job_name": "MOON",
          "assigned_working_hours": {
-            "type:acceptor": 6.0,
-            "type:monitored": 8.0,
-            "total": 8.0
+            "total": 8.0,
+            "by_tag": {
+               "type:acceptor": 6.0,
+               "type:monitored": 8.0
+            }
          }
       }
    ]
@@ -39,11 +41,16 @@ Examples
 .. note::
 
    ``assigned_working_hours.total`` は、ワークスペースタグを無視して集計した値です。
-   ``assigned_working_hours.total`` 以外の値の合計値ではないことに、注意してください。
+   ``assigned_working_hours.by_tag`` の値の合計とは限りません。
 
-   たとえば上記の出力結果だと、``assigned_working_hours.total ≠ assigned_working_hours.type:acceptor + assigned_working_hours.type:monitored`` です。
+   たとえば上記の出力結果だと、``assigned_working_hours.total ≠ assigned_working_hours.by_tag.type:acceptor + assigned_working_hours.by_tag.type:monitored`` です。
 
 
+
+
+タグ別の値は ``assigned_working_hours.by_tag`` に出力します。タグ名が ``total`` でも全体合計とは別に集計します。
+CSVでは、全体合計は ``assigned_working_hours.total``、タグ別の列は ``assigned_working_hours.by_tag.<タグ名>`` になります。
+従来の ``assigned_working_hours.<タグ名>`` を参照する処理は更新してください。
 
 
 Usage Details

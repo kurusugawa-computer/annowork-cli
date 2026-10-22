@@ -82,12 +82,13 @@ class ListActualWorkingTimeGroupbyTag:
                 if elm.workspace_member_id in member_ids:
                     dict_hours[(elm.date, elm.job_id, workspace_tag_name)] += elm.actual_working_hours
 
-        # 全体の時間を日毎に集計する
+        # タグ名と衝突しないよう、全体の時間は別に集計する。
+        totals: dict[tuple[str, str], float] = defaultdict(float)
 
         # key:job_id, value:job_nameのdict
         job_dict: dict[str, str] = {}
         for elm in actual_working_hours_daily:
-            dict_hours[(elm.date, elm.job_id, "total")] += elm.actual_working_hours
+            totals[elm.date, elm.job_id] += elm.actual_working_hours
             job_dict[elm.job_id] = elm.job_name
 
         dict_date: dict[tuple[str, str], dict[str, float]] = defaultdict(dict)
@@ -96,8 +97,13 @@ class ListActualWorkingTimeGroupbyTag:
 
         results = []
 
-        for (date, job_id), value in dict_date.items():
-            e = {"date": date, "job_id": job_id, "job_name": job_dict.get(job_id), "actual_working_hours": value}
+        for (date, job_id), total in totals.items():
+            e = {
+                "date": date,
+                "job_id": job_id,
+                "job_name": job_dict.get(job_id),
+                "actual_working_hours": {"total": total, "by_tag": dict_date.get((date, job_id), {})},
+            }
             results.append(e)
 
         results.sort(key=lambda e: (e["date"], e["job_id"]))
