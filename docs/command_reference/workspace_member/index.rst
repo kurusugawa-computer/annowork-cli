@@ -15,9 +15,9 @@ Available Commands
    :titlesonly:
 
    append_tag
+   create
    delete
    list
-   put
    remove_tag
    update_role
 

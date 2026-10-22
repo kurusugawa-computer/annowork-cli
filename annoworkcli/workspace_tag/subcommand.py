@@ -2,16 +2,18 @@ import argparse
 
 import annoworkcli
 import annoworkcli.common.cli
+import annoworkcli.workspace_tag.create_workspace_tag
 import annoworkcli.workspace_tag.list_workspace_tag
-import annoworkcli.workspace_tag.put_workspace_tag
+import annoworkcli.workspace_tag.update_workspace_tag
 
 
 def parse_args(parser: argparse.ArgumentParser):  # noqa: ANN201
     subparsers = parser.add_subparsers(dest="subcommand_name")
 
     # サブコマンドの定義
+    annoworkcli.workspace_tag.create_workspace_tag.add_parser(subparsers)
     annoworkcli.workspace_tag.list_workspace_tag.add_parser(subparsers)
-    annoworkcli.workspace_tag.put_workspace_tag.add_parser(subparsers)
+    annoworkcli.workspace_tag.update_workspace_tag.add_parser(subparsers)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:

@@ -33,7 +33,7 @@ def test_補完スクリプトを認証とログ出力なしで生成する(shel
     [
         (["annoworkcli", "work"], {"workspace", "workspace_member", "workspace_tag"}),
         (["annoworkcli", "job", ""], {"delete", "list", "update_status"}),
-        (["annoworkcli", "workspace_member", ""], {"append_tag", "delete", "list", "put", "remove_tag", "update_role"}),
+        (["annoworkcli", "workspace_member", ""], {"append_tag", "create", "delete", "list", "remove_tag", "update_role"}),
         (["annoworkcli", "job", "list", "--work"], {"--workspace_id"}),
         (["annoworkcli", "job", "list", "--format", ""], {"csv", "json"}),
         (["annoworkcli", "completion", ""], set(SHELL_CHOICES)),

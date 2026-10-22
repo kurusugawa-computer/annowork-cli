@@ -10,7 +10,7 @@ from annoworkcli.common.cli import build_annoworkapi
 logger = logging.getLogger(__name__)
 
 
-class PutWorkspace:
+class CreateWorkspace:
     def __init__(
         self,
         annowork_service: AnnoworkResource,
@@ -20,23 +20,24 @@ class PutWorkspace:
     def main(self, workspace_id: str, workspace_name: str, email: str) -> None:
         org = self.annowork_service.wrapper.get_workspace_or_none(workspace_id)
 
+        if org is not None:
+            raise ValueError(f"ワークスペース {workspace_id} は既に存在します。")
+
         request_body = {
             "workspace_name": workspace_name,
             "email": email,
         }
-        if org is not None:
-            request_body["last_updated_datetime"] = org["updated_datetime"]
 
         self.annowork_service.api.put_workspace(workspace_id, request_body=request_body)
 
-        logger.info(f"ワークスペース {workspace_id} を作成/更新しました。")
+        logger.info(f"ワークスペース {workspace_id} を作成しました。")
 
 
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     workspace_id = annoworkcli.common.cli.resolve_required_workspace_id(args)
 
-    PutWorkspace(
+    CreateWorkspace(
         annowork_service=annowork_service,
     ).main(workspace_id=workspace_id, workspace_name=args.workspace_name, email=args.email)
 
@@ -62,8 +63,8 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
-    subcommand_name = "put"
-    subcommand_help = "ワークスペースを登録/更新します。"
+    subcommand_name = "create"
+    subcommand_help = "ワークスペースを作成します。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)
     parse_args(parser)

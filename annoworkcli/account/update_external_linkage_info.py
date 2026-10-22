@@ -12,7 +12,7 @@ from annoworkcli.common.cli import build_annoworkapi, get_json_from_args
 logger = logging.getLogger(__name__)
 
 
-class PutExternalLinkageInfo:
+class UpdateExternalLinkageInfo:
     def __init__(self, annowork_service: AnnoworkResource) -> None:
         self.annowork_service = annowork_service
 
@@ -34,7 +34,7 @@ class PutExternalLinkageInfo:
 def main(args: argparse.Namespace) -> None:
     annowork_service = build_annoworkapi(args)
     external_linkage_info = get_json_from_args(args.external_linkage_info)
-    PutExternalLinkageInfo(annowork_service=annowork_service).main(user_id=args.user_id, external_linkage_info=external_linkage_info)
+    UpdateExternalLinkageInfo(annowork_service=annowork_service).main(user_id=args.user_id, external_linkage_info=external_linkage_info)
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
@@ -43,7 +43,7 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         "--user_id",
         type=str,
         required=True,
-        help="登録対象ユーザのuser_id",
+        help="更新対象ユーザのuser_id",
     )
 
     SAMPLE_EXTERNAL_LINKAGE_INFO = {"annofab": {"account_id": "xxx"}}  # noqa: N806
@@ -52,14 +52,14 @@ def parse_args(parser: argparse.ArgumentParser) -> None:
         "--external_linkage_info",
         type=str,
         required=True,
-        help=f"登録するアカウント外部連携情報。\n(ex) ``{json.dumps(SAMPLE_EXTERNAL_LINKAGE_INFO)}`` ",
+        help=f"置き換えるアカウント外部連携情報。\n(ex) ``{json.dumps(SAMPLE_EXTERNAL_LINKAGE_INFO)}`` ",
     )
 
     parser.set_defaults(subcommand_func=main)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:
-    subcommand_name = "put_external_linkage_info"
+    subcommand_name = "update_external_linkage_info"
     subcommand_help = "アカウントの外部連携情報を更新します。"
 
     parser = annoworkcli.common.cli.add_parser(subparsers, subcommand_name, subcommand_help, description=subcommand_help)

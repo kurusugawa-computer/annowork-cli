@@ -1,15 +1,17 @@
 import argparse
 
 import annoworkcli
+import annoworkcli.workspace.create_workspace
 import annoworkcli.workspace.list_workspace
-import annoworkcli.workspace.put_workspace
+import annoworkcli.workspace.update_workspace
 from annoworkcli.common.cli import add_parser as add_root_parser
 
 
 def parse_args(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="subcommand_name")
+    annoworkcli.workspace.create_workspace.add_parser(subparsers)
     annoworkcli.workspace.list_workspace.add_parser(subparsers)
-    annoworkcli.workspace.put_workspace.add_parser(subparsers)
+    annoworkcli.workspace.update_workspace.add_parser(subparsers)
 
 
 def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse.ArgumentParser:

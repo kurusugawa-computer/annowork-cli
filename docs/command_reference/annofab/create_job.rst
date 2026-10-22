@@ -1,5 +1,5 @@
 =========================================
-annofab put_job
+annofab create_job
 =========================================
 
 Description
@@ -21,10 +21,10 @@ Examples
 * job_id: ``--job_id`` に指定した値。未指定の場合はAnnofabプロジェクトのプロジェクトID
 
 
-.. code-block:: 
+.. code-block::
 
-    $ annoworkcli annofab put_job --workspace_id org --parent_job_id pjob --annofab_project_id af_prj
-     
+    $ annoworkcli annofab create_job --workspace_id org --parent_job_id pjob --annofab_project_id af_prj
+
 
 
 
@@ -34,7 +34,7 @@ Usage Details
 =================================
 
 .. argparse::
-   :ref: annoworkcli.annofab.put_job_from_annofab_project.add_parser
-   :prog: annoworkcli annofab put_job
+   :ref: annoworkcli.annofab.create_job_from_annofab_project.add_parser
+   :prog: annoworkcli annofab create_job
    :nosubcommands:
    :nodefaultconst:

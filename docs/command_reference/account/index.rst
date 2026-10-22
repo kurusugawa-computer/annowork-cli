@@ -16,7 +16,7 @@ Available Commands
    :titlesonly:
 
    list_external_linkage_info
-   put_external_linkage_info
+   update_external_linkage_info
 
 
 Usage Details
