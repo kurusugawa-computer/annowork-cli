@@ -86,20 +86,17 @@ class ListSchedule:
             max_date = max(max_date, schedule["end_date"])
 
             workspace_member_id = schedule["workspace_member_id"]
-            member = workspace_member_dict.get(schedule["workspace_member_id"])
+            member = workspace_member_dict.get(workspace_member_id)
+            schedule["user_id"] = member["user_id"] if member is not None else None
+            schedule["username"] = member["username"] if member is not None else None
             if member is None:
                 logger.warning(f"{workspace_member_id=} であるワークスペースメンバは存在しません。 :: schedule_id= '{schedule['schedule_id']}' ")
-                continue
-
-            schedule["user_id"] = member["user_id"]
-            schedule["username"] = member["username"]
 
             parent_job_id = schedule["parent_job_id"]
             job = job_dict.get(parent_job_id)
+            schedule["parent_job_name"] = job["job_name"] if job is not None else None
             if job is None:
                 logger.warning(f"{parent_job_id=} であるジョブは存在しません。 :: schedule_id= '{schedule['schedule_id']}' ")
-                continue
-            schedule["parent_job_name"] = job["job_name"]
 
         self._set_assigned_hours(schedule_list, min_date=min_date, max_date=max_date)
 

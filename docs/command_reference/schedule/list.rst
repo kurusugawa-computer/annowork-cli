@@ -57,3 +57,6 @@ Usage Details
    :prog: annoworkcli schedule list
    :nosubcommands:
    :nodefaultconst:
+
+参照先の親ジョブやメンバーが存在しない作業計画も出力します。
+取得できない名前やユーザー情報は、JSONでは ``null``、CSVでは空欄になります。
