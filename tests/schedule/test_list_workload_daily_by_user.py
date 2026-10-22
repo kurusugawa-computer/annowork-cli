@@ -4,7 +4,8 @@ import json
 import pytest
 
 from annoworkcli.common.cli import OutputFormat
-from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser
+from annoworkcli.schedule.list_workload_daily import ListWorkloadDaily
+from annoworkcli.schedule.list_workload_daily_by_user import CSV_COLUMNS, ListWorkloadDailyByUser, create_workload_csv
 
 
 def test_全ジョブの内訳と未アサインを日ごとに集計する(service):
@@ -64,7 +65,7 @@ def test_期間外と対象外メンバーを含めない(service):
 
 @pytest.mark.parametrize("output_format", list(OutputFormat))
 @pytest.mark.parametrize("empty", [False, True])
-def test_JSON配列とCSVのJSON文字列を出力する(service, tmp_path, output_format, empty):
+def test_JSONの内訳とCSVの親ジョブ列を出力する(service, tmp_path, output_format, empty):
     service.api.get_jobs.return_value[0]["job_name"] = '日本語,"ジョブ"'
     output = tmp_path / "workload"
     ListWorkloadDailyByUser(service, "workspace").main(
@@ -78,15 +79,15 @@ def test_JSON配列とCSVのJSON文字列を出力する(service, tmp_path, outp
     if output_format == OutputFormat.JSON:
         rows = json.loads(output.read_text())
     else:
-        with output.open() as stream:
+        with output.open(encoding="utf-8-sig") as stream:
             reader = csv.DictReader(stream)
-            assert reader.fieldnames is not None
-            assert "assignments" in reader.fieldnames
+            assert reader.fieldnames == CSV_COLUMNS + ([] if empty else ['日本語,"ジョブ"'])
             rows = list(reader)
-        for row in rows:
-            row["assignments"] = json.loads(row["assignments"])
     assert len(rows) == (0 if empty else 1)
-    if not empty:
+    if not empty and output_format == OutputFormat.CSV:
+        assert float(rows[0]['日本語,"ジョブ"']) == 3
+        assert rows[0]["expected_working_hours"] == rows[0]["remaining_working_hours"] == ""
+    elif not empty:
         assert rows[0]["assignments"] == [{"parent_job_id": "parent", "parent_job_name": '日本語,"ジョブ"', "assigned_working_hours": 3}]
 
 
@@ -104,11 +105,63 @@ def test_割合指定の浮動小数点誤差を超過扱いしない(service):
 
 
 @pytest.mark.parametrize("has_schedule", [False, True])
-def test_予定稼働時間とアサイン時間がともに0の日は省略する(service, has_schedule):
+def test_予定稼働時間とアサイン時間がともに0の登録も含める(service, has_schedule):
     service.api.get_expected_working_times.return_value = [{"date": "2026-10-01", "workspace_member_id": "member", "expected_working_hours": 0}]
     if has_schedule:
         service.api.get_schedules.return_value[0].update(type="percentage", value=100)
     else:
         service.api.get_schedules.return_value = []
     result = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
-    assert result == []
+    assert len(result) == 1
+    assert result[0].expected_working_hours == result[0].assigned_working_hours == result[0].remaining_working_hours == 0
+    assert result[0].status == "full"
+
+
+@pytest.mark.parametrize("name", ["Parent", *CSV_COLUMNS, "", None])
+def test_CSVの親ジョブ名が不正なら拒否しJSONは出力できる(service, tmp_path, name):
+    service.api.get_jobs.return_value[1]["job_name"] = name
+    schedule = service.api.get_schedules.return_value[0]
+    service.api.get_schedules.return_value.append({**schedule, "job_id": "grandparent", "schedule_id": "second"})
+    command = ListWorkloadDailyByUser(service, "workspace")
+    output = tmp_path / "workload"
+    output.write_text("既存の出力")
+    with pytest.raises(ValueError):
+        command.main(start_date="2026-10-01", end_date="2026-10-01", user_ids=None, statuses=None, output=output, output_format=OutputFormat.CSV)
+    assert output.read_text() == "既存の出力"
+    command.main(start_date="2026-10-01", end_date="2026-10-01", user_ids=None, statuses=None, output=output, output_format=OutputFormat.JSON)
+    assert len(json.loads(output.read_text())[0]["assignments"]) == 2
+
+
+@pytest.mark.parametrize("percentage", [False, True])
+def test_親ジョブ列の順序と時間が日別集計に対応する(service, percentage):
+    service.api.get_workspace_members.return_value.append({"workspace_member_id": "free", "user_id": "bob", "username": "Bob"})
+    service.api.get_expected_working_times.return_value = [
+        {"date": "2026-10-01", "workspace_member_id": member, "expected_working_hours": 6} for member in ["member", "free"]
+    ]
+    schedule = service.api.get_schedules.return_value[0]
+    service.api.get_schedules.return_value.append(
+        {
+            **schedule,
+            "schedule_id": "second",
+            "job_id": "grandparent",
+            "start_date": "2026-10-02",
+            "end_date": "2026-10-02",
+            "value": 50 if percentage else 2,
+            "type": "percentage" if percentage else "hours",
+        }
+    )
+    workloads = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-03")
+    df = create_workload_csv(workloads)
+    assert list(df.columns) == [*CSV_COLUMNS, "Grandparent", "Parent"]
+    assert df["Parent"].tolist() == [0, 3, 0]
+    assert df["Grandparent"].iloc[:2].tolist() == [0, 0]
+    assert df["Grandparent"].isna().iloc[2] == percentage
+    if not percentage:
+        assert df["Grandparent"].iloc[2] == 2
+    summaries = ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-03")
+    for summary in summaries:
+        rows = [row for row in workloads if row.date == summary.date]
+        for assignment in summary.assignments:
+            hours = [detail.assigned_working_hours for row in rows for detail in row.assignments if detail.parent_job_id == assignment.parent_job_id]
+            assert assignment.assigned_working_hours == (None if None in hours else sum(value for value in hours if value is not None))
+        assert len(summary.members) == len(rows)

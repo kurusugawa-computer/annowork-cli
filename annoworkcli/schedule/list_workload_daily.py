@@ -12,6 +12,7 @@ import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi
 from annoworkcli.common.utils import print_csv, print_json
 from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser, WorkloadDaily, get_status
+from annoworkcli.schedule.workload_csv import get_parent_job_columns
 
 logger = logging.getLogger(__name__)
 
@@ -100,12 +101,9 @@ def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDa
 
 def create_workload_csv(workloads: list[WorkloadDailySummary]) -> pandas.DataFrame:
     """親ジョブ名を列名とする、1日1行の比較表を作成する。"""
-    jobs = {assignment.parent_job_id: assignment.parent_job_name for row in workloads for assignment in row.assignments}
-    names = list(CSV_COLUMNS)
-    for job_id, name in sorted(jobs.items()):
-        if not name or name in names:
-            raise ValueError(f"親ジョブ名が未取得・空、またはCSV列名が重複しています。 :: {job_id=}, {name=}。--format json で出力してください。")
-        names.append(name)
+    jobs = get_parent_job_columns(
+        ((assignment.parent_job_id, assignment.parent_job_name) for row in workloads for assignment in row.assignments), CSV_COLUMNS
+    )
     rows = []
     for workload in workloads:
         row: dict[str, str | float | None] = {
@@ -115,9 +113,9 @@ def create_workload_csv(workloads: list[WorkloadDailySummary]) -> pandas.DataFra
             "remaining_working_hours": workload.remaining_working_hours,
         }
         hours_by_job = {assignment.parent_job_id: assignment.assigned_working_hours for assignment in workload.assignments}
-        row.update({name: hours_by_job.get(job_id, 0.0) for job_id, name in jobs.items() if name is not None})
+        row.update({name: hours_by_job.get(job_id, 0.0) for job_id, name in jobs.items()})
         rows.append(row)
-    return pandas.DataFrame(rows, columns=names)
+    return pandas.DataFrame(rows, columns=[*CSV_COLUMNS, *jobs.values()])
 
 
 class ListWorkloadDaily:
@@ -127,7 +125,7 @@ class ListWorkloadDaily:
     def get_workloads(self, *, start_date: str, end_date: str) -> list[WorkloadDailySummary]:
         """全ユーザーの時間を集計し、指定期間の全日を返す。"""
         daily: dict[str, list[WorkloadDaily]] = defaultdict(list)
-        for row in self.by_user.get_workloads(start_date=start_date, end_date=end_date, include_zero_hours=True):
+        for row in self.by_user.get_workloads(start_date=start_date, end_date=end_date):
             daily[row.date].append(row)
         return [summarize_workloads(str(date.date()), daily[str(date.date())]) for date in pandas.date_range(start_date, end_date)]
 
