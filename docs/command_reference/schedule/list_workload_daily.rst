@@ -55,7 +55,7 @@ JSON形式
 
 1日1オブジェクトの配列です。全体の集計値に加えて、次の内訳を常に出力します。
 
-* ``members``: ユーザー情報と、その日の予定稼働時間・アサイン合計・差分・``status``。
+* ``members``: ユーザー情報と、その日の予定稼働時間・アサイン合計・差分。
   その日に予定稼働時間の登録またはアサインがあるユーザーを含めます。0時間の登録も含みます。
 * ``assignments``: 親ジョブごとのアサイン合計と、``members`` による担当者別の内訳。
   担当者別の時間は、その親ジョブへのアサイン時間です。
@@ -65,7 +65,6 @@ JSON形式
 個人の予定稼働時間が未登録の場合は0時間とし、差分は0時間からアサイン時間を引いた値です。
 削除済みなどで取得できないユーザー情報・親ジョブ名も ``null`` です。
 データがない日は各合計を0、``members`` と ``assignments`` を空配列にします。
-個人の ``status`` の意味は :doc:`list_workload_daily_by_user` を参照してください。
 
 .. code-block:: console
 
@@ -88,8 +87,7 @@ JSON形式
             "username": "Alice",
             "expected_working_hours": 8,
             "assigned_working_hours": 9,
-            "remaining_working_hours": -1,
-            "status": "overloaded"
+            "remaining_working_hours": -1
           },
           {
             "workspace_member_id": "member-2",
@@ -97,8 +95,7 @@ JSON形式
             "username": "Bob",
             "expected_working_hours": 8,
             "assigned_working_hours": 0,
-            "remaining_working_hours": 8,
-            "status": "unassigned"
+            "remaining_working_hours": 8
           }
         ],
         "assignments": [

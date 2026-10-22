@@ -22,8 +22,8 @@ def test_全ジョブの内訳と未アサインを日ごとに集計する(serv
     )
     result = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
     free, assigned = result
-    assert (free.user_id, free.status, free.remaining_working_hours, free.assignments) == ("bob", "unassigned", 6, [])
-    assert (assigned.assigned_working_hours, assigned.remaining_working_hours, assigned.status) == (8, -2, "overloaded")
+    assert (free.user_id, free.remaining_working_hours, free.assignments) == ("bob", 6, [])
+    assert (assigned.assigned_working_hours, assigned.remaining_working_hours) == (8, -2)
     assert [(item.parent_job_id, item.parent_job_name, item.assigned_working_hours) for item in assigned.assignments] == [
         ("grandparent", "Grandparent", 2),
         ("parent", "Parent", 6),
@@ -37,7 +37,6 @@ def test_予定稼働時間が未登録の場合は0時間として過不足を�
     result = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
     assert result[0].expected_working_hours == 0
     assert result[0].remaining_working_hours == (0 if percentage else -3)
-    assert result[0].status == ("full" if percentage else "overloaded")
     assert result[0].assigned_working_hours == (0 if percentage else 3)
 
 
@@ -51,7 +50,7 @@ def test_未登録の割合指定と時間指定を合算して数値で出力�
     assigned = 0 if percentage_only else 3
     output = tmp_path / "workload"
     ListWorkloadDailyByUser(service, "workspace").main(
-        start_date="2026-10-01", end_date="2026-10-01", user_ids=None, statuses=None, output=output, output_format=output_format
+        start_date="2026-10-01", end_date="2026-10-01", user_ids=None, output=output, output_format=output_format
     )
     if output_format == OutputFormat.JSON:
         row = json.loads(output.read_text())[0]
@@ -60,19 +59,18 @@ def test_未登録の割合指定と時間指定を合算して数値で出力�
         with output.open(encoding="utf-8-sig") as stream:
             row = next(csv.DictReader(stream))
         assert float(row["Parent"]) == assigned
+    assert "status" not in row
     assert float(row["assigned_working_hours"]) == assigned
     assert float(row["expected_working_hours"]) == 0
     assert float(row["remaining_working_hours"]) == -assigned
-    assert row["status"] == ("full" if percentage_only else "overloaded")
 
 
-@pytest.mark.parametrize("expected,assigned,status", [(0, 3, "overloaded"), (3, 3, "full"), (6, 3, "under_assigned")])
-def test_予定稼働時間との過不足を判定する(service, expected, assigned, status):
+@pytest.mark.parametrize("expected,assigned", [(0, 3), (3, 3), (6, 3)])
+def test_予定稼働時間との差分を計算する(service, expected, assigned):
     service.api.get_expected_working_times.return_value = [
         {"date": "2026-10-01", "workspace_member_id": "member", "expected_working_hours": expected}
     ]
     result = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
-    assert result[0].status == status
     assert result[0].remaining_working_hours == expected - assigned
 
 
@@ -92,12 +90,13 @@ def test_期間外と対象外メンバーを含めない(service):
 @pytest.mark.parametrize("empty", [False, True])
 def test_JSONの内訳とCSVの親ジョブ列を出力する(service, tmp_path, output_format, empty):
     service.api.get_jobs.return_value[0]["job_name"] = '日本語,"ジョブ"'
+    if empty:
+        service.api.get_schedules.return_value = []
     output = tmp_path / "workload"
     ListWorkloadDailyByUser(service, "workspace").main(
         start_date="2026-10-01",
         end_date="2026-10-01",
         user_ids=None,
-        statuses=["unassigned"] if empty else None,
         output=output,
         output_format=output_format,
     )
@@ -106,6 +105,8 @@ def test_JSONの内訳とCSVの親ジョブ列を出力する(service, tmp_path,
     else:
         with output.open(encoding="utf-8-sig") as stream:
             reader = csv.DictReader(stream)
+            assert reader.fieldnames is not None
+            assert "status" not in reader.fieldnames
             assert reader.fieldnames == CSV_COLUMNS + ([] if empty else ['日本語,"ジョブ"'])
             rows = list(reader)
     assert len(rows) == (0 if empty else 1)
@@ -137,7 +138,6 @@ def test_終了日省略時は予定稼働時間と計画を上限なしで取�
     assert rows[-2].date == "2026-12-01"
     assert rows[-2].assigned_working_hours == (0 if percentage else 3)
     assert rows[-1].date == "2026-12-02"
-    assert rows[-1].status == "unassigned"
     assert service.api.get_expected_working_times.call_args.kwargs["query_params"] == {"term_start": "2026-10-01", "term_end": None}
 
 
@@ -145,7 +145,6 @@ def test_割合指定の浮動小数点誤差を超過扱いしない(service):
     service.api.get_expected_working_times.return_value = [{"date": "2026-10-01", "workspace_member_id": "member", "expected_working_hours": 7.6}]
     service.api.get_schedules.return_value[0].update(type="percentage", value=100)
     result = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
-    assert result[0].status == "full"
     assert result[0].remaining_working_hours == 0
 
 
@@ -159,7 +158,6 @@ def test_予定稼働時間とアサイン時間がともに0の登録も含め�
     result = ListWorkloadDailyByUser(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")
     assert len(result) == 1
     assert result[0].expected_working_hours == result[0].assigned_working_hours == result[0].remaining_working_hours == 0
-    assert result[0].status == "full"
 
 
 @pytest.mark.parametrize("name", ["Parent", *CSV_COLUMNS, "", None])
@@ -171,9 +169,9 @@ def test_CSVの親ジョブ名が不正なら拒否しJSONは出力できる(ser
     output = tmp_path / "workload"
     output.write_text("既存の出力")
     with pytest.raises(ValueError):
-        command.main(start_date="2026-10-01", end_date="2026-10-01", user_ids=None, statuses=None, output=output, output_format=OutputFormat.CSV)
+        command.main(start_date="2026-10-01", end_date="2026-10-01", user_ids=None, output=output, output_format=OutputFormat.CSV)
     assert output.read_text() == "既存の出力"
-    command.main(start_date="2026-10-01", end_date="2026-10-01", user_ids=None, statuses=None, output=output, output_format=OutputFormat.JSON)
+    command.main(start_date="2026-10-01", end_date="2026-10-01", user_ids=None, output=output, output_format=OutputFormat.JSON)
     assert len(json.loads(output.read_text())[0]["assignments"]) == 2
 
 

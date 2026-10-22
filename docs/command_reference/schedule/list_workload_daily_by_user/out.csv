@@ -1,2 +1,2 @@
-date,workspace_member_id,user_id,username,expected_working_hours,assigned_working_hours,remaining_working_hours,status,ジョブA
-2026-11-02,member1,alice,Alice,6,8,-2,overloaded,8
+date,workspace_member_id,user_id,username,expected_working_hours,assigned_working_hours,remaining_working_hours,ジョブA
+2026-11-02,member1,alice,Alice,6,8,-2,8

@@ -20,26 +20,19 @@ Description
 
 ``assignments`` は親ジョブごとのアサイン時間の内訳です。同じ親ジョブの複数のスケジュールは合算します。
 JSON出力では配列として出力し、未アサインの場合は空配列です。
-CSVは日付・メンバーごとに1行で、ユーザー情報・時間・``status`` の後ろに親ジョブ名の列を追加します。
+CSVは日付・メンバーごとに1行で、ユーザー情報・時間の後ろに親ジョブ名の列を追加します。
 親ジョブ列の並び順、未アサイン時の0、列名の検証は
-:doc:`list_workload_daily` のCSV形式と同じです。対象はユーザー・状態の絞り込み後の行に含まれる親ジョブです。
+:doc:`list_workload_daily` のCSV形式と同じです。対象はユーザーの絞り込み後の行に含まれる親ジョブです。
 0件の場合も固定列のヘッダーを出力します。
 
 割合指定のアサイン時間の換算方法は :doc:`list_workload_daily` と同じです。
 予定稼働時間が未登録の場合は ``expected_working_hours`` を0時間として扱います。
 ``remaining_working_hours`` は予定稼働時間からアサイン時間を引いた値です。
-割合指定のみなら残り時間は0で ``status`` は ``full``、時間指定で3時間のアサインがあれば
-残り時間は-3で ``status`` は ``overloaded`` です。時間の各項目はCSV・JSONとも数値で出力します。
-
-``status`` は次の値です。``--status`` で複数指定して絞り込めます。
-
-* ``overloaded``: 予定稼働時間を超過
-* ``under_assigned``: 一部アサイン済みで空きあり
-* ``unassigned``: 予定稼働時間が正でアサイン時間が0
-* ``full``: 予定稼働時間とアサイン時間が一致
+割合指定のみなら残り時間は0、時間指定で3時間のアサインがあれば残り時間は-3です。
+時間の各項目はCSV・JSONとも数値で出力します。
 
 CLIの共通引数（``--workspace_id``、``--start_date``、``--end_date``、``--format``、``--output``）は
-:doc:`list_workload_daily` と同じです。このコマンドでは追加で ``--user_id`` と ``--status`` による絞り込みができます。
+:doc:`list_workload_daily` と同じです。このコマンドでは追加で ``--user_id`` による絞り込みができます。
 ``--user_id`` は複数指定でき、省略時は全ユーザーを対象にします。
 
 Examples
@@ -64,7 +57,6 @@ Examples
         "expected_working_hours": 6,
         "assigned_working_hours": 8,
         "remaining_working_hours": -2,
-        "status": "overloaded",
         "assignments": [
           {"parent_job_id": "job-a", "parent_job_name": "ジョブA", "assigned_working_hours": 8}
         ]
@@ -82,14 +74,6 @@ Examples
 .. csv-table:: out.csv
    :file: list_workload_daily_by_user/out.csv
    :header-rows: 1
-
-空きがあるメンバーだけCSVに出力する例です。
-
-.. code-block:: console
-
-    $ annoworkcli schedule list_workload_daily_by_user --workspace_id org \
-      --start_date 2026-11-01 --end_date 2026-11-30 \
-      --status unassigned under_assigned --output workload.csv
 
 Usage Details
 =================================

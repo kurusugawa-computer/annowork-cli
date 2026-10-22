@@ -1,5 +1,6 @@
 import argparse
 import logging
+import math
 from collections import defaultdict
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -11,7 +12,7 @@ import annoworkcli.common.cli
 from annoworkcli.common.cli import OutputFormat, build_annoworkapi
 from annoworkcli.common.date_range import add_date_arguments, resolve_start_date
 from annoworkcli.common.utils import print_csv, print_json
-from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser, WorkloadDaily, get_status
+from annoworkcli.schedule.list_workload_daily_by_user import ListWorkloadDailyByUser, WorkloadDaily
 from annoworkcli.schedule.workload_csv import get_parent_job_columns
 
 logger = logging.getLogger(__name__)
@@ -28,7 +29,6 @@ class WorkloadMember:
     expected_working_hours: float
     assigned_working_hours: float
     remaining_working_hours: float
-    status: str
 
 
 @dataclass
@@ -71,7 +71,6 @@ def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDa
                 row.expected_working_hours,
                 row.assigned_working_hours,
                 row.remaining_working_hours,
-                row.status,
             )
         )
         for assignment in row.assignments:
@@ -85,7 +84,7 @@ def summarize_workloads(date: str, workloads: list[WorkloadDaily]) -> WorkloadDa
     ]
     expected = sum(row.expected_working_hours for row in workloads)
     assigned = sum(assignment.assigned_working_hours for assignment in assignments)
-    remaining = 0.0 if get_status(expected, assigned) == "full" else expected - assigned
+    remaining = 0.0 if math.isclose(expected, assigned, rel_tol=0, abs_tol=1e-9) else expected - assigned
     return WorkloadDailySummary(date, expected, assigned, remaining, members, assignments)
 
 

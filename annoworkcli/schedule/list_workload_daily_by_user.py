@@ -17,9 +17,6 @@ from annoworkcli.schedule.workload_csv import get_parent_job_columns
 
 logger = logging.getLogger(__name__)
 
-STATUSES = ["overloaded", "under_assigned", "unassigned", "full"]
-"""予定稼働時間に対するアサイン状況。"""
-
 CSV_COLUMNS = [
     "date",
     "workspace_member_id",
@@ -28,7 +25,6 @@ CSV_COLUMNS = [
     "expected_working_hours",
     "assigned_working_hours",
     "remaining_working_hours",
-    "status",
 ]
 """ユーザー別集計CSVの固定列。後ろに親ジョブ名の列を追加する。"""
 
@@ -49,7 +45,6 @@ class WorkloadDaily:
     expected_working_hours: float
     assigned_working_hours: float
     remaining_working_hours: float
-    status: str
     assignments: list[Assignment]
 
 
@@ -68,21 +63,11 @@ def create_workload_csv(workloads: list[WorkloadDaily]) -> pandas.DataFrame:
             "expected_working_hours": workload.expected_working_hours,
             "assigned_working_hours": workload.assigned_working_hours,
             "remaining_working_hours": workload.remaining_working_hours,
-            "status": workload.status,
         }
         hours_by_job = {assignment.parent_job_id: assignment.assigned_working_hours for assignment in workload.assignments}
         row.update({name: hours_by_job.get(job_id, 0.0) for job_id, name in jobs.items()})
         rows.append(row)
     return pandas.DataFrame(rows, columns=[*CSV_COLUMNS, *jobs.values()])
-
-
-def get_status(expected: float, assigned: float) -> str:
-    """予定稼働時間とアサイン時間から過不足を判定する。"""
-    if math.isclose(assigned, expected, rel_tol=0, abs_tol=1e-9):
-        return "full"
-    if assigned > expected:
-        return "overloaded"
-    return "unassigned" if assigned == 0 else "under_assigned"
 
 
 class ListWorkloadDailyByUser:
@@ -135,8 +120,7 @@ class ListWorkloadDailyByUser:
             details = [Assignment(job_id, jobs.get(job_id), hours) for job_id, hours in sorted(assignments.get(key, {}).items())]
             expected_hours = expected.get(key, 0.0)
             assigned = sum(item.assigned_working_hours for item in details)
-            status = get_status(expected_hours, assigned)
-            remaining = 0.0 if status == "full" else expected_hours - assigned
+            remaining = 0.0 if math.isclose(expected_hours, assigned, rel_tol=0, abs_tol=1e-9) else expected_hours - assigned
             member = members.get(member_id, {})
             result.append(
                 WorkloadDaily(
@@ -147,7 +131,6 @@ class ListWorkloadDailyByUser:
                     expected_hours,
                     assigned,
                     remaining,
-                    status,
                     details,
                 )
             )
@@ -159,12 +142,10 @@ class ListWorkloadDailyByUser:
         start_date: str | None = None,
         end_date: str | None = None,
         user_ids: list[str] | None,
-        statuses: list[str] | None,
         output: Path | None,
         output_format: OutputFormat,
     ) -> None:
-        result = self.get_workloads(start_date=start_date, end_date=end_date, user_ids=user_ids)
-        rows = [row for row in result if statuses is None or row.status in statuses]
+        rows = self.get_workloads(start_date=start_date, end_date=end_date, user_ids=user_ids)
         logger.info(f"{len(rows)} 件の日ごとのアサイン状況を出力します。")
         if output_format == OutputFormat.JSON:
             print_json([asdict(row) for row in rows], is_pretty=True, output=output)
@@ -177,7 +158,6 @@ def main(args: argparse.Namespace) -> None:
         start_date=resolve_start_date(args.start_date, args.end_date),
         end_date=args.end_date,
         user_ids=get_list_from_args(args.user_id),
-        statuses=args.status,
         output=args.output,
         output_format=OutputFormat(args.format),
     )
@@ -190,7 +170,6 @@ def add_parser(subparsers: argparse._SubParsersAction | None = None) -> argparse
     annoworkcli.common.cli.add_workspace_id_argument_with_env_fallback(parser)
     add_date_arguments(parser)
     parser.add_argument("-u", "--user_id", nargs="+", help="集計対象のユーザID")
-    parser.add_argument("--status", nargs="+", choices=STATUSES, help="出力対象のアサイン状況")
     parser.add_argument("-o", "--output", type=Path, help="出力先。省略時は標準出力")
     parser.add_argument("-f", "--format", choices=[item.value for item in OutputFormat], default=OutputFormat.CSV.value, help="出力先のフォーマット")
     parser.set_defaults(subcommand_func=main)

@@ -34,7 +34,6 @@ def test_全体とユーザー別と親ジョブ別の時間を集計する(serv
                 "expected_working_hours": 8,
                 "assigned_working_hours": 0,
                 "remaining_working_hours": 8,
-                "status": "unassigned",
             },
             {
                 "workspace_member_id": "member",
@@ -43,7 +42,6 @@ def test_全体とユーザー別と親ジョブ別の時間を集計する(serv
                 "expected_working_hours": 8,
                 "assigned_working_hours": 9,
                 "remaining_working_hours": -1,
-                "status": "overloaded",
             },
         ],
         "assignments": [
@@ -94,7 +92,6 @@ def test_未登録の予定稼働時間でもアサイン時間を集計する(s
     assert row.expected_working_hours == 8
     assert row.members[1].expected_working_hours == 0
     assert row.members[1].remaining_working_hours == (0 if percentage else -3)
-    assert row.members[1].status == ("full" if percentage else "overloaded")
     assert row.assigned_working_hours == (0 if percentage else 3)
     assert row.remaining_working_hours == (8 if percentage else 5)
     assert row.assignments[0].assigned_working_hours == (0 if percentage else 3)
@@ -132,7 +129,6 @@ def test_予定稼働時間が0の登録もメンバーに含める(service, has
     row = ListWorkloadDaily(service, "workspace").get_workloads(start_date="2026-10-01", end_date="2026-10-01")[0]
     assert len(row.members) == 1
     assert row.expected_working_hours == row.assigned_working_hours == row.remaining_working_hours == 0
-    assert row.members[0].status == "full"
 
 
 @pytest.mark.parametrize("output_format", list(OutputFormat))
