@@ -33,6 +33,7 @@ Available Commands
    list_daily_by_parent_job
    list_daily_groupby_tag
    list_weekly
+   list_workload_daily
    update
    update_end_date
    update_start_date

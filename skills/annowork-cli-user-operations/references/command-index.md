@@ -76,6 +76,7 @@ Annofab連携に関するサブコマンド
 - `annoworkcli schedule list_daily_by_parent_job`: 作業計画から求めたアサイン時間を日ごと・親ジョブごとに集計して出力します。
 - `annoworkcli schedule list_daily_groupby_tag`: 日ごとのアサイン時間を、ワークスペースタグで集計した値を出力します。
 - `annoworkcli schedule list_weekly`: 作業計画から求めたアサイン時間を週ごと（日曜日始まり）に出力します。
+- `annoworkcli schedule list_workload_daily`: 日ごとのアサイン状況と親ジョブ別の内訳を出力します。
 - `annoworkcli schedule update`: 作業計画の期間・割当量を更新します。
 - `annoworkcli schedule update_end_date`: 親ジョブ・ユーザー・現在の終了日で選んだ作業計画の終了日を一括変更します。
 - `annoworkcli schedule update_start_date`: 親ジョブ・ユーザー・現在の開始日で選んだ作業計画の開始日を一括変更します。
