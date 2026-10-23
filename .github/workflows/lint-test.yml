@@ -24,8 +24,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}        
-          # Install a specific version of uv.
-          version: "0.13.4"
+          version: "latest"
       - name: Install the project
         run: uv sync --only-group test
       - name: Set timezone
@@ -48,8 +47,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: 3.14
-          # Install a specific version of uv.
-          version: "0.13.4"
+          version: "latest"
       - name: Install the project
         run: uv sync --only-group linter
       - name: Lint
