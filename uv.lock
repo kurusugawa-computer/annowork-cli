@@ -9,10 +9,10 @@ resolution-markers = [
     "python_full_version == '3.14.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.14.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
     "python_full_version == '3.13.*' and sys_platform == 'win32'",
-    "python_full_version < '3.13' and sys_platform == 'win32'",
     "python_full_version == '3.13.*' and sys_platform == 'emscripten'",
-    "python_full_version < '3.13' and sys_platform == 'emscripten'",
     "python_full_version == '3.13.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "python_full_version < '3.13' and sys_platform == 'win32'",
+    "python_full_version < '3.13' and sys_platform == 'emscripten'",
     "python_full_version < '3.13' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
@@ -70,7 +70,7 @@ wheels = [
 
 [[package]]
 name = "annofabcli"
-version = "1.136.0"
+version = "1.141.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annofabapi" },
@@ -91,9 +91,9 @@ dependencies = [
     { name = "shtab" },
     { name = "ulid-py" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/dc/ea/3132a0f434742394558d595a2deeb5ffa87984b2ad8db87d5321889df899/annofabcli-1.136.0.tar.gz", hash = "sha256:25bcfef4ebb228ca78c03d6ff7290c0acaab7c5d41a999ca7c7065d5da509dda", size = 2532496, upload-time = "2026-10-06T02:46:57.681Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c6/4f/91bb86129dcbe9b93d5982d618b3e3c24a8bca9854129f5aeea9a2b81b38/annofabcli-1.141.1.tar.gz", hash = "sha256:525395a5ae860ff5ecaadb7d6ca59b711f18d27ff499e69e1335fb228daaf293", size = 2569432, upload-time = "2026-10-15T01:01:51.28Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1e/55/3ef440a09e2a0d282ef1cbf6a97fc8a735cb1bb81a15e660796590bd3341/annofabcli-1.136.0-py3-none-any.whl", hash = "sha256:7711cad01a503152b30782b662780adcb52298777ea7343aa3227f1174580d10", size = 904737, upload-time = "2026-10-06T02:46:56.181Z" },
+    { url = "https://files.pythonhosted.org/packages/8a/e0/9dbb929bb34f2102e6030e20e52cb7855d1cd62265cb7bc680d5967dede1/annofabcli-1.141.1-py3-none-any.whl", hash = "sha256:c7f9782910de64c69d0cbafa53169540d5587ee73a7add764078c6254d9275e2", size = 941603, upload-time = "2026-10-15T01:01:49.395Z" },
 ]
 
 [[package]]
