@@ -35,7 +35,7 @@ def get_weekly_assigned_hours_df(assigned_hours_daily_list: list[dict[str, Any]]
         # `include_groups=False`を指定する理由：pandas2.2.0で以下の警告が出ないようにするため
         # DeprecationWarning: DataFrameGroupBy.resample operated on the grouping columns.
         # This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation.
-        # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.  # noqa: E501
+        # Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
         df.groupby(["workspace_member_id", "parent_job_id", "parent_job_name"])
         .resample("W-SUN", on="dt_date", label="left", closed="left", include_groups=False)
         .agg({"assigned_working_hours": "sum"})

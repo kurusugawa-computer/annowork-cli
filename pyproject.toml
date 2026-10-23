@@ -19,8 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: 3.15"
-    
+    "Programming Language :: Python :: 3.15",
 ]
 dependencies = [
     "pyyaml",
@@ -44,31 +43,33 @@ annoworkcli = "annoworkcli.__main__:main"
 
 [dependency-groups]
 test = [
-    "pytest>=8",
-    "pytest-xdist",
-    "pytest-cov",
+    "pytest>=9.1.1",
+    "pytest-xdist>=3.8.0",
+    "pytest-cov>=7.1.0",
 ]
 linter = [
     "mypy>=2.4.0",
-    "ruff>=0.16.10",
-    "types-requests",
-    "types-python-dateutil",
-    "types-PyYAML",
+    "ruff>=0.17.2",
+    "types-requests>=2.33.0.20261006",
+    "types-python-dateutil>=2.9.0.20261021",
+    "types-PyYAML>=6.0.12.20260906",
 ]
 documentation = [
-    "sphinx>=9",
-    "pydata-sphinx-theme>=0.13",
-    "sphinx-last-updated-by-git",
-    "sphinx-argparse",
+    "sphinx>=9.1.1; python_version < '3.13'",
+    "sphinx>=9.2.0; python_version >= '3.13'",
+    "pydata-sphinx-theme>=0.23.0",
+    "sphinx-last-updated-by-git>=0.3.8",
+    "sphinx-argparse>=0.6.1",
 ]
-dev = ["ipython", "pre-commit>=4"]
-
+dev = [
+    "ipython",
+    "pre-commit>=4.7.0",
+]
 
 [tool.uv]
 required-version = ">=0.13.4"
 default-groups = ["dev", "test", "linter", "documentation"]
 package = true
-
 
 
 
@@ -82,7 +83,6 @@ warn_unreachable = true
 
 show_column_numbers = true
 warn_unused_configs = true
-
 
 
 [tool.ruff]
@@ -148,7 +148,6 @@ max-args = 10
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
-
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
